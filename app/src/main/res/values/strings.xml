@@ -2,12 +2,15 @@
 <resources>
 
     <string name="app_name">Project AIO</string>
-    <string name="title_section1">Attendance</string>
+    <string name="title_section1">Group SMS</string>
     <string name="title_section2">Maps</string>
     <string name="title_section3">Bookmarks</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="action_example">About</string>
     <string name="action_settings">Settings</string>
+    <string name="title_activity_fullscreen">Group SMS</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
 
 </resources>

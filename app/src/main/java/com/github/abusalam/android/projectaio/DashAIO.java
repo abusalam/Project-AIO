@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+import android.content.Intent;
 
 
 public class DashAIO extends ActionBarActivity
@@ -60,6 +61,7 @@ public class DashAIO extends ActionBarActivity
         switch (number) {
             case 1:
                 mTitle = getString(R.string.title_section1);
+                startActivity(new Intent(getApplicationContext(), FullscreenActivity.class));
                 break;
             case 2:
                 mTitle = getString(R.string.title_section2);
@@ -98,6 +100,7 @@ public class DashAIO extends ActionBarActivity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_settings) {
+            startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
             return true;
         }
         return super.onOptionsItemSelected(item);
