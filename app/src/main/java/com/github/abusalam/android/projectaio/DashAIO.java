@@ -61,12 +61,13 @@ public class DashAIO extends ActionBarActivity
         switch (number) {
             case 1:
                 mTitle = getString(R.string.title_section1);
-                startActivity(new Intent(getApplicationContext(), FullscreenActivity.class));
                 break;
             case 2:
                 mTitle = getString(R.string.title_section2);
+                startActivity(new Intent(getApplicationContext(), GroupSMS.class));
                 break;
             case 3:
+                startActivity(new Intent(getApplicationContext(), FullscreenActivity.class));
                 mTitle = getString(R.string.title_section3);
                 break;
         }

@@ -36,6 +36,15 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.github.abusalam.android.projectaio.DashAIO" />
         </activity>
+        <activity
+            android:name=".GroupSMS"
+            android:label="@string/title_activity_group_sms"
+            android:parentActivityName=".DashAIO"
+            android:windowSoftInputMode="adjustResize">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.github.abusalam.android.projectaio.DashAIO" />
+        </activity>
     </application>
 
 </manifest>
