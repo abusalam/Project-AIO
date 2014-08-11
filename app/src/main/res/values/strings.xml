@@ -2,10 +2,11 @@
 <resources>
 
     <string name="app_name">Project AIO</string>
-    <string name="title_section1">Project AIO</string>
-    <string name="title_section2">Group SMS</string>
-    <string name="title_section3">Maps</string>
-    <string name="title_section4">Bookmarks</string>
+    <string name="app_caption">NIC SMS Gateway</string>
+    <string name="title_Home">Home</string>
+    <string name="title_Login">Sign In</string>
+    <string name="title_GroupSMS">Group SMS</string>
+    <string name="title_Reports">Delivery Reports</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="action_example">About</string>
@@ -17,6 +18,8 @@
     <string name="send_text">Send</string>
     <string name="send_to">To</string>
     <string name="msg_text">Type Message</string>
+    <string name="IC">Internet: Connected</string>
+    <string name="NC">Internet: Not Connected</string>
     <string-array name="sms_groups">
         <item>All BDOs</item>
         <item>All SDOs</item>
