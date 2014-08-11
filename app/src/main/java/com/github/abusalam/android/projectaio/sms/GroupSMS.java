@@ -5,6 +5,8 @@ import android.util.Log;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Button;
 import android.view.View;
@@ -15,7 +17,16 @@ import com.github.abusalam.android.projectaio.R;
 import com.github.abusalam.android.projectaio.ajax.Request;
 import com.github.abusalam.android.projectaio.ajax.Transport;
 
-public class GroupSMS extends ActionBarActivity {
+import java.util.ArrayList;
+import java.util.List;
+
+public class GroupSMS extends ActionBarActivity implements OnClickListener{
+
+    private ArrayAdapter<String> lvMsgHistAdapter;
+
+    private List<String> lvMsgContent=new ArrayList<String>();
+
+    private EditText etMsg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,31 +42,50 @@ public class GroupSMS extends ActionBarActivity {
         // Apply the adapter to the spinner
         spinner.setAdapter(adapter);
 
+
+        ListView lvMsgHist = (ListView) findViewById(R.id.lvMsgHist);
+        lvMsgHistAdapter=new ArrayAdapter<String>(this,
+                android.R.layout.simple_list_item_1,
+                android.R.id.text1,
+                lvMsgContent);
+
+        lvMsgHist.setAdapter(lvMsgHistAdapter);
+
+        etMsg=(EditText) findViewById(R.id.etMsg);
+
         final Button GetAjaxData = (Button) findViewById(R.id.btnSendSMS);
 
-        GetAjaxData.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View arg0) {
-
-                // WebServer Request URL
-                String serverURL = "http://10.0.2.2/apps/android/index.php";
-
-                Request r = new Request(serverURL){
-
-                    // Optional callback override.
-                    @Override
-                    protected void onSuccess(Transport transport) {
-                        // Your handling code goes here,
-                        // The 'transport' object holds all the desired response data.
-                        Log.d("JSON: ", transport.getResponseJson().toString());
-                    }
-                };
-                r.execute("GET");
-            }
-        });
+        GetAjaxData.setOnClickListener(this);
     }
 
+    @Override
+    public void onClick(View arg0) {
+
+        String txtMsg=etMsg.getText().toString();
+
+        if(txtMsg.length()>0) {
+
+            lvMsgContent.add(txtMsg);
+            etMsg.setText("");
+        }
+
+        lvMsgHistAdapter.notifyDataSetChanged();
+
+        // WebServer Request URL
+        String serverURL = "http://10.0.2.2/apps/android/index.php";
+
+        Request r = new Request(serverURL){
+
+            // Optional callback override.
+            @Override
+            protected void onSuccess(Transport transport) {
+                // Your handling code goes here,
+                // The 'transport' object holds all the desired response data.
+                Log.d("JSON: ", transport.getResponseJson().toString());
+            }
+        };
+        r.execute("GET");
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
