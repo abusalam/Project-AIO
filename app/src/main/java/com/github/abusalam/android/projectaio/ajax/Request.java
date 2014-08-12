@@ -37,7 +37,7 @@ public class Request extends AsyncTask<Object,Void,Transport> {
 	BasicHttpContext context;
 	private String method; 
 	HttpRequestBase request;
-	private Transport transport;
+	public Transport transport;
 	
 	private String url;
 	private HttpEntity params;

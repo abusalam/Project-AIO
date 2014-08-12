@@ -6,25 +6,26 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Spinner;
-import android.widget.Button;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.Toast;
 
 import com.github.abusalam.android.projectaio.R;
 import com.github.abusalam.android.projectaio.ajax.Request;
 import com.github.abusalam.android.projectaio.ajax.Transport;
 
 import java.util.ArrayList;
-import java.util.List;
+
 
 public class GroupSMS extends ActionBarActivity implements OnClickListener{
 
-    private ArrayAdapter<String> lvMsgHistAdapter;
-
-    private List<String> lvMsgContent=new ArrayList<String>();
+    private MsgItemAdapter lvMsgHistAdapter;
+    private Spinner spinner;
+    private ArrayList<MsgItem> lvMsgContent;
 
     private EditText etMsg;
 
@@ -33,7 +34,7 @@ public class GroupSMS extends ActionBarActivity implements OnClickListener{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_group_sms);
 
-        Spinner spinner = (Spinner) findViewById(R.id.spinner);
+        spinner = (Spinner) findViewById(R.id.spinner);
         // Create an ArrayAdapter using the string array and a default spinner layout
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.sms_groups, android.R.layout.simple_spinner_item);
@@ -42,18 +43,18 @@ public class GroupSMS extends ActionBarActivity implements OnClickListener{
         // Apply the adapter to the spinner
         spinner.setAdapter(adapter);
 
+        lvMsgContent=new ArrayList<MsgItem>();
 
         ListView lvMsgHist = (ListView) findViewById(R.id.lvMsgHist);
-        lvMsgHistAdapter=new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_1,
-                android.R.id.text1,
+        lvMsgHistAdapter=new MsgItemAdapter(this,
+                R.layout.msg_item,
                 lvMsgContent);
 
         lvMsgHist.setAdapter(lvMsgHistAdapter);
 
         etMsg=(EditText) findViewById(R.id.etMsg);
 
-        final Button GetAjaxData = (Button) findViewById(R.id.btnSendSMS);
+        ImageButton GetAjaxData = (ImageButton) findViewById(R.id.btnSendSMS);
 
         GetAjaxData.setOnClickListener(this);
     }
@@ -62,17 +63,18 @@ public class GroupSMS extends ActionBarActivity implements OnClickListener{
     public void onClick(View arg0) {
 
         String txtMsg=etMsg.getText().toString();
+        final MsgItem newMsgItem=new MsgItem(spinner.getSelectedItem().toString(),etMsg.getText().toString(),"Sending on Click...");
 
         if(txtMsg.length()>0) {
-
-            lvMsgContent.add(txtMsg);
+            newMsgItem.setShowPB(true);
+            lvMsgContent.add(newMsgItem);
             etMsg.setText("");
         }
 
         lvMsgHistAdapter.notifyDataSetChanged();
 
         // WebServer Request URL
-        String serverURL = "http://10.0.2.2/apps/android/index.php";
+        String serverURL = "http://www.paschimmedinipur.gov.in/apps/android/index.php";
 
         Request r = new Request(serverURL){
 
@@ -81,7 +83,20 @@ public class GroupSMS extends ActionBarActivity implements OnClickListener{
             protected void onSuccess(Transport transport) {
                 // Your handling code goes here,
                 // The 'transport' object holds all the desired response data.
-                Log.d("JSON: ", transport.getResponseJson().toString());
+                Log.d("JSON: ",transport.getResponseJson().toString() );
+                this.transport=transport;
+                Toast.makeText(getApplicationContext(),"Message Sent",Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            protected void onComplete(Transport transport) {
+                // Your handling code goes here,
+                // The 'transport' object holds all the desired response data.
+                //ProgressBar pbMsg=(ProgressBar) findViewById(R.id.pbMsg);
+                //pbMsg.setVisibility(View.GONE);
+                newMsgItem.setMsgStatus(transport.getResponseJson().optString("SentOn"));
+                newMsgItem.setShowPB(false);
+                lvMsgHistAdapter.notifyDataSetChanged();
             }
         };
         r.execute("GET");

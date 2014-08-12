@@ -16,20 +16,21 @@
         android:id="@+id/etMsg"
         android:autoText="false"
         android:hint="@string/msg_text"
-        android:layout_toLeftOf="@+id/btnSendSMS"
         android:layout_alignParentBottom="true"
         android:clickable="false"
         android:layout_alignParentStart="false"
-        android:layout_alignParentEnd="false"
-        android:maxHeight="@dimen/msg_text_max_height" />
+        android:maxHeight="@dimen/msg_text_max_height"
+        android:layout_toLeftOf="@+id/btnSendSMS" />
 
-    <Button
+    <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/send_text"
         android:id="@+id/btnSendSMS"
         android:layout_alignBottom="@+id/etMsg"
-        android:layout_alignRight="@+id/spinner" />
+        android:layout_alignRight="@+id/spinner"
+        android:src="@drawable/ic_send"
+        android:background="@drawable/btn_pressed_background"
+        android:contentDescription="@string/btn_send_msg_content_description" />
 
     <Spinner
         android:layout_width="fill_parent"
@@ -49,5 +50,6 @@
         android:divider="@color/black_overlay"
         android:dividerHeight="@dimen/divider_Height"
         android:layout_above="@+id/etMsg" />
+
 
 </RelativeLayout>

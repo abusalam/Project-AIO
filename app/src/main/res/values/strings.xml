@@ -20,6 +20,10 @@
     <string name="msg_text">Type Message</string>
     <string name="IC">Internet: Connected</string>
     <string name="NC">Internet: Not Connected</string>
+    <string name="default_sent_to_txt">To:</string>
+    <string name="default_msg_text">Message</string>
+    <string name="default_msg_status">Sending...</string>
+    <string name="btn_send_msg_content_description">Sent this message</string>
     <string-array name="sms_groups">
         <item>All BDOs</item>
         <item>All SDOs</item>
