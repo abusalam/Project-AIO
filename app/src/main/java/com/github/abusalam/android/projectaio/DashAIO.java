@@ -1,11 +1,13 @@
 package com.github.abusalam.android.projectaio;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -48,12 +50,23 @@ public class DashAIO extends ActionBarActivity
 
         InternetConnection IC=new InternetConnection(getApplicationContext());
         TextView tvNetConn = (TextView) findViewById(R.id.tvNetConn);
+        TextView tvUserName = (TextView) findViewById(R.id.tvUserName);
+        TextView tvDesg = (TextView) findViewById(R.id.tvDesignation);
+        TextView tvEMail = (TextView) findViewById(R.id.tvEMailID);
+        TextView tvMobile = (TextView) findViewById(R.id.tvMobileNo);
 
         if(IC.isConnectingToInternet()){
             tvNetConn.setText(getString(R.string.IC));
+            SharedPreferences settings = PreferenceManager
+                    .getDefaultSharedPreferences(getApplicationContext());
+            tvUserName.setText(settings.getString("pref_display_name", ""));
+            tvDesg.setText(settings.getString("pref_designation", ""));
+            tvEMail.setText(settings.getString("pref_email", ""));
+            tvMobile.setText(settings.getString("pref_mobile", ""));
         }else{
             tvNetConn.setText(getString(R.string.NC));
         }
+
     }
 
     @Override
@@ -75,7 +88,11 @@ public class DashAIO extends ActionBarActivity
                 startActivity(new Intent(getApplicationContext(), GroupSMS.class));
                 break;
             case 3:
-                startActivity(new Intent(getApplicationContext(), FullscreenActivity.class));
+                //startActivity(new Intent(getApplicationContext(), FullscreenActivity.class));
+                mTitle = getString(R.string.title_Reports);
+                break;
+            case 4:
+                startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
                 mTitle = getString(R.string.title_Login);
                 break;
         }
