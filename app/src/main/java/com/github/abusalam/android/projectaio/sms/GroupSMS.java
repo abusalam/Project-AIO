@@ -18,7 +18,11 @@ import com.github.abusalam.android.projectaio.R;
 import com.github.abusalam.android.projectaio.ajax.Request;
 import com.github.abusalam.android.projectaio.ajax.Transport;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.Objects;
 
 
 public class GroupSMS extends ActionBarActivity implements OnClickListener{
@@ -75,6 +79,7 @@ public class GroupSMS extends ActionBarActivity implements OnClickListener{
 
         // WebServer Request URL
         String serverURL = "http://www.paschimmedinipur.gov.in/apps/android/index.php";
+        //String serverURL = "http://10.0.2.2/apps/android/ParseJSON.php";
 
         Request r = new Request(serverURL){
 
@@ -83,7 +88,7 @@ public class GroupSMS extends ActionBarActivity implements OnClickListener{
             protected void onSuccess(Transport transport) {
                 // Your handling code goes here,
                 // The 'transport' object holds all the desired response data.
-                Log.d("JSON: ",transport.getResponseJson().toString() );
+                Log.d("JSON: ",transport.getResponseText());
                 this.transport=transport;
                 Toast.makeText(getApplicationContext(),"Message Sent",Toast.LENGTH_SHORT).show();
             }
@@ -99,6 +104,16 @@ public class GroupSMS extends ActionBarActivity implements OnClickListener{
                 lvMsgHistAdapter.notifyDataSetChanged();
             }
         };
+        JSONObject msgItemJSON=new JSONObject();
+
+        try {
+            msgItemJSON.put("Receiver",newMsgItem.getSentTo());
+            msgItemJSON.put("MsgText",newMsgItem.getMsgText());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        r.setJsonParams(msgItemJSON);
         r.execute("GET");
     }
 

@@ -17,7 +17,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.widget.TextView;
 import android.content.Intent;
 
-import com.github.abusalam.android.projectaio.ajax.InternetConnection;
+import com.github.abusalam.android.projectaio.ajax.NetConnection;
 import com.github.abusalam.android.projectaio.sms.GroupSMS;
 
 
@@ -48,14 +48,14 @@ public class DashAIO extends ActionBarActivity
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
 
-        InternetConnection IC=new InternetConnection(getApplicationContext());
+        NetConnection IC=new NetConnection(getApplicationContext());
         TextView tvNetConn = (TextView) findViewById(R.id.tvNetConn);
         TextView tvUserName = (TextView) findViewById(R.id.tvUserName);
         TextView tvDesg = (TextView) findViewById(R.id.tvDesignation);
         TextView tvEMail = (TextView) findViewById(R.id.tvEMailID);
         TextView tvMobile = (TextView) findViewById(R.id.tvMobileNo);
 
-        if(IC.isConnectingToInternet()){
+        if(IC.isDeviceConnected()){
             tvNetConn.setText(getString(R.string.IC));
             SharedPreferences settings = PreferenceManager
                     .getDefaultSharedPreferences(getApplicationContext());
