@@ -7,6 +7,7 @@ import com.github.abusalam.android.projectaio.ajax.Request;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 
 import org.apache.http.HttpResponse;
@@ -47,11 +48,11 @@ public class Transport {
         contentLength = response.getEntity().getContentLength();
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//		InputStream content = response.getEntity().getContent();
-//		int b=0;
-//		while((b = content.read())!= -1){
-//			baos.write(b);
-//		}
+		InputStream content = response.getEntity().getContent();
+		int b=0;
+		while((b = content.read())!= -1){
+			baos.write(b);
+		}
         response.getEntity().writeTo(baos);
 
         responseText = baos.toString(contentEncoding);
