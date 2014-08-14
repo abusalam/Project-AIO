@@ -41,7 +41,8 @@
                     android:layout_gravity="center_horizontal"
                     android:text="@string/pref_title_display_name"
                     android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:layout_marginLeft="@dimen/dash_margin_small" />
 
                 <TextView
                     android:id="@+id/tvUserName"
@@ -49,7 +50,9 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:text="@string/pref_default_display_name"
-                    android:textAppearance="?android:attr/textAppearanceLarge" />
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:layout_marginLeft="@dimen/dash_margin_small"
+                    android:textStyle="bold" />
             </LinearLayout>
 
             <LinearLayout
@@ -64,21 +67,23 @@
                     android:layout_height="wrap_content"
                     android:text="@string/pref_title_designation"
                     android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:layout_marginLeft="@dimen/activity_vertical_margin" />
 
                 <TextView
                     android:id="@+id/tvDesignation"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/pref_default_designation"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:layout_marginLeft="@dimen/activity_vertical_margin" />
             </LinearLayout>
 
             <LinearLayout
                 style="@style/ButtonBar"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal|top"
+                android:layout_gravity="center_horizontal"
                 android:orientation="vertical"
                 android:weightSum="1">
 
@@ -88,14 +93,16 @@
                     android:layout_height="wrap_content"
                     android:text="@string/pref_title_email"
                     android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:layout_marginLeft="@dimen/activity_vertical_margin" />
 
                 <TextView
                     android:id="@+id/tvEMailID"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/pref_default_email"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:layout_marginLeft="@dimen/activity_vertical_margin" />
 
             </LinearLayout>
 
@@ -111,14 +118,16 @@
                     android:layout_height="wrap_content"
                     android:text="@string/pref_title_mobile"
                     android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:layout_marginLeft="@dimen/activity_vertical_margin" />
 
                 <TextView
                     android:id="@+id/tvMobileNo"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/pref_default_mobile"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:layout_marginLeft="@dimen/activity_vertical_margin" />
             </LinearLayout>
 
 
