@@ -1,5 +1,6 @@
 package com.github.abusalam.android.projectaio.sms;
 
+import android.content.SharedPreferences;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.os.Bundle;
@@ -34,19 +35,31 @@ import java.util.ArrayList;
 public class GroupSMS extends ActionBarActivity implements OnClickListener {
 
     public static final String TAG = GroupSMS.class.getSimpleName();
+
+    private SharedPreferences mInSecurePrefs;
+
     private MsgItemAdapter lvMsgHistAdapter;
     private Spinner spinner;
     private ArrayList<MsgItem> lvMsgContent;
     private MessageDB msgDB;
+
+    protected String appSecret;
+    protected String mUserID;
 
     private EditText etMsg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_group_sms);
 
         msgDB = new MessageDB(getApplicationContext());
+        mInSecurePrefs=getSharedPreferences("mSecrets",MODE_PRIVATE);
+
+        appSecret=mInSecurePrefs.getString("AppSecret",null);
+        mUserID=mInSecurePrefs.getString("UserID",null);
+
+        setContentView(R.layout.activity_group_sms);
+
 
         spinner = (Spinner) findViewById(R.id.spinner);
         // Create an ArrayAdapter using the string array and a default spinner layout
@@ -95,17 +108,17 @@ public class GroupSMS extends ActionBarActivity implements OnClickListener {
 
         // WebServer Request URL
         //String serverURL = "http://echo.jsontest.com/key/value/one/two";
-        String serverURL = "http://10.42.0.1/apps/android/api.php";
-        //String serverURL = "http://www.paschimmedinipur.gov.in/apps/android/api.php";
-        RequestQueue queue = VolleyAPI.getInstance(this).getRequestQueue();
+        //String serverURL = "http://10.42.0.1/apps/android/api.php";
+        String serverURL = "http://www.paschimmedinipur.gov.in/apps/android/api.php";
 
+        RequestQueue queue = VolleyAPI.getInstance(this).getRequestQueue();
 
         final String tag_json_obj = "json_obj_req";
 
         JSONObject jsonPost=new JSONObject();
 
         try {
-            jsonPost.put("f1","v1");
+            jsonPost.put("API","v1");
         } catch (JSONException e) {
             e.printStackTrace();
         }

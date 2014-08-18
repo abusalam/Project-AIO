@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -34,6 +35,10 @@ public class DashAIO extends ActionBarActivity
      */
     private CharSequence mTitle;
 
+    static final int UPDATE_PROFILE_REQUEST = 0;
+    static final String SECRET_PREF_NAME="mPrefSecrets";
+    static final String PREF_KEY_UserID="mUserID";
+    static final String PREF_KEY_Secret="mSecrets";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,7 +95,17 @@ public class DashAIO extends ActionBarActivity
             case 1:
                 break;
             case 2:
-                startActivity(new Intent(getApplicationContext(), GroupSMS.class));
+                SharedPreferences mInSecurePrefs=getSharedPreferences(SECRET_PREF_NAME, MODE_PRIVATE);
+                if(mInSecurePrefs==null){
+                    Log.e("StartLogin: ", "Preference not found");
+                } else {
+                    String mUserID = mInSecurePrefs.getString(PREF_KEY_UserID, null);
+                    if(mUserID==null) {
+                        startActivityForResult(new Intent(getApplicationContext(), LoginActivity.class), UPDATE_PROFILE_REQUEST);
+                    } else {
+                        startActivity(new Intent(getApplicationContext(), GroupSMS.class));
+                    }
+                }
                 break;
             case 3:
             case 4:
@@ -105,6 +120,25 @@ public class DashAIO extends ActionBarActivity
                 startActivity(intent);
                 finish();
                 break;
+        }
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode,
+                                    Intent data) {
+
+        if (requestCode == UPDATE_PROFILE_REQUEST) {
+            if(resultCode==RESULT_OK){
+                String mUserID=data.getStringExtra(PREF_KEY_UserID);
+                String mSecretKey=data.getStringExtra(PREF_KEY_Secret);
+                SharedPreferences mInSecurePrefs=getSharedPreferences(SECRET_PREF_NAME,MODE_PRIVATE);
+                SharedPreferences.Editor prefEdit=mInSecurePrefs.edit();
+                prefEdit.putString(PREF_KEY_UserID,mUserID);
+                prefEdit.putString(PREF_KEY_Secret,mSecretKey);
+                prefEdit.commit();
+                Log.e("onActivityResult-GroupSMS", "RequestCode: " + requestCode + ":" + resultCode + "=" + RESULT_OK
+                        + " Secrets:" + mSecretKey + ":" + mUserID + " =>" + mInSecurePrefs.getAll().toString());
+                startActivity(new Intent(getApplicationContext(), GroupSMS.class));
+            }
         }
     }
 
