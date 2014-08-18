@@ -14,22 +14,30 @@ import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.JsonObjectRequest;
+
 import com.github.abusalam.android.projectaio.R;
-import com.github.abusalam.android.projectaio.ajax.Request;
-import com.github.abusalam.android.projectaio.ajax.Transport;
+import com.github.abusalam.android.projectaio.ajax.VolleyAPI;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 
-public class GroupSMS extends ActionBarActivity implements OnClickListener{
 
+public class GroupSMS extends ActionBarActivity implements OnClickListener {
+
+    public static final String TAG = GroupSMS.class.getSimpleName();
     private MsgItemAdapter lvMsgHistAdapter;
     private Spinner spinner;
     private ArrayList<MsgItem> lvMsgContent;
+    private MessageDB msgDB;
 
     private EditText etMsg;
 
@@ -37,6 +45,8 @@ public class GroupSMS extends ActionBarActivity implements OnClickListener{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_group_sms);
+
+        msgDB = new MessageDB(getApplicationContext());
 
         spinner = (Spinner) findViewById(R.id.spinner);
         // Create an ArrayAdapter using the string array and a default spinner layout
@@ -47,16 +57,20 @@ public class GroupSMS extends ActionBarActivity implements OnClickListener{
         // Apply the adapter to the spinner
         spinner.setAdapter(adapter);
 
-        lvMsgContent=new ArrayList<MsgItem>();
+        lvMsgContent = new ArrayList<MsgItem>();
+
+        lvMsgContent.addAll(msgDB.getAllSms());
+        msgDB.closeDB();
+        // TODO: Retrieve & Populate List of SMSs Sent by the user using MessageAPI.
 
         ListView lvMsgHist = (ListView) findViewById(R.id.lvMsgHist);
-        lvMsgHistAdapter=new MsgItemAdapter(this,
+        lvMsgHistAdapter = new MsgItemAdapter(this,
                 R.layout.msg_item,
                 lvMsgContent);
 
         lvMsgHist.setAdapter(lvMsgHistAdapter);
 
-        etMsg=(EditText) findViewById(R.id.etMsg);
+        etMsg = (EditText) findViewById(R.id.etMsg);
 
         ImageButton GetAjaxData = (ImageButton) findViewById(R.id.btnSendSMS);
 
@@ -66,55 +80,63 @@ public class GroupSMS extends ActionBarActivity implements OnClickListener{
     @Override
     public void onClick(View arg0) {
 
-        String txtMsg=etMsg.getText().toString();
-        final MsgItem newMsgItem=new MsgItem(spinner.getSelectedItem().toString(),etMsg.getText().toString(),"Sending on Click...");
+        String txtMsg = etMsg.getText().toString();
+        final MsgItem newMsgItem = new MsgItem(spinner.getSelectedItem().toString(), etMsg.getText().toString(), "Sending on Click...");
 
-        if(txtMsg.length()>0) {
+        if (txtMsg.length() > 0) {
             newMsgItem.setShowPB(true);
             lvMsgContent.add(newMsgItem);
+            newMsgItem.setMsgID(msgDB.saveSMS(newMsgItem));
+            msgDB.closeDB();
             etMsg.setText("");
         }
 
         lvMsgHistAdapter.notifyDataSetChanged();
 
         // WebServer Request URL
-        String serverURL = "http://www.paschimmedinipur.gov.in/apps/android/index.php";
-        //String serverURL = "http://10.0.2.2/apps/android/ParseJSON.php";
+        //String serverURL = "http://echo.jsontest.com/key/value/one/two";
+        String serverURL = "http://10.42.0.1/apps/android/api.php";
+        //String serverURL = "http://www.paschimmedinipur.gov.in/apps/android/api.php";
+        RequestQueue queue = VolleyAPI.getInstance(this).getRequestQueue();
 
-        Request r = new Request(serverURL){
 
-            // Optional callback override.
-            @Override
-            protected void onSuccess(Transport transport) {
-                // Your handling code goes here,
-                // The 'transport' object holds all the desired response data.
-                Log.d("JSON: ",transport.getResponseText());
-                this.transport=transport;
-                Toast.makeText(getApplicationContext(),"Message Sent",Toast.LENGTH_SHORT).show();
-            }
+        final String tag_json_obj = "json_obj_req";
 
-            @Override
-            protected void onComplete(Transport transport) {
-                // Your handling code goes here,
-                // The 'transport' object holds all the desired response data.
-                //ProgressBar pbMsg=(ProgressBar) findViewById(R.id.pbMsg);
-                //pbMsg.setVisibility(View.GONE);
-                newMsgItem.setMsgStatus(transport.getResponseJson().optString("SentOn"));
-                newMsgItem.setShowPB(false);
-                lvMsgHistAdapter.notifyDataSetChanged();
-            }
-        };
-        JSONObject msgItemJSON=new JSONObject();
+        JSONObject jsonPost=new JSONObject();
 
         try {
-            msgItemJSON.put("Receiver",newMsgItem.getSentTo());
-            msgItemJSON.put("MsgText",newMsgItem.getMsgText());
+            jsonPost.put("f1","v1");
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        r.setJsonParams(msgItemJSON);
-        r.execute("GET");
+        JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST,
+                serverURL, jsonPost,
+                new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+
+                        Log.d(TAG,"Group-SMS " + response.toString());
+                        Toast.makeText(getApplicationContext(), "Message Sent", Toast.LENGTH_SHORT).show();
+                        newMsgItem.setMsgStatus(response.optString("SentOn"));
+                        newMsgItem.setShowPB(false);
+                        msgDB.updateSMS(newMsgItem);
+                        lvMsgHistAdapter.notifyDataSetChanged();
+                    }
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.d(TAG, "Error: " + error.getMessage());
+            }
+        }
+        );
+
+        // Adding request to request queue
+        jsonObjReq.setTag(tag_json_obj);
+        queue.add(jsonObjReq);
+
     }
 
     @Override

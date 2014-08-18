@@ -48,14 +48,14 @@ public class DashAIO extends ActionBarActivity
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
 
-        NetConnection IC=new NetConnection(getApplicationContext());
+        NetConnection IC = new NetConnection(getApplicationContext());
         TextView tvNetConn = (TextView) findViewById(R.id.tvNetConn);
         TextView tvUserName = (TextView) findViewById(R.id.tvUserName);
         TextView tvDesg = (TextView) findViewById(R.id.tvDesignation);
         TextView tvEMail = (TextView) findViewById(R.id.tvEMailID);
         TextView tvMobile = (TextView) findViewById(R.id.tvMobileNo);
 
-        if(IC.isDeviceConnected()){
+        if (IC.isDeviceConnected()) {
             tvNetConn.setText(getString(R.string.IC));
             SharedPreferences settings = PreferenceManager
                     .getDefaultSharedPreferences(getApplicationContext());
@@ -63,7 +63,7 @@ public class DashAIO extends ActionBarActivity
             tvDesg.setText(settings.getString("pref_designation", ""));
             tvEMail.setText(settings.getString("pref_email", ""));
             tvMobile.setText(settings.getString("pref_mobile", ""));
-        }else{
+        } else {
             tvNetConn.setText(getString(R.string.NC));
         }
 
@@ -79,21 +79,31 @@ public class DashAIO extends ActionBarActivity
     }
 
     public void onSectionAttached(int number) {
+        String[] mDrawerMenuList = getResources().getStringArray(R.array.drawer_menu_list);
+
+        if (number == mDrawerMenuList.length) {
+            number = 0;
+        } else {
+            //mTitle = mDrawerMenuList[number - 1];
+        }
         switch (number) {
             case 1:
-                mTitle = getString(R.string.app_caption);
                 break;
             case 2:
-                mTitle = getString(R.string.title_GroupSMS);
                 startActivity(new Intent(getApplicationContext(), GroupSMS.class));
                 break;
             case 3:
-                //startActivity(new Intent(getApplicationContext(), FullscreenActivity.class));
-                mTitle = getString(R.string.title_Reports);
-                break;
             case 4:
+                break;
+            case 6:
                 startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
-                mTitle = getString(R.string.title_Login);
+                break;
+            case 0:
+                Intent intent = new Intent(Intent.ACTION_MAIN);
+                intent.addCategory(Intent.CATEGORY_HOME);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                finish();
                 break;
         }
     }
@@ -159,7 +169,7 @@ public class DashAIO extends ActionBarActivity
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                Bundle savedInstanceState) {
+                                 Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_dash_aio, container, false);
             return rootView;
         }

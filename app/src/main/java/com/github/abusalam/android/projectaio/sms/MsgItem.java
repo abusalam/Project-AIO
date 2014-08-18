@@ -3,6 +3,7 @@ package com.github.abusalam.android.projectaio.sms;
 
 public class MsgItem {
 
+    private long MsgID;
     private String SentTo;
     private String MsgText;
     private String MsgStatus;
@@ -27,6 +28,14 @@ public class MsgItem {
         SentTo = sentTo;
         MsgText = msgText;
         MsgStatus = msgStatus;
+    }
+
+    public long getMsgID() {
+        return MsgID;
+    }
+
+    public void setMsgID(long msgID) {
+        MsgID = msgID;
     }
 
     /**

@@ -27,6 +27,7 @@ public class MsgItemAdapter extends ArrayAdapter<MsgItem> {
         this.msgItems=msgItems;
     }
 
+    @Override
     public View getView(int position, View convertView, ViewGroup parent){
         LinearLayout MsgItemView;
         MsgItem msgItem=getItem(position);
@@ -61,6 +62,12 @@ public class MsgItemAdapter extends ArrayAdapter<MsgItem> {
             pbMsg.setVisibility(View.GONE);
         }
 
+        //Manufacture New item if going to exhaust
+        if (this.msgItems.size()<(position+2)){
+            new LoadSMS().execute(this.msgItems.size()+2);
+        }
+
         return MsgItemView;
     }
+
 }
