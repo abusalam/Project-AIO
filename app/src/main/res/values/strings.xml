@@ -46,5 +46,7 @@
     <string name="login_message">Please enter your mobile no to use with the Group Messaging System.</string>
     <string name="btn_update_profile_text">Update Profile</string>
     <string name="img_btn_update_profile_text">Login/Update Profile</string>
+    <string name="login_wait_message">Checking your registration data with the SMS Gateway Server to sync your profile...</string>
+    <string name="btn_login_text">Start Messaging</string>
 
 </resources>

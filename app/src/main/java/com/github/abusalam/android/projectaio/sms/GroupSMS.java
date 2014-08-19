@@ -129,7 +129,6 @@ public class GroupSMS extends ActionBarActivity implements OnClickListener {
 
                     @Override
                     public void onResponse(JSONObject response) {
-
                         Log.d(TAG,"Group-SMS " + response.toString());
                         Toast.makeText(getApplicationContext(), "Message Sent", Toast.LENGTH_SHORT).show();
                         newMsgItem.setMsgStatus(response.optString("SentOn"));

@@ -15,20 +15,19 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="@string/login_message"
-        android:id="@+id/tvLoginMessage" />
+        android:id="@+id/tvLoginMessage"
+        android:layout_toRightOf="@+id/pbLoginWait" />
 
     <EditText
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:inputType="phone"
+        android:inputType="number"
         android:ems="10"
         android:maxLength="10"
         android:id="@+id/etUserMobile"
         android:layout_below="@+id/tvLoginMessage"
         android:layout_toLeftOf="@+id/btnUpdateProfile"
         android:phoneNumber="true"
-        android:selectAllOnFocus="true"
-        android:textIsSelectable="true"
         android:textStyle="bold"
         android:textSize="@dimen/abc_action_bar_title_text_size" />
 
@@ -44,4 +43,20 @@
         android:focusableInTouchMode="false"
         android:layout_alignBottom="@+id/etUserMobile"
         android:layout_alignRight="@+id/tvLoginMessage" />
+
+    <ProgressBar
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/pbLoginWait"
+        android:layout_alignParentLeft="true"
+        android:layout_alignBottom="@+id/etUserMobile" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/btn_login_text"
+        android:id="@+id/btnLogin"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/tvLoginMessage" />
 </RelativeLayout>

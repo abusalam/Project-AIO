@@ -7,18 +7,19 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.github.abusalam.android.projectaio.ajax.VolleyAPI;
-import com.github.abusalam.android.projectaio.sms.GroupSMS;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,11 +29,23 @@ public class LoginActivity extends ActionBarActivity {
 
     private static final String TAG=LoginActivity.class.getSimpleName();
     protected EditText etMobileNo;
+    protected ImageButton GetImgButton;
+    protected TextView msgLoginText;
+    protected ProgressBar pbLoginWait;
+    protected Button btnLogin;
+
     protected RequestQueue rQueue;
+    protected JSONObject apiRespUserStat;
 
     View.OnClickListener btnUpdateClick=new View.OnClickListener() {
         @Override
         public void onClick(View view) {
+
+            etMobileNo.setVisibility(View.GONE);
+            GetImgButton.setVisibility(View.GONE);
+            msgLoginText.setText(getText(R.string.login_wait_message));
+            pbLoginWait.setVisibility(View.VISIBLE);
+
             // WebServer Request URL
             //String serverURL = "http://echo.jsontest.com/key/value/one/two";
             //String serverURL = "http://10.42.0.1/apps/android/api.php";
@@ -55,19 +68,19 @@ public class LoginActivity extends ActionBarActivity {
                         public void onResponse(JSONObject response) {
                             Log.d(TAG, response.toString());
                             Toast.makeText(getApplicationContext(), response.optString("Status"), Toast.LENGTH_SHORT).show();
-                            Intent data=new Intent();
-                            data.putExtra(DashAIO.PREF_KEY_UserID,response.optString("UserID"));
-                            data.putExtra(DashAIO.PREF_KEY_Secret,response.optString("SentOn"));
-                            setResult(RESULT_OK,data);
-                            finish();
+                            apiRespUserStat=response;
+                            btnLogin.setVisibility(View.VISIBLE);
+                            pbLoginWait.setVisibility(View.GONE);
+                            msgLoginText.setText(response.optString("Status"));
                         }
                     }, new Response.ErrorListener() {
 
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     String msgError="Error: " + error.getMessage();
-                    VolleyLog.d(TAG, msgError);
-                    Toast.makeText(getApplicationContext(), msgError, Toast.LENGTH_SHORT).show();
+                    Log.e(TAG, msgError);
+                    Toast.makeText(getApplicationContext(), msgError, Toast.LENGTH_LONG).show();
+                    finish();
                 }
             }
             );
@@ -78,14 +91,35 @@ public class LoginActivity extends ActionBarActivity {
         }
     };
 
+    View.OnClickListener loginClick=new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            Intent data=new Intent();
+            data.putExtra(DashAIO.PREF_KEY_UserID,apiRespUserStat.optString("UserID"));
+            data.putExtra(DashAIO.PREF_KEY_Secret,apiRespUserStat.optString("SentOn"));
+            setResult(RESULT_OK,data);
+            finish();
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        msgLoginText=(TextView) findViewById(R.id.tvLoginMessage);
         etMobileNo=(EditText) findViewById(R.id.etUserMobile);
-        rQueue = VolleyAPI.getInstance(this).getRequestQueue();
-        ImageButton GetImgButton = (ImageButton) findViewById(R.id.btnUpdateProfile);
+        pbLoginWait=(ProgressBar) findViewById(R.id.pbLoginWait);
+        btnLogin=(Button) findViewById(R.id.btnLogin);
+
+        GetImgButton = (ImageButton) findViewById(R.id.btnUpdateProfile);
+
+        pbLoginWait.setVisibility(View.GONE);
+        btnLogin.setVisibility(View.GONE);
+
         GetImgButton.setOnClickListener(btnUpdateClick);
+        btnLogin.setOnClickListener(loginClick);
+
+        rQueue = VolleyAPI.getInstance(this).getRequestQueue();
     }
 
 
