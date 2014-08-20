@@ -48,8 +48,8 @@
     <string name="img_btn_update_profile_text">Login/Update Profile</string>
     <string name="login_wait_message">Checking your registration data with the SMS Gateway Server to sync your profile...</string>
     <string name="btn_login_text">Start Messaging</string>
-    <string name="btn_scan_barcode_text">Scan Barcode</string>
-    <string name="btn_enter_key_text">Enter Activation Key</string>
+    <string name="btn_scan_barcode_text">Verify OTP</string>
+    <string name="btn_enter_key_text">Save Key</string>
     <!-- Confirmation message displayed in a toast after adding new account -->
     <string name="secret_saved">Secret saved</string>
 

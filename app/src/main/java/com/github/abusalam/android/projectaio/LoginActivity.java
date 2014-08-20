@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -24,8 +25,10 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.github.abusalam.android.projectaio.GoogleAuthenticator.AccountDb;
 import com.github.abusalam.android.projectaio.GoogleAuthenticator.Base32String;
+import com.github.abusalam.android.projectaio.GoogleAuthenticator.OtpProvider;
 import com.github.abusalam.android.projectaio.GoogleAuthenticator.OtpSource;
 import com.github.abusalam.android.projectaio.GoogleAuthenticator.OtpSourceException;
+import com.github.abusalam.android.projectaio.GoogleAuthenticator.TotpClock;
 import com.github.abusalam.android.projectaio.ajax.VolleyAPI;
 
 import org.json.JSONException;
@@ -40,31 +43,30 @@ public class LoginActivity extends ActionBarActivity {
     private static final int MIN_KEY_BYTES = 10;
 
     protected EditText etMobileNo;
-    protected EditText mKeyEntryField;
-    protected ImageButton GetImgButton;
-    protected TextView msgLoginText;
+    protected EditText etSecretKey;
+    protected ImageButton btnRegister;
+    protected TextView tvLoginMessage;
     protected ProgressBar pbLoginWait;
-    protected Button btnLogin;
-    protected Button btnEnterKey;
+    protected Button btnStartMessaging;
+    protected Button btnSaveKey;
     protected TextView tvOTP;
-    protected Button btnNextCode;
+    protected Button btnVerifyOTP;
 
     protected RequestQueue rQueue;
     protected JSONObject apiRespUserStat;
 
 
-
-
-    View.OnClickListener btnUpdateClick = new View.OnClickListener() {
+    /**
+     * Listener for the Button that registers the user.
+     */
+    private class RegisterButtonListener implements OnClickListener {
         @Override
         public void onClick(View view) {
 
             etMobileNo.setVisibility(View.GONE);
-            GetImgButton.setVisibility(View.GONE);
-            msgLoginText.setText(getText(R.string.login_wait_message));
+            btnRegister.setVisibility(View.GONE);
+            tvLoginMessage.setText(getText(R.string.login_wait_message));
             pbLoginWait.setVisibility(View.VISIBLE);
-
-
 
 
             JSONObject jsonPost = new JSONObject();
@@ -85,9 +87,14 @@ public class LoginActivity extends ActionBarActivity {
                             Log.d(TAG, response.toString());
                             Toast.makeText(getApplicationContext(), response.optString(DashAIO.KEY_STATUS), Toast.LENGTH_SHORT).show();
                             apiRespUserStat = response;
-                            btnLogin.setVisibility(View.VISIBLE);
+
+                            etSecretKey.setVisibility(View.VISIBLE);
+                            btnSaveKey.setVisibility(View.VISIBLE);
+                            tvOTP.setVisibility(View.VISIBLE);
+                            btnVerifyOTP.setVisibility(View.VISIBLE);
+
                             pbLoginWait.setVisibility(View.GONE);
-                            msgLoginText.setText(response.optString(DashAIO.KEY_STATUS));
+                            tvLoginMessage.setText(response.optString(DashAIO.KEY_STATUS));
                         }
                     }, new Response.ErrorListener() {
                 @Override
@@ -104,9 +111,13 @@ public class LoginActivity extends ActionBarActivity {
             jsonObjReq.setTag(TAG);
             rQueue.add(jsonObjReq);
         }
-    };
+    }
 
-    View.OnClickListener loginClick = new View.OnClickListener() {
+    /**
+     * Listener for the Button that saves the user Credentials for future use
+     * and completes the registration process.
+     */
+    private class StartMessagingButtonListener implements OnClickListener {
         @Override
         public void onClick(View view) {
             Intent data = new Intent();
@@ -115,9 +126,12 @@ public class LoginActivity extends ActionBarActivity {
             setResult(RESULT_OK, data);
             finish();
         }
-    };
+    }
 
-    View.OnClickListener enterKeyClick = new View.OnClickListener() {
+    /**
+     * Listener for the Button that Validates and Saves the HOTP Secret Key of the user.
+     */
+    private class SaveKeyButtonListener implements OnClickListener {
         @Override
         public void onClick(View view) {
             if (validateKeyAndUpdateStatus(true)) {
@@ -126,10 +140,10 @@ public class LoginActivity extends ActionBarActivity {
                         getEnteredKey(),
                         null,
                         AccountDb.OtpType.HOTP,
-                        AccountDb.DEFAULT_HOTP_COUNTER);
+                        AccountDb.DEFAULT_HOTP_COUNTER + 1);
             }
         }
-    };
+    }
 
     /**
      * Minimum amount of time (milliseconds) that has to elapse from the moment a HOTP code is
@@ -152,7 +166,7 @@ public class LoginActivity extends ActionBarActivity {
     private double mTotpCountdownPhase;
     private AccountDb mAccountDb;
     private OtpSource mOtpProvider;
-    private PinInfo[] mUsers = {};
+    private PinInfo mUser;
 
     /**
      * A tuple of user, OTP value, and type, that represents a particular user.
@@ -164,7 +178,9 @@ public class LoginActivity extends ActionBarActivity {
         private String user;
         private boolean isHotp = false; // used to see if button needs to be displayed
 
-        /** HOTP only: Whether code generation is allowed for this account. */
+        /**
+         * HOTP only: Whether code generation is allowed for this account.
+         */
         private boolean hotpCodeGenerationAllowed;
     }
 
@@ -173,7 +189,7 @@ public class LoginActivity extends ActionBarActivity {
      *
      * @author adhintz@google.com (Drew Hintz)
      */
-    private class NextOtpButtonListener implements View.OnClickListener {
+    private class NextOtpButtonListener implements OnClickListener {
         private final Handler mHandler = new Handler();
         private final PinInfo mAccount;
 
@@ -183,13 +199,9 @@ public class LoginActivity extends ActionBarActivity {
 
         @Override
         public void onClick(View v) {
-            int position = 0; // = findAccountPositionInList();
-            if (position == -1) {
-                throw new RuntimeException("Account not in list: " + mAccount);
-            }
 
             try {
-                computeAndDisplayPin(mAccount.user, position, true);
+                computeAndDisplayPin(mAccount.user, /*position,*/ true);
             } catch (OtpSourceException e) {
                 //DependencyInjector.getOptionalFeatures().onAuthenticatorActivityGetNextOtpFailed(
                 //        AuthenticatorActivity.this, mAccount.user, e);
@@ -201,6 +213,52 @@ public class LoginActivity extends ActionBarActivity {
             // Temporarily disable code generation for this account
             mAccount.hotpCodeGenerationAllowed = false;
             tvOTP.setText(pin); //mUserAdapter.notifyDataSetChanged();
+
+            // Verify the PIN with Server
+            JSONObject jsonPost = new JSONObject();
+
+            try {
+                jsonPost.put("API", "RT");
+                jsonPost.put("MDN", etMobileNo.getText());
+                jsonPost.put("OTP", pin);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST,
+                    DashAIO.API_URL, jsonPost,
+                    new Response.Listener<JSONObject>() {
+
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            Log.d(TAG, response.toString());
+                            Toast.makeText(getApplicationContext(), response.optString(DashAIO.KEY_STATUS)
+                                    + " Counter: " + mAccountDb.getCounter(mAccount.user), Toast.LENGTH_SHORT).show();
+                            apiRespUserStat = response;
+                            if (response.optBoolean("ValidUser")) {
+                                etSecretKey.setVisibility(View.GONE);
+                                btnStartMessaging.setVisibility(View.VISIBLE);
+                                btnSaveKey.setVisibility(View.GONE);
+                                btnVerifyOTP.setVisibility(View.GONE);
+                                tvOTP.setVisibility(View.GONE);
+                            }
+                            tvLoginMessage.setText(response.optString(DashAIO.KEY_STATUS));
+                        }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    String msgError = "Error: " + error.getMessage();
+                    Log.e(TAG, msgError);
+                    Toast.makeText(getApplicationContext(), msgError, Toast.LENGTH_LONG).show();
+                }
+            }
+            );
+
+            // Adding request to request queue
+            jsonObjReq.setTag(TAG);
+            rQueue.add(jsonObjReq);
+
+
             // The delayed operation below will be invoked once code generation is yet again allowed for
             // this account. The delay is in wall clock time (monotonically increasing) and is thus not
             // susceptible to system time jumps.
@@ -228,21 +286,6 @@ public class LoginActivity extends ActionBarActivity {
                     },
                     HOTP_DISPLAY_TIMEOUT);
         }
-
-        /**
-         * Gets the position in the account list of the account this listener is associated with.
-         *
-         * @return {@code 0}-based position or {@code -1} if the account is not in the list.
-         */
-        private int findAccountPositionInList() {
-            for (int i = 0, len = mUsers.length; i < len; i++) {
-                if (mUsers[i] == mAccount) {
-                    return i;
-                }
-            }
-
-            return -1;
-        }
     }
 
     /**
@@ -250,16 +293,16 @@ public class LoginActivity extends ActionBarActivity {
      * thread so it should not take more than a second or so. If necessary, we can
      * move the computation to a background thread.
      *
-     * @param user the user email to display with the PIN
-     * @param position the index for the screen of this user and PIN
+     * @param user        the user email to display with the PIN
+     *                    //@param position the index for the screen of this user and PIN
      * @param computeHotp true if we should increment counter and display new hotp
      */
-    public void computeAndDisplayPin(String user, int position,
+    public void computeAndDisplayPin(String user, /*int position,*/
                                      boolean computeHotp) throws OtpSourceException {
 
         PinInfo currentPin;
-        if (mUsers[position] != null) {
-            currentPin = mUsers[position]; // existing PinInfo, so we'll update it
+        if (mUser != null) {
+            currentPin = mUser; // existing PinInfo, so we'll update it
         } else {
             currentPin = new PinInfo();
             currentPin.pin = getString(R.string.empty_pin);
@@ -280,7 +323,7 @@ public class LoginActivity extends ActionBarActivity {
             currentPin.hotpCodeGenerationAllowed = true;
         }
 
-        mUsers[position] = currentPin;
+        mUser = currentPin;
 
     }
 
@@ -296,14 +339,14 @@ public class LoginActivity extends ActionBarActivity {
             if (decoded.length < MIN_KEY_BYTES) {
                 // If the user is trying to submit a key that's too short, then
                 // display a message saying it's too short.
-                mKeyEntryField.setError(submitting ? getString(R.string.enter_key_too_short) : null);
+                etSecretKey.setError(submitting ? getString(R.string.enter_key_too_short) : null);
                 return false;
             } else {
-                mKeyEntryField.setError(null);
+                etSecretKey.setError(null);
                 return true;
             }
         } catch (Base32String.DecodingException e) {
-            mKeyEntryField.setError(getString(R.string.enter_key_illegal_char));
+            etSecretKey.setError(getString(R.string.enter_key_illegal_char));
             return false;
         }
     }
@@ -312,7 +355,7 @@ public class LoginActivity extends ActionBarActivity {
      * Return key entered by user, replacing visually similar characters 1 and 0.
      */
     private String getEnteredKey() {
-        String enteredKey = mKeyEntryField.getText().toString();
+        String enteredKey = etSecretKey.getText().toString();
         return enteredKey.replace('1', 'I').replace('0', 'O');
     }
 
@@ -356,30 +399,34 @@ public class LoginActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        mAccountDb=new AccountDb(this);
+        mAccountDb = new AccountDb(this);
+        mOtpProvider = new OtpProvider(mAccountDb, new TotpClock(this));
 
-
-        msgLoginText = (TextView) findViewById(R.id.tvLoginMessage);
+        tvLoginMessage = (TextView) findViewById(R.id.tvLoginMessage);
         etMobileNo = (EditText) findViewById(R.id.etUserMobile);
-        mKeyEntryField = (EditText) findViewById(R.id.etSecretKey);
+        etSecretKey = (EditText) findViewById(R.id.etSecretKey);
         pbLoginWait = (ProgressBar) findViewById(R.id.pbLoginWait);
-        btnLogin = (Button) findViewById(R.id.btnLogin);
-        btnEnterKey = (Button) findViewById(R.id.btnEnterKey);
-        btnNextCode=(Button) findViewById(R.id.btnScanBarcode);
-        tvOTP=(TextView) findViewById(R.id.tvOTP);
-        mUsers[0] = new PinInfo();
-        mUsers[0].user="8972096989";
+        btnStartMessaging = (Button) findViewById(R.id.btnStartMessaging);
+        btnSaveKey = (Button) findViewById(R.id.btnSaveKey);
+        btnVerifyOTP = (Button) findViewById(R.id.btnVerifyOTP);
+        tvOTP = (TextView) findViewById(R.id.tvOTP);
+        mUser = new PinInfo();
+        mUser.user = "8972096989";
 
 
-        GetImgButton = (ImageButton) findViewById(R.id.btnUpdateProfile);
+        btnRegister = (ImageButton) findViewById(R.id.btnUpdateProfile);
 
         pbLoginWait.setVisibility(View.GONE);
-        btnLogin.setVisibility(View.GONE);
+        btnStartMessaging.setVisibility(View.GONE);
+        btnSaveKey.setVisibility(View.GONE);
+        btnVerifyOTP.setVisibility(View.GONE);
+        etSecretKey.setVisibility(View.GONE);
+        tvOTP.setVisibility(View.GONE);
 
-        GetImgButton.setOnClickListener(btnUpdateClick);
-        btnLogin.setOnClickListener(loginClick);
-        btnEnterKey.setOnClickListener(enterKeyClick);
-        btnNextCode.setOnClickListener(new NextOtpButtonListener(mUsers[0]));
+        btnRegister.setOnClickListener(new RegisterButtonListener());
+        btnStartMessaging.setOnClickListener(new StartMessagingButtonListener());
+        btnSaveKey.setOnClickListener(new SaveKeyButtonListener());
+        btnVerifyOTP.setOnClickListener(new NextOtpButtonListener(mUser));
 
         rQueue = VolleyAPI.getInstance(this).getRequestQueue();
     }
