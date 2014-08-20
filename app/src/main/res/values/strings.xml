@@ -48,5 +48,25 @@
     <string name="img_btn_update_profile_text">Login/Update Profile</string>
     <string name="login_wait_message">Checking your registration data with the SMS Gateway Server to sync your profile...</string>
     <string name="btn_login_text">Start Messaging</string>
+    <string name="btn_scan_barcode_text">Scan Barcode</string>
+    <string name="btn_enter_key_text">Enter Activation Key</string>
+    <!-- Confirmation message displayed in a toast after adding new account -->
+    <string name="secret_saved">Secret saved</string>
+
+    <!-- Question asking user to confirm adding a new account, the details of which were obtained
+         by scanning a QR code or provided by the web browser. -->
+    <string name="save_key_message">Save key for</string>
+
+    <!-- Error message displayed if the scanned QR code contains an empty key -->
+    <string name="error_empty_secret">Cannot save empty secret</string>
+
+    <!-- Error message displayed if user enters a key that is shorter than allowed minimum -->
+    <string name="enter_key_too_short">Key value is too short</string>
+
+    <!-- Error message displayed if user enters a key with an illegal character -->
+    <string name="enter_key_illegal_char">Key value has illegal character</string>
+
+    <!-- Placeholder value displayed for OTP before any codes have been generated -->
+    <string name="empty_pin">_ _ _ _ _ _</string>
 
 </resources>

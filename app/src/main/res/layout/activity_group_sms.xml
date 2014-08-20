@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    tools:context="com.github.abusalam.android.projectaio.sms.GroupSMS">
+    tools:context="com.github.abusalam.android.projectaio.GroupSMS">
 
     <EditText
         android:layout_width="fill_parent"

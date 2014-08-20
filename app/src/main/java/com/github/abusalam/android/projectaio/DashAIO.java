@@ -19,7 +19,6 @@ import android.widget.TextView;
 import android.content.Intent;
 
 import com.github.abusalam.android.projectaio.ajax.NetConnection;
-import com.github.abusalam.android.projectaio.sms.GroupSMS;
 
 
 public class DashAIO extends ActionBarActivity
@@ -36,6 +35,18 @@ public class DashAIO extends ActionBarActivity
     private CharSequence mTitle;
 
     static final int UPDATE_PROFILE_REQUEST = 0;
+
+    static final String KEY_SENT_ON="SentOn";
+    static final String KEY_STATUS="Status";
+
+
+    // WebServer Request URL
+    //String serverURL = "http://echo.jsontest.com/key/value/one/two";
+    //String serverURL = "http://10.42.0.1/apps/android/api.php";
+    //String serverURL = "http://www.paschimmedinipur.gov.in/apps/android/api.php";
+
+    static final String API_URL="http://10.42.0.1/apps/android/api.php";
+
     static final String SECRET_PREF_NAME="mPrefSecrets";
     static final String PREF_KEY_UserID="mUserID";
     static final String PREF_KEY_Secret="mSecrets";

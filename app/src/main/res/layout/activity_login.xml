@@ -59,4 +59,37 @@
         android:id="@+id/btnLogin"
         android:layout_centerHorizontal="true"
         android:layout_below="@+id/tvLoginMessage" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/btn_scan_barcode_text"
+        android:id="@+id/btnScanBarcode"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/btn_enter_key_text"
+        android:id="@+id/btnEnterKey"
+        android:layout_alignTop="@+id/btnScanBarcode"
+        android:layout_alignRight="@+id/tvLoginMessage" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/etSecretKey"
+        android:layout_above="@+id/btnScanBarcode"
+        android:layout_alignLeft="@+id/btnScanBarcode"
+        android:inputType="textCapCharacters" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/empty_pin"
+        android:id="@+id/tvOTP"
+        android:layout_above="@+id/etSecretKey"
+        android:layout_centerHorizontal="true" />
 </RelativeLayout>
