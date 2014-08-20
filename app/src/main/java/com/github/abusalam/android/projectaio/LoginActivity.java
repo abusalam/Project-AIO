@@ -122,7 +122,6 @@ public class LoginActivity extends ActionBarActivity {
         public void onClick(View view) {
             Intent data = new Intent();
             data.putExtra(DashAIO.PREF_KEY_UserID, apiRespUserStat.optString(DashAIO.PREF_KEY_UserID));
-            data.putExtra(DashAIO.PREF_KEY_Secret, apiRespUserStat.optString(DashAIO.PREF_KEY_Secret));
             setResult(RESULT_OK, data);
             finish();
         }
@@ -140,7 +139,7 @@ public class LoginActivity extends ActionBarActivity {
                         getEnteredKey(),
                         null,
                         AccountDb.OtpType.HOTP,
-                        AccountDb.DEFAULT_HOTP_COUNTER + 1);
+                        AccountDb.DEFAULT_HOTP_COUNTER);
             }
         }
     }
@@ -218,7 +217,7 @@ public class LoginActivity extends ActionBarActivity {
             JSONObject jsonPost = new JSONObject();
 
             try {
-                jsonPost.put("API", "RT");
+                jsonPost.put("API", "OT");
                 jsonPost.put("MDN", etMobileNo.getText());
                 jsonPost.put("OTP", pin);
             } catch (JSONException e) {
@@ -235,7 +234,7 @@ public class LoginActivity extends ActionBarActivity {
                             Toast.makeText(getApplicationContext(), response.optString(DashAIO.KEY_STATUS)
                                     + " Counter: " + mAccountDb.getCounter(mAccount.user), Toast.LENGTH_SHORT).show();
                             apiRespUserStat = response;
-                            if (response.optBoolean("ValidUser")) {
+                            if (response.optBoolean("API")) {
                                 etSecretKey.setVisibility(View.GONE);
                                 btnStartMessaging.setVisibility(View.VISIBLE);
                                 btnSaveKey.setVisibility(View.GONE);

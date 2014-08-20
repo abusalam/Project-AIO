@@ -29,7 +29,8 @@
         android:layout_toLeftOf="@+id/btnUpdateProfile"
         android:phoneNumber="true"
         android:textStyle="bold"
-        android:textSize="@dimen/abc_action_bar_title_text_size" />
+        android:textSize="@dimen/abc_action_bar_title_text_size"
+        android:editable="true" />
 
     <ImageButton
         android:layout_width="wrap_content"

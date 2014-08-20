@@ -36,8 +36,8 @@ public class DashAIO extends ActionBarActivity
 
     static final int UPDATE_PROFILE_REQUEST = 0;
 
-    static final String KEY_SENT_ON="SentOn";
-    static final String KEY_STATUS="Status";
+    static final String KEY_SENT_ON="ST";
+    static final String KEY_STATUS="MSG";
 
 
     // WebServer Request URL
@@ -45,12 +45,12 @@ public class DashAIO extends ActionBarActivity
     //String serverURL = "http://10.42.0.1/apps/android/api.php";
     //String serverURL = "http://www.paschimmedinipur.gov.in/apps/android/api.php";
 
-    static final String API_URL="http://10.42.0.1/apps/android/api.php";
+    static final String API_URL="http://www.paschimmedinipur.gov.in/apps/android/api.php";
 
 
     static final String SECRET_PREF_NAME="mPrefSecrets";
     static final String PREF_KEY_UserID="mUserID";
-    static final String PREF_KEY_Secret="mSecrets";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -141,14 +141,13 @@ public class DashAIO extends ActionBarActivity
         if (requestCode == UPDATE_PROFILE_REQUEST) {
             if(resultCode==RESULT_OK){
                 String mUserID=data.getStringExtra(PREF_KEY_UserID);
-                String mSecretKey=data.getStringExtra(PREF_KEY_Secret);
                 SharedPreferences mInSecurePrefs=getSharedPreferences(SECRET_PREF_NAME,MODE_PRIVATE);
                 SharedPreferences.Editor prefEdit=mInSecurePrefs.edit();
                 prefEdit.putString(PREF_KEY_UserID,mUserID);
-                prefEdit.putString(PREF_KEY_Secret,mSecretKey);
                 prefEdit.commit();
-                Log.e("onActivityResult-GroupSMS", "RequestCode: " + requestCode + ":" + resultCode + "=" + RESULT_OK
-                        + " Secrets:" + mSecretKey + ":" + mUserID + " =>" + mInSecurePrefs.getAll().toString());
+                Log.e("onActivityResult-GroupSMS", "RequestCode: " + requestCode
+                        + ":" + resultCode + "=" + RESULT_OK
+                        + mUserID + " =>" + mInSecurePrefs.getAll().toString());
                 startActivity(new Intent(getApplicationContext(), GroupSMS.class));
             }
         }

@@ -114,7 +114,6 @@ public class GroupSMS extends ActionBarActivity {
         SharedPreferences mInSecurePrefs;
         mInSecurePrefs = getSharedPreferences(DashAIO.SECRET_PREF_NAME, MODE_PRIVATE);
 
-        appSecret = mInSecurePrefs.getString(DashAIO.PREF_KEY_Secret, null);
         mUserID = mInSecurePrefs.getString(DashAIO.PREF_KEY_UserID, null);
 
         setContentView(R.layout.activity_group_sms);
