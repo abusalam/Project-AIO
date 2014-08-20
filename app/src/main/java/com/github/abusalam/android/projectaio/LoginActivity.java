@@ -65,6 +65,8 @@ public class LoginActivity extends ActionBarActivity {
             pbLoginWait.setVisibility(View.VISIBLE);
 
 
+
+
             JSONObject jsonPost = new JSONObject();
 
             try {
@@ -367,6 +369,7 @@ public class LoginActivity extends ActionBarActivity {
         tvOTP=(TextView) findViewById(R.id.tvOTP);
         mUsers[0] = new PinInfo();
         mUsers[0].user="8972096989";
+
 
         GetImgButton = (ImageButton) findViewById(R.id.btnUpdateProfile);
 

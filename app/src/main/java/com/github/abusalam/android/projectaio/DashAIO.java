@@ -47,6 +47,7 @@ public class DashAIO extends ActionBarActivity
 
     static final String API_URL="http://10.42.0.1/apps/android/api.php";
 
+
     static final String SECRET_PREF_NAME="mPrefSecrets";
     static final String PREF_KEY_UserID="mUserID";
     static final String PREF_KEY_Secret="mSecrets";

@@ -83,6 +83,7 @@ public class GroupSMS extends ActionBarActivity {
                         public void onResponse(JSONObject response) {
                             Log.d(TAG, "Group-SMS " + response.toString());
                             Toast.makeText(getApplicationContext(), DashAIO.KEY_STATUS, Toast.LENGTH_SHORT).show();
+
                             newMsgItem.setMsgStatus(response.optString(DashAIO.KEY_SENT_ON));
                             newMsgItem.setShowPB(false);
                             msgDB.updateSMS(newMsgItem);
