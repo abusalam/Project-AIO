@@ -81,10 +81,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/etSecretKey"
-        android:layout_above="@+id/btnVerifyOTP"
         android:inputType="textCapCharacters"
-        android:layout_alignParentLeft="true"
-        android:gravity="center_vertical" />
+        android:layout_alignParentLeft="false"
+        android:gravity="center_vertical"
+        android:layout_above="@+id/btnVerifyOTP"
+        android:layout_toLeftOf="@+id/btnScanQR" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -94,4 +95,15 @@
         android:id="@+id/tvOTP"
         android:layout_above="@+id/etSecretKey"
         android:layout_centerHorizontal="true" />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/btnScanQR"
+        android:layout_alignRight="@+id/btnVerifyOTP"
+        android:src="@drawable/qr_button"
+        android:background="@drawable/btn_pressed_background"
+        android:contentDescription="@string/btn_qr_code_description"
+        android:layout_alignParentRight="true"
+        android:layout_above="@+id/btnVerifyOTP" />
 </RelativeLayout>

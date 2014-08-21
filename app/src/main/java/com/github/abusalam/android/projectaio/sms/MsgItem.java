@@ -3,70 +3,70 @@ package com.github.abusalam.android.projectaio.sms;
 
 public class MsgItem {
 
-    private long MsgID;
-    private String SentTo;
-    private String MsgText;
-    private String MsgStatus;
+  private long MsgID;
+  private String SentTo;
+  private String MsgText;
+  private String MsgStatus;
 
-    private boolean ShowPB;
+  private boolean ShowPB;
 
-    public void setShowPB(boolean showPB) {
-        ShowPB = showPB;
-    }
+  public MsgItem() {
+    SentTo = "";
+    MsgText = "";
+    MsgStatus = "";
+  }
 
-    public boolean isShowPB() {
-        return ShowPB;
-    }
+  public MsgItem(String sentTo, String msgText, String msgStatus) {
+    SentTo = sentTo;
+    MsgText = msgText;
+    MsgStatus = msgStatus;
+  }
 
-    public MsgItem() {
-        SentTo = "";
-        MsgText = "";
-        MsgStatus = "";
-    }
+  public boolean isShowPB() {
+    return ShowPB;
+  }
 
-    public MsgItem(String sentTo, String msgText, String msgStatus) {
-        SentTo = sentTo;
-        MsgText = msgText;
-        MsgStatus = msgStatus;
-    }
+  public void setShowPB(boolean showPB) {
+    ShowPB = showPB;
+  }
 
-    public long getMsgID() {
-        return MsgID;
-    }
+  public long getMsgID() {
+    return MsgID;
+  }
 
-    public void setMsgID(long msgID) {
-        MsgID = msgID;
-    }
+  public void setMsgID(long msgID) {
+    MsgID = msgID;
+  }
 
-    /**
-     * ******** Set Methods *****************
-     */
+  /**
+   * ******** Get Methods ***************
+   */
 
-    public void setSentTo(String SentTo) {
-        this.SentTo = SentTo;
-    }
+  public String getSentTo() {
+    return this.SentTo;
+  }
 
-    public void setMsgText(String MsgText) {
-        this.MsgText = MsgText;
-    }
+  /**
+   * ******** Set Methods *****************
+   */
 
-    public void setMsgStatus(String MsgStatus) {
-        this.MsgStatus = MsgStatus;
-    }
+  public void setSentTo(String SentTo) {
+    this.SentTo = SentTo;
+  }
 
-    /**
-     * ******** Get Methods ***************
-     */
+  public String getMsgText() {
+    return this.MsgText;
+  }
 
-    public String getSentTo() {
-        return this.SentTo;
-    }
+  public void setMsgText(String MsgText) {
+    this.MsgText = MsgText;
+  }
 
-    public String getMsgText() {
-        return this.MsgText;
-    }
+  public String getMsgStatus() {
+    return this.MsgStatus;
+  }
 
-    public String getMsgStatus() {
-        return this.MsgStatus;
-    }
+  public void setMsgStatus(String MsgStatus) {
+    this.MsgStatus = MsgStatus;
+  }
 }

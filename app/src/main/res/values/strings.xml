@@ -26,10 +26,11 @@
     <string name="btn_send_msg_content_description">Sent this message</string>
 
     <string-array name="sms_groups">
+        <item>Test Group</item>
         <item>All BDOs</item>
         <item>All SDOs</item>
         <item>All OCs</item>
-        <item>All Users</item>
+
     </string-array>
     <string-array name="drawer_menu_list">
         <item>Dashboard</item>
@@ -68,5 +69,21 @@
 
     <!-- Placeholder value displayed for OTP before any codes have been generated -->
     <string name="empty_pin">_ _ _ _ _ _</string>
+
+    <!-- Title for error message dialog when user attempts to scan a barcode but does not
+       have the barcode scanner application installed. -->
+    <string name="install_dialog_title">Install barcode scanner?</string>
+
+    <!-- Error message displayed when user attempts to scan a barcode without a scanner app. -->
+  <string name="install_dialog_message">
+    To scan barcodes containing keys, you must install the ZXing barcode scanner.
+   </string>
+
+    <!-- Text on button user clicks to start installation of barcode scanning app -->
+    <string name="install_button">Install</string>
+    <!-- Button on manual account entry page, cancels adding account, returns to main page -->
+    <string name="cancel">Cancel</string>
+
+    <string name="btn_qr_code_description">Scan QR Code</string>
 
 </resources>

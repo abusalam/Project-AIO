@@ -235,7 +235,7 @@ public class AccountDb {
     return null;
   }
 
-  static Signer getSigningOracle(String secret) {
+  public static Signer getSigningOracle(String secret) {
     try {
       byte[] keyBytes = decodeKey(secret);
       final Mac mac = Mac.getInstance("HMACSHA1");

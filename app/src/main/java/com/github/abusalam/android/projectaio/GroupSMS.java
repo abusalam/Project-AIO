@@ -1,17 +1,18 @@
 package com.github.abusalam.android.projectaio;
 
 import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
-import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Spinner;
-import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -20,12 +21,17 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
-
+import com.github.abusalam.android.projectaio.GoogleAuthenticator.AccountDb;
+import com.github.abusalam.android.projectaio.GoogleAuthenticator.OtpProvider;
+import com.github.abusalam.android.projectaio.GoogleAuthenticator.OtpSource;
+import com.github.abusalam.android.projectaio.GoogleAuthenticator.OtpSourceException;
+import com.github.abusalam.android.projectaio.GoogleAuthenticator.TotpClock;
 import com.github.abusalam.android.projectaio.ajax.VolleyAPI;
 import com.github.abusalam.android.projectaio.sms.MessageDB;
 import com.github.abusalam.android.projectaio.sms.MsgItem;
 import com.github.abusalam.android.projectaio.sms.MsgItemAdapter;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -34,130 +40,272 @@ import java.util.ArrayList;
 
 public class GroupSMS extends ActionBarActivity {
 
-    public static final String TAG = GroupSMS.class.getSimpleName();
+  public static final String TAG = GroupSMS.class.getSimpleName();
+  /**
+   * Minimum amount of time (milliseconds) that has to elapse from the moment a HOTP code is
+   * generated for an account until the moment the next code can be generated for the account.
+   * This is to prevent the user from generating too many HOTP codes in a short period of time.
+   */
+  private static final long HOTP_MIN_TIME_INTERVAL_BETWEEN_CODES = 5000;
+  /**
+   * The maximum amount of time (milliseconds) for which a HOTP code is displayed after it's been
+   * generated.
+   */
+  private static final long HOTP_DISPLAY_TIMEOUT = 2 * 60 * 1000;
+  protected PinInfo mUser;
+  private MsgItemAdapter lvMsgHistAdapter;
+  private Spinner spnrAllGroups;
+  private ArrayList<MsgItem> lvMsgContent;
+  private JSONArray respJsonArray;
+  private MessageDB msgDB;
+  private RequestQueue rQueue;
+  private AccountDb mAccountDb;
+  private OtpSource mOtpProvider;
+  private EditText etMsg;
 
-    private MsgItemAdapter lvMsgHistAdapter;
-    private Spinner spinner;
-    private ArrayList<MsgItem> lvMsgContent;
-    private MessageDB msgDB;
-    private RequestQueue rQueue;
+  private void sendSMS() {
+    final MsgItem newMsgItem = new MsgItem(spnrAllGroups.getSelectedItem().toString(),
+        etMsg.getText().toString(), getString(R.string.default_msg_status));
+    newMsgItem.setShowPB(true);
+    lvMsgContent.add(newMsgItem);
+    newMsgItem.setMsgID(msgDB.saveSMS(newMsgItem));
+    msgDB.closeDB();
+    etMsg.setText("");
 
-    protected String appSecret;
-    protected String mUserID;
+    lvMsgHistAdapter.notifyDataSetChanged();
 
-    private EditText etMsg;
 
-    View.OnClickListener btnSendSMSClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
+    final JSONObject jsonPost = new JSONObject();
 
-            String txtMsg = etMsg.getText().toString();
-            final MsgItem newMsgItem = new MsgItem(spinner.getSelectedItem().toString(),
-                    etMsg.getText().toString(), getString(R.string.default_msg_status));
+    try {
+      jsonPost.put("API", "SM");
+      jsonPost.put("MDN", mUser.user);
+      jsonPost.put("OTP", mUser.pin);
+      jsonPost.put("TXT", newMsgItem.getMsgText());
+      jsonPost.put("GRP", newMsgItem.getSentTo());
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
 
-            if (txtMsg.length() > 0) {
-                newMsgItem.setShowPB(true);
-                lvMsgContent.add(newMsgItem);
-                newMsgItem.setMsgID(msgDB.saveSMS(newMsgItem));
-                msgDB.closeDB();
-                etMsg.setText("");
-            }
+    JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST,
+        DashAIO.API_URL, jsonPost,
+        new Response.Listener<JSONObject>() {
 
+          @Override
+          public void onResponse(JSONObject response) {
+            Log.d(TAG, "Group-SMS " + response.toString());
+            Toast.makeText(getApplicationContext(), response.optString(DashAIO.KEY_STATUS), Toast.LENGTH_SHORT).show();
+
+            newMsgItem.setMsgStatus(response.optString(DashAIO.KEY_SENT_ON));
+            newMsgItem.setShowPB(false);
+            msgDB.updateSMS(newMsgItem);
             lvMsgHistAdapter.notifyDataSetChanged();
+          }
+        }, new Response.ErrorListener() {
 
-            final String tag_json_obj = "json_obj_req";
+      @Override
+      public void onErrorResponse(VolleyError error) {
+        VolleyLog.d(TAG, "Error: " + error.getMessage());
+        Log.e(TAG, jsonPost.toString());
+      }
+    }
+    );
 
-            JSONObject jsonPost = new JSONObject();
+    // Adding request to request queue
+    jsonObjReq.setTag(TAG);
+    rQueue.add(jsonObjReq);
+  }
 
+  private void getAllGroups() {
+
+    final JSONObject jsonPost = new JSONObject();
+
+    try {
+      mUser.pin = mOtpProvider.getNextCode(mUser.user);
+    } catch (OtpSourceException e) {
+      Toast.makeText(getApplicationContext(), "Error: " + e.getMessage()
+          + " MDN:" + mUser.user, Toast.LENGTH_SHORT).show();
+      return;
+    }
+
+    try {
+      jsonPost.put("API", "AG");
+      jsonPost.put("MDN", mUser.user);
+      jsonPost.put("OTP", mUser.pin);
+    } catch (JSONException e) {
+      e.printStackTrace();
+      return;
+    }
+
+    JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST,
+        DashAIO.API_URL, jsonPost,
+        new Response.Listener<JSONObject>() {
+
+          @Override
+          public void onResponse(JSONObject response) {
+            JSONArray respJSON;
+            Log.d(TAG, "Group-SMS " + response.toString());
+            Toast.makeText(getApplicationContext(), response.optString(DashAIO.KEY_STATUS), Toast.LENGTH_SHORT).show();
             try {
-                jsonPost.put("API", "v1");
+              respJsonArray = response.getJSONArray("DB");
+              ArrayList<String> groupList = new ArrayList<String>();
+
+              for (int i = 0; i < respJsonArray.length(); i++) {
+                groupList.add(respJsonArray.getJSONObject(i).optString("GroupName"));
+              }
+              // Spinner adapter
+              spnrAllGroups.setAdapter(new ArrayAdapter<String>(GroupSMS.this,
+                  android.R.layout.simple_spinner_dropdown_item,
+                  groupList));
             } catch (JSONException e) {
-                e.printStackTrace();
+              e.printStackTrace();
+              return;
             }
 
-            JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST,
-                    DashAIO.API_URL, jsonPost,
-                    new Response.Listener<JSONObject>() {
+          }
+        }, new Response.ErrorListener() {
 
-                        @Override
-                        public void onResponse(JSONObject response) {
-                            Log.d(TAG, "Group-SMS " + response.toString());
-                            Toast.makeText(getApplicationContext(), DashAIO.KEY_STATUS, Toast.LENGTH_SHORT).show();
+      @Override
+      public void onErrorResponse(VolleyError error) {
+        VolleyLog.d(TAG, "Error: " + error.getMessage());
+        Log.e(TAG, jsonPost.toString());
+      }
+    }
+    );
 
-                            newMsgItem.setMsgStatus(response.optString(DashAIO.KEY_SENT_ON));
-                            newMsgItem.setShowPB(false);
-                            msgDB.updateSMS(newMsgItem);
-                            lvMsgHistAdapter.notifyDataSetChanged();
-                        }
-                    }, new Response.ErrorListener() {
+    // Adding request to request queue
+    jsonObjReq.setTag(TAG);
+    rQueue.add(jsonObjReq);
+    Toast.makeText(getApplicationContext(), "Loading All Groups Please Wait...", Toast.LENGTH_LONG).show();
+  }
 
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    VolleyLog.d(TAG, "Error: " + error.getMessage());
-                }
-            }
-            );
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_group_sms);
 
-            // Adding request to request queue
-            jsonObjReq.setTag(tag_json_obj);
-            rQueue.add(jsonObjReq);
+    SharedPreferences mInSecurePrefs;
+    mInSecurePrefs = getSharedPreferences(DashAIO.SECRET_PREF_NAME, MODE_PRIVATE);
+
+    mAccountDb = new AccountDb(this);
+    mOtpProvider = new OtpProvider(mAccountDb, new TotpClock(this));
+
+    mUser = new PinInfo();
+    mUser.user = mInSecurePrefs.getString(DashAIO.PREF_KEY_UserID, null);
+    rQueue = VolleyAPI.getInstance(this).getRequestQueue();
+
+    /**
+     * Retrieve & Populate List of SMSs Sent by the user using MessageAPI.
+     */
+    msgDB = new MessageDB(getApplicationContext());
+    lvMsgContent = new ArrayList<MsgItem>();
+    lvMsgContent.addAll(msgDB.getAllSms());
+    msgDB.closeDB();
+    ListView lvMsgHist = (ListView) findViewById(R.id.lvMsgHist);
+    lvMsgHistAdapter = new MsgItemAdapter(this, R.layout.msg_item, lvMsgContent);
+    lvMsgHist.setAdapter(lvMsgHistAdapter);
+
+    etMsg = (EditText) findViewById(R.id.etMsg);
+
+    spnrAllGroups = (Spinner) findViewById(R.id.spinner);
+
+    /*// Create an ArrayAdapter using the string array and a default spinner layout
+    ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+        R.array.sms_groups, android.R.layout.simple_spinner_item);
+    // Specify the layout to use when the list of choices appears
+    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+    // Apply the adapter to the spinner
+    spnrAllGroups.setAdapter(adapter);*/
+
+    getAllGroups();
+
+    ImageButton btnSendSMS = (ImageButton) findViewById(R.id.btnSendSMS);
+    btnSendSMS.setOnClickListener(new SendSMSClickListener());
+  }
+
+  @Override
+  public boolean onCreateOptionsMenu(Menu menu) {
+    // Inflate the menu; this adds items to the action bar if it is present.
+    getMenuInflater().inflate(R.menu.group_sm, menu);
+    return true;
+  }
+
+  @Override
+  protected void onDestroy() {
+    super.onDestroy();
+    mAccountDb.close();
+    rQueue.cancelAll(TAG);
+  }
+
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    // Handle action bar item clicks here. The action bar will
+    // automatically handle clicks on the Home/Up button, so long
+    // as you specify a parent activity in AndroidManifest.xml.
+    int id = item.getItemId();
+    if (id == R.id.action_settings) {
+      return true;
+    }
+    return super.onOptionsItemSelected(item);
+  }
+
+  /**
+   * A tuple of user, OTP value, and type, that represents a particular user.
+   *
+   * @author adhintz@google.com (Drew Hintz)
+   */
+  private static class PinInfo {
+    private String pin; // calculated OTP, or a placeholder if not calculated
+    private String user;
+    private boolean isHotp = true; // used to see if button needs to be displayed
+
+    /**
+     * HOTP only: Whether code generation is allowed for this account.
+     */
+    private boolean hotpCodeGenerationAllowed;
+  }
+
+  private class SendSMSClickListener implements View.OnClickListener {
+    private final Handler mHandler = new Handler();
+
+    @Override
+    public void onClick(View view) {
+
+      String txtMsg = etMsg.getText().toString();
+
+      if (txtMsg.length() > 0) {
+        Toast.makeText(getApplicationContext(), "Message Size: " + txtMsg.length(), Toast.LENGTH_SHORT).show();
+        try {
+          mUser.pin = mOtpProvider.getNextCode(mUser.user);
+        } catch (OtpSourceException e) {
+          Toast.makeText(getApplicationContext(), "Error: " + e.getMessage()
+              + " MDN:" + mUser.user, Toast.LENGTH_SHORT).show();
+          return;
         }
-    };
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        // Temporarily disable code generation for this account
+        mUser.hotpCodeGenerationAllowed = false;
 
-        rQueue = VolleyAPI.getInstance(this).getRequestQueue();
-        msgDB = new MessageDB(getApplicationContext());
+        // The delayed operation below will be invoked once code generation is yet again allowed for
+        // this account. The delay is in wall clock time (monotonically increasing) and is thus not
+        // susceptible to system time jumps.
+        mHandler.postDelayed(
+            new Runnable() {
+              @Override
+              public void run() {
+                mUser.hotpCodeGenerationAllowed = true;
+              }
+            },
+            HOTP_MIN_TIME_INTERVAL_BETWEEN_CODES
+        );
 
-        SharedPreferences mInSecurePrefs;
-        mInSecurePrefs = getSharedPreferences(DashAIO.SECRET_PREF_NAME, MODE_PRIVATE);
+        sendSMS();
 
-        mUserID = mInSecurePrefs.getString(DashAIO.PREF_KEY_UserID, null);
+      } else {
+        Toast.makeText(getApplicationContext(), "Type your Message", Toast.LENGTH_SHORT).show();
+      }
 
-        setContentView(R.layout.activity_group_sms);
-
-        spinner = (Spinner) findViewById(R.id.spinner);
-        // Create an ArrayAdapter using the string array and a default spinner layout
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.sms_groups, android.R.layout.simple_spinner_item);
-        // Specify the layout to use when the list of choices appears
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        // Apply the adapter to the spinner
-        spinner.setAdapter(adapter);
-
-        // TODO: Retrieve & Populate List of SMSs Sent by the user using MessageAPI.
-        lvMsgContent = new ArrayList<MsgItem>();
-        lvMsgContent.addAll(msgDB.getAllSms());
-        msgDB.closeDB();
-
-        ListView lvMsgHist = (ListView) findViewById(R.id.lvMsgHist);
-        lvMsgHistAdapter = new MsgItemAdapter(this, R.layout.msg_item, lvMsgContent);
-        lvMsgHist.setAdapter(lvMsgHistAdapter);
-
-        etMsg = (EditText) findViewById(R.id.etMsg);
-
-        ImageButton btnSendSMS = (ImageButton) findViewById(R.id.btnSendSMS);
-        btnSendSMS.setOnClickListener(btnSendSMSClick);
     }
+  }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.group_sm, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
 }
