@@ -57,7 +57,19 @@ public class LoginActivity extends ActionBarActivity {
 
 
     /**
-     * Listener for the Button that registers the user.
+     * Register User: Register User with Mobile No. to get the Secret Key for HOTP
+     *
+     * Request:
+     *   JSONObject={"API":"RU",
+     *               "MDN":"9876543210"}
+     *
+     * Response:
+     *   JSONObject={"API":true,
+     *               "DB": // Unused till now
+     *               "MSG":"Key Sent to Mobile No. 9876543210",
+     *               "ET":2.0987,
+     *               "ST":"Wed 20 Aug 08:31:23 PM"}
+     *
      */
     private class RegisterButtonListener implements OnClickListener {
         @Override
@@ -185,6 +197,21 @@ public class LoginActivity extends ActionBarActivity {
 
     /**
      * Listener for the Button that generates the next OTP value.
+     *
+     * Request:
+     *   JSONObject={"API":"RU",
+     *               "MDN":"9876543210"}
+     *
+     * Response:
+     *    JSONObject={"API":true,
+     *               "DB": {'KeyUpdated':1,
+     *                      "USER":{"UserName":"", TODO Store User Profile Data received from server.
+     *                              "Designation":"",
+     *                              "eMailID":""}
+     *                      }
+     *               "MSG":"Mobile No. 9876543210 is Registered Successfully.",
+     *               "ET":2.0987,
+     *               "ST":"Wed 20 Aug 08:31:23 PM"}
      *
      * @author adhintz@google.com (Drew Hintz)
      */
