@@ -63,59 +63,6 @@ public class GroupSMS extends ActionBarActivity {
   private OtpSource mOtpProvider;
   private EditText etMsg;
 
-  private void sendSMS() {
-    final MsgItem newMsgItem = new MsgItem(spnrAllGroups.getSelectedItem().toString(),
-        etMsg.getText().toString(), getString(R.string.default_msg_status));
-    newMsgItem.setShowPB(true);
-    lvMsgContent.add(newMsgItem);
-    newMsgItem.setMsgID(msgDB.saveSMS(newMsgItem));
-    msgDB.closeDB();
-    etMsg.setText("");
-
-    lvMsgHistAdapter.notifyDataSetChanged();
-
-
-    final JSONObject jsonPost = new JSONObject();
-
-    try {
-      jsonPost.put("API", "SM");
-      jsonPost.put("MDN", mUser.user);
-      jsonPost.put("OTP", mUser.pin);
-      jsonPost.put("TXT", newMsgItem.getMsgText());
-      jsonPost.put("GRP", newMsgItem.getSentTo());
-    } catch (JSONException e) {
-      e.printStackTrace();
-    }
-
-    JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST,
-        DashAIO.API_URL, jsonPost,
-        new Response.Listener<JSONObject>() {
-
-          @Override
-          public void onResponse(JSONObject response) {
-            Log.d(TAG, "Group-SMS " + response.toString());
-            Toast.makeText(getApplicationContext(), response.optString(DashAIO.KEY_STATUS), Toast.LENGTH_SHORT).show();
-
-            newMsgItem.setMsgStatus(response.optString(DashAIO.KEY_SENT_ON));
-            newMsgItem.setShowPB(false);
-            msgDB.updateSMS(newMsgItem);
-            lvMsgHistAdapter.notifyDataSetChanged();
-          }
-        }, new Response.ErrorListener() {
-
-      @Override
-      public void onErrorResponse(VolleyError error) {
-        VolleyLog.d(TAG, "Error: " + error.getMessage());
-        Log.e(TAG, jsonPost.toString());
-      }
-    }
-    );
-
-    // Adding request to request queue
-    jsonObjReq.setTag(TAG);
-    rQueue.add(jsonObjReq);
-  }
-
   private void getAllGroups() {
 
     final JSONObject jsonPost = new JSONObject();
@@ -276,7 +223,13 @@ public class GroupSMS extends ActionBarActivity {
       if (txtMsg.length() > 0) {
         Toast.makeText(getApplicationContext(), "Message Size: " + txtMsg.length(), Toast.LENGTH_SHORT).show();
         try {
+          String oldPin = mUser.pin;
           mUser.pin = mOtpProvider.getNextCode(mUser.user);
+          if (mUser.pin.equals(oldPin)||!mUser.hotpCodeGenerationAllowed) {
+            Toast.makeText(getApplicationContext(), "Please wait for a while to generate new OTP for"
+                + " MDN:" + mUser.user, Toast.LENGTH_LONG).show();
+            return;
+          }
         } catch (OtpSourceException e) {
           Toast.makeText(getApplicationContext(), "Error: " + e.getMessage()
               + " MDN:" + mUser.user, Toast.LENGTH_SHORT).show();
@@ -306,6 +259,59 @@ public class GroupSMS extends ActionBarActivity {
       }
 
     }
+  }
+
+  private void sendSMS() {
+    final MsgItem newMsgItem = new MsgItem(spnrAllGroups.getSelectedItem().toString(),
+        etMsg.getText().toString(), getString(R.string.default_msg_status));
+    newMsgItem.setShowPB(true);
+    lvMsgContent.add(newMsgItem);
+    newMsgItem.setMsgID(msgDB.saveSMS(newMsgItem));
+    msgDB.closeDB();
+    etMsg.setText("");
+
+    lvMsgHistAdapter.notifyDataSetChanged();
+
+
+    final JSONObject jsonPost = new JSONObject();
+
+    try {
+      jsonPost.put("API", "SM");
+      jsonPost.put("MDN", mUser.user);
+      jsonPost.put("OTP", mUser.pin);
+      jsonPost.put("TXT", newMsgItem.getMsgText());
+      jsonPost.put("GRP", newMsgItem.getSentTo());
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+
+    JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST,
+        DashAIO.API_URL, jsonPost,
+        new Response.Listener<JSONObject>() {
+
+          @Override
+          public void onResponse(JSONObject response) {
+            Log.d(TAG, "Group-SMS " + response.toString());
+            Toast.makeText(getApplicationContext(), response.optString(DashAIO.KEY_STATUS), Toast.LENGTH_SHORT).show();
+
+            newMsgItem.setMsgStatus(response.optString(DashAIO.KEY_SENT_ON));
+            newMsgItem.setShowPB(false);
+            msgDB.updateSMS(newMsgItem);
+            lvMsgHistAdapter.notifyDataSetChanged();
+          }
+        }, new Response.ErrorListener() {
+
+      @Override
+      public void onErrorResponse(VolleyError error) {
+        VolleyLog.d(TAG, "Error: " + error.getMessage());
+        Log.e(TAG, jsonPost.toString());
+      }
+    }
+    );
+
+    // Adding request to request queue
+    jsonObjReq.setTag(TAG);
+    rQueue.add(jsonObjReq);
   }
 
 }

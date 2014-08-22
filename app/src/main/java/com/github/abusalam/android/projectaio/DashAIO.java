@@ -17,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.github.abusalam.android.projectaio.ajax.NetConnection;
 
@@ -36,6 +37,11 @@ public class DashAIO extends ActionBarActivity
   //String serverURL = "http://10.42.0.1/apps/android/api.php";
   //String serverURL = "http://www.paschimmedinipur.gov.in/apps/android/api.php";
   static final String PREF_KEY_UserID = "mUserID";
+  static final String PREF_KEY_NAME = "pref_display_name";
+  static final String PREF_KEY_POST = "pref_designation";
+  static final String PREF_KEY_EMAIL = "pref_email";
+  static final String PREF_KEY_MOBILE = "pref_mobile";
+
   /**
    * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
    */
@@ -68,12 +74,11 @@ public class DashAIO extends ActionBarActivity
 
     if (IC.isDeviceConnected()) {
       tvNetConn.setText(getString(R.string.IC));
-      SharedPreferences settings = PreferenceManager
-          .getDefaultSharedPreferences(getApplicationContext());
-      tvUserName.setText(settings.getString("pref_display_name", ""));
-      tvDesg.setText(settings.getString("pref_designation", ""));
-      tvEMail.setText(settings.getString("pref_email", ""));
-      tvMobile.setText(settings.getString("pref_mobile", ""));
+      SharedPreferences settings = getSharedPreferences(SECRET_PREF_NAME,MODE_PRIVATE);
+      tvUserName.setText(settings.getString(PREF_KEY_NAME, ""));
+      tvDesg.setText(settings.getString(PREF_KEY_POST, ""));
+      tvEMail.setText(settings.getString(PREF_KEY_EMAIL, ""));
+      tvMobile.setText(settings.getString(PREF_KEY_MOBILE, ""));
     } else {
       tvNetConn.setText(getString(R.string.NC));
     }
@@ -138,11 +143,16 @@ public class DashAIO extends ActionBarActivity
         SharedPreferences mInSecurePrefs = getSharedPreferences(SECRET_PREF_NAME, MODE_PRIVATE);
         SharedPreferences.Editor prefEdit = mInSecurePrefs.edit();
         prefEdit.putString(PREF_KEY_UserID, mUserID);
-        prefEdit.commit();
+        prefEdit.putString(PREF_KEY_MOBILE,data.getStringExtra(PREF_KEY_UserID));
+        prefEdit.putString(PREF_KEY_NAME,data.getStringExtra(PREF_KEY_NAME));
+        prefEdit.putString(PREF_KEY_EMAIL,data.getStringExtra(PREF_KEY_EMAIL));
+        prefEdit.putString(PREF_KEY_POST,data.getStringExtra(PREF_KEY_POST));
+        prefEdit.apply();
         Log.e("onActivityResult-GroupSMS", "RequestCode: " + requestCode
-            + ":" + resultCode + "=" + RESULT_OK
-            + mUserID + " =>" + mInSecurePrefs.getAll().toString());
+            + ":" + resultCode + mUserID + " =>" + mInSecurePrefs.getAll().toString());
         startActivity(new Intent(getApplicationContext(), GroupSMS.class));
+      }else{
+        Toast.makeText(getApplicationContext(),"Unable to update profile.",Toast.LENGTH_LONG).show();
       }
     }
   }

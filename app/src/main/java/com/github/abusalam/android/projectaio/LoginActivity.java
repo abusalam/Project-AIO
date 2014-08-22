@@ -503,6 +503,15 @@ public class LoginActivity extends ActionBarActivity {
     public void onClick(View view) {
       Intent data = new Intent();
       data.putExtra(DashAIO.PREF_KEY_UserID, mUser.user);
+      try {
+        JSONObject userData=apiRespUserStat.getJSONObject("DB").getJSONObject("USER");
+        data.putExtra(DashAIO.PREF_KEY_NAME, userData.optString("UserName"));
+        data.putExtra(DashAIO.PREF_KEY_POST, userData.optString("Designation"));
+        data.putExtra(DashAIO.PREF_KEY_EMAIL, userData.optString("eMailID"));
+      } catch (JSONException e) {
+        e.printStackTrace();
+        Toast.makeText(getApplicationContext(),"Profile Error:"+e.getMessage(),Toast.LENGTH_LONG).show();
+      }
       setResult(RESULT_OK, data);
       finish();
     }
