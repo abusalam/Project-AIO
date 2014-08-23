@@ -11,6 +11,9 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="action_example">About</string>
     <string name="action_settings">Settings</string>
+    <string name="sync_profile_text">Sync Profile</string>
+    <string name="register_again_text">Remove Activation Key</string>
+    <string name="register_again_msg">Activation Key Removed. You can register again to get new activation key</string>
     <string name="title_activity_fullscreen">Group SMS</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
@@ -22,7 +25,7 @@
     <string name="NC">Internet: Not Connected</string>
     <string name="default_sent_to_txt">To:</string>
     <string name="default_msg_text">Message</string>
-    <string name="default_msg_status">Sending...</string>
+    <string name="default_msg_status">Sending…</string>
     <string name="btn_send_msg_content_description">Sent this message</string>
 
     <string-array name="sms_groups">

@@ -69,6 +69,7 @@ public class GroupSMS extends ActionBarActivity {
 
     try {
       mUser.pin = mOtpProvider.getNextCode(mUser.user);
+      mUser.hotpCodeGenerationAllowed=false;
     } catch (OtpSourceException e) {
       Toast.makeText(getApplicationContext(), "Error: " + e.getMessage()
           + " MDN:" + mUser.user, Toast.LENGTH_SHORT).show();
@@ -90,7 +91,6 @@ public class GroupSMS extends ActionBarActivity {
 
           @Override
           public void onResponse(JSONObject response) {
-            JSONArray respJSON;
             Log.d(TAG, "Group-SMS " + response.toString());
             Toast.makeText(getApplicationContext(), response.optString(DashAIO.KEY_STATUS), Toast.LENGTH_SHORT).show();
             try {
@@ -120,10 +120,80 @@ public class GroupSMS extends ActionBarActivity {
     }
     );
 
+    Handler mHandler = new Handler();
+    mHandler.postDelayed(
+        new Runnable() {
+          @Override
+          public void run() {
+            mUser.hotpCodeGenerationAllowed = true;
+          }
+        },
+        HOTP_MIN_TIME_INTERVAL_BETWEEN_CODES
+    );
+
     // Adding request to request queue
     jsonObjReq.setTag(TAG);
     rQueue.add(jsonObjReq);
     Toast.makeText(getApplicationContext(), "Loading All Groups Please Wait...", Toast.LENGTH_LONG).show();
+  }
+
+  private void SyncProfile() {
+    final JSONObject jsonPost = new JSONObject();
+
+    try {
+      mUser.pin = mOtpProvider.getNextCode(mUser.user);
+    } catch (OtpSourceException e) {
+      Toast.makeText(getApplicationContext(), "Error: " + e.getMessage()
+          + " MDN:" + mUser.user, Toast.LENGTH_SHORT).show();
+      return;
+    }
+
+    try {
+      jsonPost.put("API", "SP");
+      jsonPost.put("MDN", mUser.user);
+      jsonPost.put("OTP", mUser.pin);
+    } catch (JSONException e) {
+      e.printStackTrace();
+      return;
+    }
+
+    JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST,
+        DashAIO.API_URL, jsonPost,
+        new Response.Listener<JSONObject>() {
+
+          @Override
+          public void onResponse(JSONObject response) {
+            Log.d(TAG, "Group-SMS " + response.toString());
+            Toast.makeText(getApplicationContext(), response.optString(DashAIO.KEY_STATUS), Toast.LENGTH_SHORT).show();
+            try {
+              JSONObject respJson = response.getJSONObject("DB");
+              SharedPreferences mInSecurePrefs = getSharedPreferences(DashAIO.SECRET_PREF_NAME, MODE_PRIVATE);
+              SharedPreferences.Editor prefEdit = mInSecurePrefs.edit();
+              prefEdit.putString(DashAIO.PREF_KEY_MOBILE,mUser.user);
+              prefEdit.putString(DashAIO.PREF_KEY_NAME,respJson.optString("UserName"));
+              prefEdit.putString(DashAIO.PREF_KEY_EMAIL,respJson.optString("eMailID"));
+              prefEdit.putString(DashAIO.PREF_KEY_POST,respJson.optString("Designation"));
+              prefEdit.apply();
+            } catch (JSONException e) {
+              e.printStackTrace();
+              return;
+            }
+
+          }
+        }, new Response.ErrorListener() {
+
+      @Override
+      public void onErrorResponse(VolleyError error) {
+        VolleyLog.d(TAG, "Error: " + error.getMessage());
+        Log.e(TAG, jsonPost.toString());
+      }
+    }
+    );
+
+    // Adding request to request queue
+    jsonObjReq.setTag(TAG);
+    rQueue.add(jsonObjReq);
+    Toast.makeText(getApplicationContext(), "Synchronizing Profile Please Wait...", Toast.LENGTH_LONG).show();
   }
 
   @Override
@@ -190,7 +260,18 @@ public class GroupSMS extends ActionBarActivity {
     // automatically handle clicks on the Home/Up button, so long
     // as you specify a parent activity in AndroidManifest.xml.
     int id = item.getItemId();
-    if (id == R.id.action_settings) {
+    if (id == R.id.sync_profile) {
+      SyncProfile();
+      return true;
+    }
+    if (id == R.id.register_again) {
+      SharedPreferences mInSecurePrefs = getSharedPreferences(DashAIO.SECRET_PREF_NAME, MODE_PRIVATE);
+      SharedPreferences.Editor prefEdit = mInSecurePrefs.edit();
+      prefEdit.clear();
+      prefEdit.apply();
+      prefEdit.commit();
+      Toast.makeText(getApplicationContext(), getString(R.string.register_again_msg), Toast.LENGTH_LONG).show();
+      finish();
       return true;
     }
     return super.onOptionsItemSelected(item);
@@ -209,7 +290,7 @@ public class GroupSMS extends ActionBarActivity {
     /**
      * HOTP only: Whether code generation is allowed for this account.
      */
-    private boolean hotpCodeGenerationAllowed;
+    private boolean hotpCodeGenerationAllowed = true;
   }
 
   private class SendSMSClickListener implements View.OnClickListener {
@@ -225,7 +306,7 @@ public class GroupSMS extends ActionBarActivity {
         try {
           String oldPin = mUser.pin;
           mUser.pin = mOtpProvider.getNextCode(mUser.user);
-          if (mUser.pin.equals(oldPin)||!mUser.hotpCodeGenerationAllowed) {
+          if (mUser.pin.equals(oldPin) || !mUser.hotpCodeGenerationAllowed) {
             Toast.makeText(getApplicationContext(), "Please wait for a while to generate new OTP for"
                 + " MDN:" + mUser.user, Toast.LENGTH_LONG).show();
             return;

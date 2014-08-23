@@ -2,8 +2,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.github.abusalam.android.projectaio.GroupSMS" >
-    <item android:id="@+id/action_settings"
-        android:title="@string/action_settings"
+    <item android:id="@+id/sync_profile"
+        android:title="@string/sync_profile_text"
         android:orderInCategory="100"
         app:showAsAction="never" />
+    <item android:id="@+id/register_again"
+          android:title="@string/register_again_text"
+          android:orderInCategory="100"
+          app:showAsAction="never" />
 </menu>
