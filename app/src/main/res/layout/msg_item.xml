@@ -12,7 +12,7 @@
         android:text="@string/default_sent_to_txt"
         android:id="@+id/tvSentTo" />
 
-    <EditText
+    <TextView
         android:layout_width="364dp"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"

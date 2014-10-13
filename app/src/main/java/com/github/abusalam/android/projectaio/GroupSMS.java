@@ -5,9 +5,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -62,6 +64,7 @@ public class GroupSMS extends ActionBarActivity {
   private AccountDb mAccountDb;
   private OtpSource mOtpProvider;
   private EditText etMsg;
+  private int mSelectedItemIndex;
 
   private void getAllGroups() {
 
@@ -69,7 +72,7 @@ public class GroupSMS extends ActionBarActivity {
 
     try {
       mUser.pin = mOtpProvider.getNextCode(mUser.user);
-      mUser.hotpCodeGenerationAllowed=false;
+      mUser.hotpCodeGenerationAllowed = false;
     } catch (OtpSourceException e) {
       Toast.makeText(getApplicationContext(), "Error: " + e.getMessage()
           + " MDN:" + mUser.user, Toast.LENGTH_SHORT).show();
@@ -169,10 +172,10 @@ public class GroupSMS extends ActionBarActivity {
               JSONObject respJson = response.getJSONObject("DB");
               SharedPreferences mInSecurePrefs = getSharedPreferences(DashAIO.SECRET_PREF_NAME, MODE_PRIVATE);
               SharedPreferences.Editor prefEdit = mInSecurePrefs.edit();
-              prefEdit.putString(DashAIO.PREF_KEY_MOBILE,mUser.user);
-              prefEdit.putString(DashAIO.PREF_KEY_NAME,respJson.optString("UserName"));
-              prefEdit.putString(DashAIO.PREF_KEY_EMAIL,respJson.optString("eMailID"));
-              prefEdit.putString(DashAIO.PREF_KEY_POST,respJson.optString("Designation"));
+              prefEdit.putString(DashAIO.PREF_KEY_MOBILE, mUser.user);
+              prefEdit.putString(DashAIO.PREF_KEY_NAME, respJson.optString("UserName"));
+              prefEdit.putString(DashAIO.PREF_KEY_EMAIL, respJson.optString("eMailID"));
+              prefEdit.putString(DashAIO.PREF_KEY_POST, respJson.optString("Designation"));
               prefEdit.apply();
             } catch (JSONException e) {
               e.printStackTrace();
@@ -222,6 +225,8 @@ public class GroupSMS extends ActionBarActivity {
     lvMsgHistAdapter = new MsgItemAdapter(this, R.layout.msg_item, lvMsgContent);
     lvMsgHist.setAdapter(lvMsgHistAdapter);
 
+    registerForContextMenu(lvMsgHist);
+
     etMsg = (EditText) findViewById(R.id.etMsg);
 
     spnrAllGroups = (Spinner) findViewById(R.id.spinner);
@@ -245,6 +250,32 @@ public class GroupSMS extends ActionBarActivity {
     // Inflate the menu; this adds items to the action bar if it is present.
     getMenuInflater().inflate(R.menu.group_sm, menu);
     return true;
+  }
+
+  @Override
+  public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+    super.onCreateContextMenu(menu, v, menuInfo);
+    AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
+    mSelectedItemIndex = info.position;      // Get Index of long-clicked item
+
+    super.onCreateContextMenu(menu, v, menuInfo);
+    menu.setHeaderTitle("Choose Action");   // Context-menu title
+    menu.add(0, v.getId(), 0, "Delivery Report");
+    menu.add(0, v.getId(), 1, "Copy Message");
+  }
+
+  @Override
+  public boolean onContextItemSelected(MenuItem item) {
+    if (item.getTitle() == "Delivery Report") {
+      //Do stuff
+    } else if (item.getTitle() == "Copy Message") {
+      MsgItem mMsgItem = lvMsgHistAdapter.getItem(mSelectedItemIndex);
+      etMsg.setText(mMsgItem.getMsgText());
+      Toast.makeText(getApplicationContext(), "Text Copied", Toast.LENGTH_LONG).show();
+    } else {
+      return false;
+    }
+    return super.onContextItemSelected(item);
   }
 
   @Override
