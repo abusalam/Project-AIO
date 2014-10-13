@@ -2,12 +2,91 @@
 <resources>
 
     <string name="app_name">Project AIO</string>
-    <string name="title_section1">Attendance</string>
-    <string name="title_section2">Maps</string>
-    <string name="title_section3">Bookmarks</string>
+    <string name="app_caption">NIC SMS Gateway</string>
+    <string name="title_Home">Home</string>
+    <string name="title_Login">Sign In</string>
+    <string name="title_GroupSMS">Group SMS</string>
+    <string name="title_Reports">Delivery Reports</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="action_example">About</string>
     <string name="action_settings">Settings</string>
+    <string name="sync_profile_text">Sync Profile</string>
+    <string name="register_again_text">Remove Activation Key</string>
+    <string name="register_again_msg">Activation Key Removed. You can register again to get new activation key</string>
+    <string name="title_activity_fullscreen">Group SMS</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="title_activity_group_sms">Group SMS</string>
+    <string name="send_text">Send</string>
+    <string name="send_to">To</string>
+    <string name="msg_text">Type Message</string>
+    <string name="IC">Internet: Connected</string>
+    <string name="NC">Internet: Not Connected</string>
+    <string name="default_sent_to_txt">To:</string>
+    <string name="default_msg_text">Message</string>
+    <string name="default_msg_status">Sending…</string>
+    <string name="btn_send_msg_content_description">Sent this message</string>
+
+    <string-array name="sms_groups">
+        <item>Test Group</item>
+        <item>All BDOs</item>
+        <item>All SDOs</item>
+        <item>All OCs</item>
+
+    </string-array>
+    <string-array name="drawer_menu_list">
+        <item>Dashboard</item>
+        <item>Group SMS</item>
+        <item>GPS Markers</item>
+        <item>Project Location</item>
+        <item>Update MPR</item>
+        <item>Profile</item>
+        <item>Exit</item>
+    </string-array>
+
+    <string name="title_activity_login">Sign In</string>
+    <string name="update_profile">Update Profile</string>
+    <string name="login_message">Please enter your mobile no to use with the Group Messaging System.</string>
+    <string name="btn_update_profile_text">Update Profile</string>
+    <string name="img_btn_update_profile_text">Login/Update Profile</string>
+    <string name="login_wait_message">Checking your registration data with the SMS Gateway Server to sync your profile...</string>
+    <string name="btn_login_text">Start Messaging</string>
+    <string name="btn_scan_barcode_text">Verify OTP</string>
+    <string name="btn_enter_key_text">Save Key</string>
+    <!-- Confirmation message displayed in a toast after adding new account -->
+    <string name="secret_saved">Secret saved</string>
+
+    <!-- Question asking user to confirm adding a new account, the details of which were obtained
+         by scanning a QR code or provided by the web browser. -->
+    <string name="save_key_message">Save key for</string>
+
+    <!-- Error message displayed if the scanned QR code contains an empty key -->
+    <string name="error_empty_secret">Cannot save empty secret</string>
+
+    <!-- Error message displayed if user enters a key that is shorter than allowed minimum -->
+    <string name="enter_key_too_short">Key value is too short</string>
+
+    <!-- Error message displayed if user enters a key with an illegal character -->
+    <string name="enter_key_illegal_char">Key value has illegal character</string>
+
+    <!-- Placeholder value displayed for OTP before any codes have been generated -->
+    <string name="empty_pin">_ _ _ _ _ _</string>
+
+    <!-- Title for error message dialog when user attempts to scan a barcode but does not
+       have the barcode scanner application installed. -->
+    <string name="install_dialog_title">Install barcode scanner?</string>
+
+    <!-- Error message displayed when user attempts to scan a barcode without a scanner app. -->
+  <string name="install_dialog_message">
+    To scan barcodes containing keys, you must install the ZXing barcode scanner.
+   </string>
+
+    <!-- Text on button user clicks to start installation of barcode scanning app -->
+    <string name="install_button">Install</string>
+    <!-- Button on manual account entry page, cancels adding account, returns to main page -->
+    <string name="cancel">Cancel</string>
+
+    <string name="btn_qr_code_description">Scan QR Code</string>
 
 </resources>

@@ -1,0 +1,51 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    tools:context="com.github.abusalam.android.projectaio.GroupSMS">
+
+    <EditText
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textMultiLine"
+        android:ems="10"
+        android:id="@+id/etMsg"
+        android:autoText="false"
+        android:hint="@string/msg_text"
+        android:layout_alignParentBottom="true"
+        android:clickable="false"
+        android:layout_alignParentStart="false"
+        android:maxHeight="@dimen/msg_text_max_height"
+        android:layout_toLeftOf="@+id/btnSendSMS" />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/btnSendSMS"
+        android:layout_alignBottom="@+id/etMsg"
+        android:layout_alignRight="@+id/spinner"
+        android:src="@drawable/ic_send"
+        android:background="@drawable/btn_pressed_background"
+        android:contentDescription="@string/btn_send_msg_content_description" />
+
+    <Spinner
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/spinner"
+        android:focusableInTouchMode="false"
+        android:spinnerMode="dropdown"
+        android:layout_alignParentTop="true"
+        android:prompt="@string/send_to" />
+
+    <ListView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/lvMsgHist"
+        android:layout_below="@+id/spinner"
+        android:layout_alignParentLeft="true"
+        android:divider="@color/black_overlay"
+        android:dividerHeight="@dimen/divider_Height"
+        android:layout_above="@+id/etMsg" />
+
+
+</RelativeLayout>
