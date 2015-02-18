@@ -102,6 +102,7 @@ public class DashAIO extends ActionBarActivity
     } else {
       //mTitle = mDrawerMenuList[number - 1];
     }
+      Log.e("MenuLink-Number: ", ""+number);
     switch (number) {
       case 1:
         break;
@@ -119,12 +120,11 @@ public class DashAIO extends ActionBarActivity
         }
         break;
       case 3:
+          break;
       case 4:
+          startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
         break;
-      case 6:
-        startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
-        break;
-      case 0:
+      case 0: //Exit Menu
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_HOME);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

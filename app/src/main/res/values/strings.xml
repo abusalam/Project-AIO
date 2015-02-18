@@ -38,8 +38,8 @@
     <string-array name="drawer_menu_list">
         <item>Dashboard</item>
         <item>Group SMS</item>
-        <item>GPS Markers</item>
-        <item>Project Location</item>
+        <!--item>GPS Markers</item>
+        <item>Project Location</item-->
         <item>Update MPR</item>
         <item>Profile</item>
         <item>Exit</item>
