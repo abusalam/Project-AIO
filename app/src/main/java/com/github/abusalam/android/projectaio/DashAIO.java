@@ -120,6 +120,7 @@ public class DashAIO extends ActionBarActivity
         }
         break;
       case 3:
+          startActivity(new Intent(getApplicationContext(), ProgressMPR.class));
           break;
       case 4:
           startActivity(new Intent(getApplicationContext(), SettingsActivity.class));

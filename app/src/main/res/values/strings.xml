@@ -33,13 +33,14 @@
         <item>All BDOs</item>
         <item>All SDOs</item>
         <item>All OCs</item>
-
     </string-array>
     <string-array name="drawer_menu_list">
         <item>Dashboard</item>
         <item>Group SMS</item>
-        <!--item>GPS Markers</item>
-        <item>Project Location</item-->
+        <!--
+        item>GPS Markers</item>
+        <item>Project Location</item
+        -->
         <item>Update MPR</item>
         <item>Profile</item>
         <item>Exit</item>
@@ -57,8 +58,10 @@
     <!-- Confirmation message displayed in a toast after adding new account -->
     <string name="secret_saved">Secret saved</string>
 
-    <!-- Question asking user to confirm adding a new account, the details of which were obtained
-         by scanning a QR code or provided by the web browser. -->
+    <!--
+         Question asking user to confirm adding a new account, the details of which were obtained
+         by scanning a QR code or provided by the web browser.
+    -->
     <string name="save_key_message">Save key for</string>
 
     <!-- Error message displayed if the scanned QR code contains an empty key -->
@@ -73,20 +76,25 @@
     <!-- Placeholder value displayed for OTP before any codes have been generated -->
     <string name="empty_pin">_ _ _ _ _ _</string>
 
-    <!-- Title for error message dialog when user attempts to scan a barcode but does not
-       have the barcode scanner application installed. -->
+    <!--
+       Title for error message dialog when user attempts to scan a barcode but does not
+       have the barcode scanner application installed.
+    -->
     <string name="install_dialog_title">Install barcode scanner?</string>
 
     <!-- Error message displayed when user attempts to scan a barcode without a scanner app. -->
-  <string name="install_dialog_message">
-    To scan barcodes containing keys, you must install the ZXing barcode scanner.
-   </string>
+    <string name="install_dialog_message">    To scan barcodes containing keys, you must install the ZXing barcode scanner.</string>
 
     <!-- Text on button user clicks to start installation of barcode scanning app -->
     <string name="install_button">Install</string>
     <!-- Button on manual account entry page, cancels adding account, returns to main page -->
     <string name="cancel">Cancel</string>
-
     <string name="btn_qr_code_description">Scan QR Code</string>
+    <string name="title_activity_progress_mpr">Update MPR</string>
+    <string name="lblSchemes">Scheme:</string>
+    <string name="lblWorks">Work:</string>
+    <string name="lblPhyPrg">Physical Progress(%):</string>
+    <string name="lblExpAmount">Expenditure Amount:</string>
+    <string name="lblRemarks">Remarks:</string>
 
 </resources>
