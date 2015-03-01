@@ -96,5 +96,7 @@
     <string name="lblPhyPrg">Physical Progress(%):</string>
     <string name="lblExpAmount">Expenditure Amount:</string>
     <string name="lblRemarks">Remarks:</string>
+    <string name="lblBtnSave">Update Progress</string>
+    <string name="msg_warn_remarks">Type Some Remarks</string>
 
 </resources>
