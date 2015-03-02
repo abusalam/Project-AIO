@@ -1,5 +1,6 @@
 package com.github.abusalam.android.projectaio;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
@@ -331,6 +332,7 @@ public class ProgressMPR extends ActionBarActivity {
 
             } else {
                 Toast.makeText(getApplicationContext(), getString(R.string.msg_warn_remarks), Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(getApplicationContext(), SchemeActivity.class));
             }
 
         }

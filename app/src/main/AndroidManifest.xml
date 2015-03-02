@@ -63,6 +63,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.github.abusalam.android.projectaio.DashAIO" />
         </activity>
+        <activity
+            android:name=".SchemeActivity"
+            android:label="@string/title_activity_scheme"
+            android:parentActivityName=".ProgressMPR" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.github.abusalam.android.projectaio.ProgressMPR" />
+        </activity>
     </application>
 
 </manifest>

@@ -98,5 +98,8 @@
     <string name="lblRemarks">Remarks:</string>
     <string name="lblBtnSave">Update Progress</string>
     <string name="msg_warn_remarks">Type Some Remarks</string>
+    <string name="title_activity_scheme">Select Scheme</string>
+    <string name="lbl_scheme_id">Scheme ID: </string>
+    <string name="lbl_scheme_name">Scheme</string>
 
 </resources>
