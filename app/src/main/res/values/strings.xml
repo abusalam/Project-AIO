@@ -101,5 +101,8 @@
     <string name="title_activity_scheme">Select Scheme</string>
     <string name="lbl_scheme_id">Scheme ID: </string>
     <string name="lbl_scheme_name">Scheme</string>
+    <string name="title_activity_work">Select Work</string>
+    <string name="lbl_work_id">Work ID: </string>
+    <string name="lbl_work_name">Work Description</string>
 
 </resources>

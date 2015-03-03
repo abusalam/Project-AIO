@@ -8,22 +8,21 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="@string/lbl_scheme_name"
-        android:id="@+id/tvSchemeName"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="@string/lbl_work_name"
+        android:id="@+id/tvWork"
+        android:layout_below="@+id/tvWorkID"
         android:layout_alignParentLeft="true"
-        android:layout_marginLeft="0dp"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="0dp" />
+        android:layout_alignParentStart="true" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="@string/lbl_scheme_id"
-        android:id="@+id/tvSchemeID"
+        android:text="@string/lbl_work_id"
+        android:id="@+id/tvWorkID"
         android:layout_gravity="right"
-        android:layout_alignBottom="@+id/tvSchemeName"
+        android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
 

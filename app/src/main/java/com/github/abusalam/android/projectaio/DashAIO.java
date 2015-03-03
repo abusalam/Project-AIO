@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
@@ -20,16 +19,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.abusalam.android.projectaio.ajax.NetConnection;
+import com.github.abusalam.android.projectaio.mpr.SchemeActivity;
 
 
 public class DashAIO extends ActionBarActivity
     implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 
   static final int UPDATE_PROFILE_REQUEST = 0;
-  static final String KEY_SENT_ON = "ST";
-  static final String KEY_STATUS = "MSG";
-  static final String KEY_API = "API";
-  static final String API_URL = "http://www.paschimmedinipur.gov.in/apps/android/api.php";
+  public static final String KEY_SENT_ON = "ST";
+  public static final String KEY_STATUS = "MSG";
+  public static final String KEY_API = "API";
+  static final String API_URL = "http://10.42.0.1/apps/android/api.php";
   static final String SECRET_PREF_NAME = "mPrefSecrets";
 
   // WebServer Request URL
@@ -120,7 +120,8 @@ public class DashAIO extends ActionBarActivity
         }
         break;
       case 3:
-          startActivity(new Intent(getApplicationContext(), ProgressMPR.class));
+
+          startActivity(new Intent(getApplicationContext(), SchemeActivity.class).putExtra(SchemeActivity.UID,"5"));
           break;
       case 4:
           startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
@@ -149,7 +150,7 @@ public class DashAIO extends ActionBarActivity
         prefEdit.putString(PREF_KEY_EMAIL,data.getStringExtra(PREF_KEY_EMAIL));
         prefEdit.putString(PREF_KEY_POST,data.getStringExtra(PREF_KEY_POST));
         prefEdit.apply();
-        Log.e("onActivityResult-GroupSMS", "RequestCode: " + requestCode
+        Log.e("onActivityResult", "GroupSMS-RequestCode: " + requestCode
             + ":" + resultCode + mUserID + " =>" + mInSecurePrefs.getAll().toString());
         startActivity(new Intent(getApplicationContext(), GroupSMS.class));
       }else{

@@ -1,5 +1,4 @@
-package com.github.abusalam.android.projectaio;
-
+package com.github.abusalam.android.projectaio.mpr;
 
 import android.content.Intent;
 import android.os.Handler;
@@ -10,6 +9,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -19,10 +19,9 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
-
+import com.github.abusalam.android.projectaio.DashAIO;
+import com.github.abusalam.android.projectaio.R;
 import com.github.abusalam.android.projectaio.ajax.VolleyAPI;
-import com.github.abusalam.android.projectaio.mpr.Scheme;
-import com.github.abusalam.android.projectaio.mpr.SchemeAdapter;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -30,42 +29,38 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-
-
-public class SchemeActivity extends ActionBarActivity {
-    public static final String TAG = SchemeActivity.class.getSimpleName();
-    /**
-     * Minimum amount of time (milliseconds) that has to elapse from the moment a HOTP code is
-     * generated for an account until the moment the next code can be generated for the account.
-     * This is to prevent the user from generating too many HOTP codes in a short period of time.
-     */
-
-    static final String API_URL = "http://10.173.168.169/apps/mpr/AndroidAPI.php";
+public class WorkActivity extends ActionBarActivity {
+    public static final String TAG = WorkActivity.class.getSimpleName();
+    public static final String WorkID = "WorkID";
+    public static final String Work = "Work";
+    public static final String Progress = "Progress";
 
     private JSONArray respJsonArray;
     private RequestQueue rQueue;
-private                             ArrayList<Scheme> SchemeList;
-    private ListView lvSchemes;
+    private ArrayList<Work> WorkList;
+    private ListView lvWorks;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_scheme);
+        setContentView(R.layout.activity_work);
 
         rQueue = VolleyAPI.getInstance(this).getRequestQueue();
-        lvSchemes = (ListView) findViewById(R.id.lvSchemes);
+        lvWorks = (ListView) findViewById(R.id.lvWorks);
 
-        lvSchemes.setOnItemClickListener(new SelectSchemeClickListener());
-        SchemeList = new ArrayList<Scheme>();
+        lvWorks.setOnItemClickListener(new SelectWorkClickListener());
+        WorkList = new ArrayList<Work>();
+        Log.e("Populate Works:", "Found-" + getIntent().getExtras().getLong(SchemeActivity.SID));
+        getUserWorks(getIntent().getExtras().getString(SchemeActivity.UID),
+                getIntent().getExtras().getLong(SchemeActivity.SID));
 
-        getUserSchemes();
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_scheme, menu);
+        getMenuInflater().inflate(R.menu.menu_work, menu);
         return true;
     }
 
@@ -84,26 +79,22 @@ private                             ArrayList<Scheme> SchemeList;
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        rQueue.cancelAll(TAG);
-    }
 
-    private void getUserSchemes() {
+    private void getUserWorks(String UID,Long SID) {
 
         final JSONObject jsonPost = new JSONObject();
 
         try {
-            jsonPost.put("API", "US");
-            jsonPost.put("UID", "5"); // TODO Supply Dynamic UserMapID instead of Static
+            jsonPost.put(DashAIO.KEY_API, "UW");
+            jsonPost.put("UID", UID);
+            jsonPost.put("SID", SID);
         } catch (JSONException e) {
             e.printStackTrace();
             return;
         }
 
         JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST,
-                API_URL, jsonPost,
+                SchemeActivity.API_URL, jsonPost,
                 new Response.Listener<JSONObject>() {
 
                     @Override
@@ -115,14 +106,15 @@ private                             ArrayList<Scheme> SchemeList;
                         try {
                             respJsonArray = response.getJSONArray("DB");
                             for (int i = 0; i < respJsonArray.length(); i++) {
-                                Scheme mScheme = new Scheme();
-                                mScheme.setSchemeID(respJsonArray.getJSONObject(i).getInt("ID"));
-                                mScheme.setSchemeName(respJsonArray.getJSONObject(i).optString("SN"));
-                                SchemeList.add(mScheme);
+                                Work mWork = new Work();
+                                mWork.setWorkID(respJsonArray.getJSONObject(i).getInt(WorkID));
+                                mWork.setWorkName(respJsonArray.getJSONObject(i).optString(Work));
+                                mWork.setBalance(respJsonArray.getJSONObject(i).optLong(Progress));
+                                WorkList.add(mWork);
                             }
                             // Spinner adapter
-                            lvSchemes.setAdapter(new SchemeAdapter(SchemeActivity.this,
-                                    R.layout.scheme_view, SchemeList));
+                            lvWorks.setAdapter(new WorkAdapter(WorkActivity.this,
+                                    R.layout.work_view, WorkList));
                         } catch (JSONException e) {
                             e.printStackTrace();
                             return;
@@ -145,13 +137,16 @@ private                             ArrayList<Scheme> SchemeList;
         //Toast.makeText(getApplicationContext(), "Loading All Schemes Please Wait...", Toast.LENGTH_SHORT).show();
     }
 
-    private class SelectSchemeClickListener implements ListView.OnItemClickListener{
+    private class SelectWorkClickListener implements ListView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
-            Toast.makeText(getApplicationContext(), "Scheme ID: " + SchemeList.get(i).getSchemeID(), Toast.LENGTH_SHORT).show();
-                //startActivity(new Intent(getApplicationContext(), SchemeActivity.class));
-
+            Toast.makeText(getApplicationContext(),
+                    "Work ID: " + WorkList.get(i).getWorkID(),
+                    Toast.LENGTH_SHORT).show();
+            //Intent mWorks = new Intent(getApplicationContext(), WorkActivity.class);
+            //mWorks.putExtra(SchemeActivity.SID,WorkList.get(i).getSchemeID());
+            //startActivity(mWorks);
         }
     }
 }
