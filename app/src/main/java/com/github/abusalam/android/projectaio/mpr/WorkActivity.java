@@ -53,9 +53,7 @@ public class WorkActivity extends ActionBarActivity {
         Log.e("Populate Works:", "Found-" + getIntent().getExtras().getLong(SchemeActivity.SID));
         getUserWorks(getIntent().getExtras().getString(SchemeActivity.UID),
                 getIntent().getExtras().getLong(SchemeActivity.SID));
-
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -79,6 +77,11 @@ public class WorkActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        rQueue.cancelAll(TAG);
+    }
 
     private void getUserWorks(String UID,Long SID) {
 

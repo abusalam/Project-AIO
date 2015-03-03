@@ -251,7 +251,7 @@ public class NavigationDrawerFragment extends Fragment {
       return true;
     }
 
-    if (item.getItemId() == R.id.action_example) {
+    if (item.getItemId() == R.id.action_about) {
 
       Toast.makeText(getActivity(), "Developed by NIC", Toast.LENGTH_SHORT).show();
       return true;

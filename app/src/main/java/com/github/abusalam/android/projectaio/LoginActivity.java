@@ -79,10 +79,10 @@ public class LoginActivity extends ActionBarActivity {
    * full time step remaining until the code refreshes, and {@code 0} meaning the code is refreshing
    * right now.
    */
-  private double mTotpCountdownPhase;
+
   private AccountDb mAccountDb;
   private OtpSource mOtpProvider;
-  private PinInfo mUser;
+  private User mUser;
 
   /**
    * Saves the secret key to local storage on the phone.
@@ -143,11 +143,11 @@ public class LoginActivity extends ActionBarActivity {
   public void computeAndDisplayPin(String user, /*int position,*/
                                    boolean computeHotp) throws OtpSourceException {
 
-    PinInfo currentPin;
+    User currentPin;
     if (mUser != null) {
       currentPin = mUser; // existing PinInfo, so we'll update it
     } else {
-      currentPin = new PinInfo();
+      currentPin = new User();
       currentPin.pin = getString(R.string.empty_pin);
       currentPin.hotpCodeGenerationAllowed = true;
     }
@@ -155,7 +155,7 @@ public class LoginActivity extends ActionBarActivity {
     AccountDb.OtpType type = mAccountDb.getType(user);
     currentPin.isHotp = (type == AccountDb.OtpType.HOTP);
 
-    currentPin.user = user;
+    currentPin.MobileNo = user;
 
     if (!currentPin.isHotp || computeHotp) {
       // Always safe to recompute, because this code path is only
@@ -233,11 +233,11 @@ public class LoginActivity extends ActionBarActivity {
     etMobileNo = (EditText) findViewById(R.id.etUserMobile);
     etSecretKey = (EditText) findViewById(R.id.etSecretKey);
     pbLoginWait = (ProgressBar) findViewById(R.id.pbLoginWait);
-    btnStartMessaging = (Button) findViewById(R.id.btnStartMessaging);
+    btnStartMessaging = (Button) findViewById(R.id.btnStart);
     btnSaveKey = (Button) findViewById(R.id.btnSaveKey);
     btnVerifyOTP = (Button) findViewById(R.id.btnVerifyOTP);
     tvOTP = (TextView) findViewById(R.id.tvOTP);
-    mUser = new PinInfo();
+    mUser = new User();
     btnScanOR = (ImageButton) findViewById(R.id.btnScanQR);
     btnScanOR.setOnClickListener(new View.OnClickListener() {
       @Override
@@ -374,7 +374,7 @@ public class LoginActivity extends ActionBarActivity {
     }
 
     if (secret.equals(mAccountDb.getSecret(user)) &&
-        counter == mAccountDb.getCounter(user) &&
+        counter.equals(mAccountDb.getCounter(user)) &&
         type == mAccountDb.getType(user)) {
       return;  // nothing to update.
     }
@@ -409,33 +409,18 @@ public class LoginActivity extends ActionBarActivity {
   }
 
   /**
-   * A tuple of user, OTP value, and type, that represents a particular user.
-   *
-   * @author adhintz@google.com (Drew Hintz)
-   */
-  private static class PinInfo {
-    private String pin; // calculated OTP, or a placeholder if not calculated
-    private String user;
-    private boolean isHotp = true; // used to see if button needs to be displayed
-
-    /**
-     * HOTP only: Whether code generation is allowed for this account.
-     */
-    private boolean hotpCodeGenerationAllowed;
-  }
-
-  /**
    * Register User: Register User with Mobile No. to get the Secret Key for HOTP
    * <p/>
    * Request:
    * JSONObject={"API":"RU",
-   * "MDN":"9876543210"}
+   *            "MDN":"9876543210"}
+   *
    * Response:
-   * JSONObject={"API":true,
-   * "DB": // Unused till now
-   * "MSG":"Key Sent to Mobile No. 9876543210",
-   * "ET":2.0987,
-   * "ST":"Wed 20 Aug 08:31:23 PM"}
+   *            JSONObject={"API":true,
+   *                        "DB": // Unused till now
+   *                        "MSG":"Key Sent to Mobile No. 9876543210",
+   *                        "ET":2.0987,
+   *                        "ST":"Wed 20 Aug 08:31:23 PM"}
    */
   private class RegisterButtonListener implements OnClickListener {
     @Override
@@ -445,7 +430,7 @@ public class LoginActivity extends ActionBarActivity {
       btnRegister.setVisibility(View.GONE);
       tvLoginMessage.setText(getText(R.string.login_wait_message));
       pbLoginWait.setVisibility(View.VISIBLE);
-      mUser.user = etMobileNo.getText().toString();
+      mUser.MobileNo = etMobileNo.getText().toString();
 
       JSONObject jsonPost = new JSONObject();
 
@@ -502,7 +487,7 @@ public class LoginActivity extends ActionBarActivity {
     @Override
     public void onClick(View view) {
       Intent data = new Intent();
-      data.putExtra(DashAIO.PREF_KEY_UserID, mUser.user);
+      data.putExtra(DashAIO.PREF_KEY_MOBILE, mUser.MobileNo);
       try {
         JSONObject userData=apiRespUserStat.getJSONObject("DB").getJSONObject("USER");
         data.putExtra(DashAIO.PREF_KEY_NAME, userData.optString("UserName"));
@@ -556,9 +541,9 @@ public class LoginActivity extends ActionBarActivity {
    */
   private class NextOtpButtonListener implements OnClickListener {
     private final Handler mHandler = new Handler();
-    private final PinInfo mAccount;
+    private final User mAccount;
 
-    private NextOtpButtonListener(PinInfo account) {
+    private NextOtpButtonListener(User account) {
       mAccount = account;
     }
 
@@ -566,7 +551,7 @@ public class LoginActivity extends ActionBarActivity {
     public void onClick(View v) {
 
       try {
-        computeAndDisplayPin(mAccount.user, /*position,*/ true);
+        computeAndDisplayPin(mAccount.MobileNo, /*position,*/ true);
       } catch (OtpSourceException e) {
         //DependencyInjector.getOptionalFeatures().onAuthenticatorActivityGetNextOtpFailed(
         //        AuthenticatorActivity.this, mAccount.user, e);
@@ -598,7 +583,7 @@ public class LoginActivity extends ActionBarActivity {
             public void onResponse(JSONObject response) {
               Log.d(TAG, response.toString());
               Toast.makeText(getApplicationContext(), response.optString(DashAIO.KEY_STATUS)
-                  + " Counter: " + mAccountDb.getCounter(mAccount.user), Toast.LENGTH_SHORT).show();
+                  + " Counter: " + mAccountDb.getCounter(mAccount.MobileNo), Toast.LENGTH_SHORT).show();
               apiRespUserStat = response;
               if (response.optBoolean(DashAIO.KEY_API)) {
                 etSecretKey.setVisibility(View.GONE);

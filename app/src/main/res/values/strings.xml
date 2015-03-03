@@ -2,14 +2,14 @@
 <resources>
 
     <string name="app_name">Project AIO</string>
-    <string name="app_caption">NIC SMS Gateway</string>
-    <string name="title_Home">Home</string>
+    <string name="app_caption">Project AIO</string>
+    <string name="title_Home">Project AIO</string>
     <string name="title_Login">Sign In</string>
     <string name="title_GroupSMS">Group SMS</string>
     <string name="title_Reports">Delivery Reports</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="action_example">About</string>
+    <string name="action_about">About</string>
     <string name="action_settings">Settings</string>
     <string name="sync_profile_text">Sync Profile</string>
     <string name="register_again_text">Remove Activation Key</string>
@@ -35,14 +35,9 @@
         <item>All OCs</item>
     </string-array>
     <string-array name="drawer_menu_list">
-        <item>Dashboard</item>
+        <item>User Profile</item>
+        <item>Scheme Progress</item>
         <item>Group SMS</item>
-        <!--
-        item>GPS Markers</item>
-        <item>Project Location</item
-        -->
-        <item>Update MPR</item>
-        <item>Profile</item>
         <item>Exit</item>
     </string-array>
 
@@ -52,7 +47,7 @@
     <string name="btn_update_profile_text">Update Profile</string>
     <string name="img_btn_update_profile_text">Login/Update Profile</string>
     <string name="login_wait_message">Checking your registration data with the SMS Gateway Server to sync your profile...</string>
-    <string name="btn_login_text">Start Messaging</string>
+    <string name="btn_login_text">Start</string>
     <string name="btn_scan_barcode_text">Verify OTP</string>
     <string name="btn_enter_key_text">Save Key</string>
     <!-- Confirmation message displayed in a toast after adding new account -->
@@ -104,5 +99,6 @@
     <string name="title_activity_work">Select Work</string>
     <string name="lbl_work_id">Work ID: </string>
     <string name="lbl_work_name">Work Description</string>
+    <string name="lbl_works">Work Progress</string>
 
 </resources>

@@ -39,7 +39,7 @@
                 android:value="com.github.abusalam.android.projectaio.DashAIO" />
         </activity>
         <activity
-            android:name=".GroupSMS"
+            android:name=".sms.GroupSMS"
             android:label="@string/title_activity_group_sms"
             android:parentActivityName=".DashAIO"
             android:windowSoftInputMode="adjustResize" >
@@ -56,7 +56,7 @@
                 android:value="com.github.abusalam.android.projectaio.DashAIO" />
         </activity>
         <activity
-            android:name=".ProgressMPR"
+            android:name=".mpr.ProgressActivity"
             android:label="@string/title_activity_progress_mpr"
             android:parentActivityName=".DashAIO" >
             <meta-data
@@ -66,10 +66,10 @@
         <activity
             android:name=".mpr.SchemeActivity"
             android:label="@string/title_activity_scheme"
-            android:parentActivityName=".ProgressMPR" >
+            android:parentActivityName=".mpr.ProgressActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.github.abusalam.android.projectaio.ProgressMPR" />
+                android:value=".mpr.ProgressActivity" />
         </activity>
         <activity
             android:name=".mpr.WorkActivity"

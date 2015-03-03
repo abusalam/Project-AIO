@@ -1,6 +1,7 @@
 package com.github.abusalam.android.projectaio.mpr;
 
 
+import android.content.SharedPreferences;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -32,7 +33,10 @@ import java.util.ArrayList;
 
 public class SchemeActivity extends ActionBarActivity {
     public static final String TAG = SchemeActivity.class.getSimpleName();
-    static final String API_URL = "http://10.42.0.1/apps/mpr/AndroidAPI.php";
+    static final String API_URL = "http://" + DashAIO.API_HOST + "/apps/mpr/android/api.php";
+
+    static final String SECRET_PREF_NAME = "mPrefSecrets";
+    private SharedPreferences mPrefs;
 
     static final String SID = "ID";
     public static final String UID = "UID";
@@ -41,10 +45,13 @@ public class SchemeActivity extends ActionBarActivity {
     private ArrayList<Scheme> SchemeList;
     private ListView lvSchemes;
     private String UserID;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scheme);
+
+        mPrefs = getSharedPreferences(SECRET_PREF_NAME, MODE_PRIVATE);
 
         rQueue = VolleyAPI.getInstance(this).getRequestQueue();
         lvSchemes = (ListView) findViewById(R.id.lvSchemes);
@@ -55,7 +62,12 @@ public class SchemeActivity extends ActionBarActivity {
             // Restore value of members from saved state
             UserID = savedInstanceState.getString(UID);
         } else {
-            UserID=getIntent().getExtras().getString(SchemeActivity.UID);
+            Bundle mBundle = getIntent().getExtras();
+            if (mBundle == null) {
+                UserID = mPrefs.getString(SchemeActivity.UID, "");
+            } else {
+                UserID = mBundle.getString(SchemeActivity.UID);
+            }
         }
         getUserSchemes(UserID);
     }
@@ -97,6 +109,14 @@ public class SchemeActivity extends ActionBarActivity {
         rQueue.cancelAll(TAG);
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        SharedPreferences.Editor ed = mPrefs.edit();
+        ed.putString(UID, UserID);
+        ed.apply();
+    }
+
     private void getUserSchemes(String UID) {
 
         final JSONObject jsonPost = new JSONObject();
@@ -104,7 +124,7 @@ public class SchemeActivity extends ActionBarActivity {
         try {
             jsonPost.put(DashAIO.KEY_API, "US");
             jsonPost.put("UID", UID); // TODO Supply Dynamic UserMapID instead of Static
-            Log.e(TAG,"UserMapID: " + UID);
+            Log.e(TAG, "UserMapID: " + UID);
         } catch (JSONException e) {
             e.printStackTrace();
             return;
@@ -157,15 +177,14 @@ public class SchemeActivity extends ActionBarActivity {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
-            Long SchemeID=SchemeList.get(i).getSchemeID();
-            String UserID=getIntent().getExtras().getString(SchemeActivity.UID);
+            Long SchemeID = SchemeList.get(i).getSchemeID();
             Toast.makeText(getApplicationContext(),
                     "Scheme ID: " + SchemeID
-                    +" User: " + UserID,
+                            + " User: " + UserID,
                     Toast.LENGTH_SHORT).show();
-            Intent iWorks = new Intent(getApplicationContext(),WorkActivity.class);
+            Intent iWorks = new Intent(getApplicationContext(), WorkActivity.class);
             iWorks.putExtra(SchemeActivity.SID, SchemeID);
-            iWorks.putExtra(SchemeActivity.UID,UserID);
+            iWorks.putExtra(SchemeActivity.UID, UserID);
             startActivity(iWorks);
         }
     }

@@ -1,8 +1,20 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".DashAIO" >
-    <item android:id="@+id/action_example"
-    android:title="@string/action_example"
-    app:showAsAction="never" />
+    tools:context=".DashAIO">
+    <item
+        android:id="@+id/sync_profile"
+        android:orderInCategory="100"
+        android:title="@string/sync_profile_text"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/register_again"
+        android:orderInCategory="100"
+        android:title="@string/register_again_text"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_about"
+        android:orderInCategory="100"
+        android:title="@string/action_about"
+        app:showAsAction="never" />
 </menu>

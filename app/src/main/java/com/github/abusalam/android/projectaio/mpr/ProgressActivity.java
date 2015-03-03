@@ -1,4 +1,4 @@
-package com.github.abusalam.android.projectaio;
+package com.github.abusalam.android.projectaio.mpr;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -22,13 +22,15 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.github.abusalam.android.projectaio.DashAIO;
 import com.github.abusalam.android.projectaio.GoogleAuthenticator.AccountDb;
 import com.github.abusalam.android.projectaio.GoogleAuthenticator.OtpProvider;
 import com.github.abusalam.android.projectaio.GoogleAuthenticator.OtpSource;
 import com.github.abusalam.android.projectaio.GoogleAuthenticator.OtpSourceException;
 import com.github.abusalam.android.projectaio.GoogleAuthenticator.TotpClock;
+import com.github.abusalam.android.projectaio.R;
+import com.github.abusalam.android.projectaio.User;
 import com.github.abusalam.android.projectaio.ajax.VolleyAPI;
-import com.github.abusalam.android.projectaio.mpr.SchemeActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -38,8 +40,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 
-public class ProgressMPR extends ActionBarActivity {
-    public static final String TAG = ProgressMPR.class.getSimpleName();
+public class ProgressActivity extends ActionBarActivity {
+    public static final String TAG = ProgressActivity.class.getSimpleName();
     /**
      * Minimum amount of time (milliseconds) that has to elapse from the moment a HOTP code is
      * generated for an account until the moment the next code can be generated for the account.
@@ -49,7 +51,7 @@ public class ProgressMPR extends ActionBarActivity {
 
     static final String API_URL = "http://10.42.0.1/apps/mpr/AndroidAPI.php";
 
-    protected PinInfo mUser;
+    protected User mUser;
     private JSONArray respJsonArray;
     private RequestQueue rQueue;
     private AccountDb mAccountDb;
@@ -75,8 +77,8 @@ public class ProgressMPR extends ActionBarActivity {
         mAccountDb = new AccountDb(this);
         mOtpProvider = new OtpProvider(mAccountDb, new TotpClock(this));
 
-        mUser = new PinInfo();
-        mUser.user = mInSecurePrefs.getString(DashAIO.PREF_KEY_UserID, null);
+        mUser = new User();
+        mUser.UserMapID = mInSecurePrefs.getLong(DashAIO.PREF_KEY_UserMapID, 0);
         rQueue = VolleyAPI.getInstance(this).getRequestQueue();
 
         spnSchemes = (Spinner) findViewById(R.id.spnSchemes);
@@ -122,27 +124,11 @@ public class ProgressMPR extends ActionBarActivity {
         rQueue.cancelAll(TAG);
     }
 
-    /**
-     * A tuple of user, OTP value, and type, that represents a particular user.
-     *
-     * @author adhintz@google.com (Drew Hintz)
-     */
-    private static class PinInfo {
-        private String pin; // calculated OTP, or a placeholder if not calculated
-        private String user;
-        private boolean isHotp = true; // used to see if button needs to be displayed
-
-        /**
-         * HOTP only: Whether code generation is allowed for this account.
-         */
-        private boolean hotpCodeGenerationAllowed = true;
-    }
-
     private void getUserSchemes() {
 
         final JSONObject jsonPost = new JSONObject();
 
-        Log.e("P-Counter: ", "" + mAccountDb.getCounter(mUser.user));
+        Log.e("P-Counter: ", "" + mAccountDb.getCounter(mUser.MobileNo));
 
         try {
             jsonPost.put("API", "US");
@@ -170,12 +156,11 @@ public class ProgressMPR extends ActionBarActivity {
                                 SchemeList.add(respJsonArray.getJSONObject(i).optString("SN"));
                             }
                             // Spinner adapter
-                            spnSchemes.setAdapter(new ArrayAdapter<String>(ProgressMPR.this,
+                            spnSchemes.setAdapter(new ArrayAdapter<String>(ProgressActivity.this,
                                     android.R.layout.simple_spinner_dropdown_item,
                                     SchemeList));
                         } catch (JSONException e) {
                             e.printStackTrace();
-                            return;
                         }
 
                     }
@@ -206,7 +191,7 @@ public class ProgressMPR extends ActionBarActivity {
         //Toast.makeText(getApplicationContext(), "Loading All Schemes Please Wait...", Toast.LENGTH_SHORT).show();
     }
 
-    private class SchemeSelectionListener implements AdapterView.OnItemSelectedListener{
+    private class SchemeSelectionListener implements AdapterView.OnItemSelectedListener {
         @Override
         public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
             String txtScheme = spnSchemes.getSelectedItem().toString();
@@ -253,7 +238,7 @@ public class ProgressMPR extends ActionBarActivity {
                                         + ": " + respJsonArray.getJSONObject(i).optString("Work"));
                             }
                             // Spinner adapter
-                            spnWorks.setAdapter(new ArrayAdapter<String>(ProgressMPR.this,
+                            spnWorks.setAdapter(new ArrayAdapter<String>(ProgressActivity.this,
                                     android.R.layout.simple_spinner_dropdown_item,
                                     WorkList));
                         } catch (JSONException e) {
@@ -301,15 +286,15 @@ public class ProgressMPR extends ActionBarActivity {
                 Toast.makeText(getApplicationContext(), "Message Size: " + txtMsg.length(), Toast.LENGTH_SHORT).show();
                 try {
                     String oldPin = mUser.pin;
-                    mUser.pin = mOtpProvider.getNextCode(mUser.user);
+                    mUser.pin = mOtpProvider.getNextCode(mUser.MobileNo);
                     if (mUser.pin.equals(oldPin) || !mUser.hotpCodeGenerationAllowed) {
                         Toast.makeText(getApplicationContext(), "Please wait for a while to generate new OTP for"
-                                + " MDN:" + mUser.user, Toast.LENGTH_LONG).show();
+                                + " MDN:" + mUser.MobileNo, Toast.LENGTH_LONG).show();
                         return;
                     }
                 } catch (OtpSourceException e) {
                     Toast.makeText(getApplicationContext(), "Error: " + e.getMessage()
-                            + " MDN:" + mUser.user, Toast.LENGTH_SHORT).show();
+                            + " MDN:" + mUser.MobileNo, Toast.LENGTH_SHORT).show();
                     return;
                 }
 
