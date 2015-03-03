@@ -7,13 +7,13 @@ import android.os.AsyncTask;
  */
 public class LoadSMS extends AsyncTask<Integer, Void, MsgItem> {
 
-  @Override
-  protected MsgItem doInBackground(Integer... integers) {
-    return new MsgItem("Recipient...", "Sample Message...", "Message #" + integers);
-  }
+    @Override
+    protected MsgItem doInBackground(Integer... integers) {
+        return new MsgItem("Recipient...", "Sample Message...", "Message #" + integers);
+    }
 
-  @Override
-  protected void onPostExecute(MsgItem msgItem) {
-    super.onPostExecute(msgItem);
-  }
+    @Override
+    protected void onPostExecute(MsgItem msgItem) {
+        super.onPostExecute(msgItem);
+    }
 }

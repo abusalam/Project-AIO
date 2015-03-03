@@ -2,9 +2,9 @@ package com.github.abusalam.android.projectaio.mpr;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -42,15 +42,13 @@ import java.util.HashMap;
 
 public class ProgressActivity extends ActionBarActivity {
     public static final String TAG = ProgressActivity.class.getSimpleName();
+    static final String API_URL = "http://10.42.0.1/apps/mpr/AndroidAPI.php";
     /**
      * Minimum amount of time (milliseconds) that has to elapse from the moment a HOTP code is
      * generated for an account until the moment the next code can be generated for the account.
      * This is to prevent the user from generating too many HOTP codes in a short period of time.
      */
     private static final long HOTP_MIN_TIME_INTERVAL_BETWEEN_CODES = 5000;
-
-    static final String API_URL = "http://10.42.0.1/apps/mpr/AndroidAPI.php";
-
     protected User mUser;
     private JSONArray respJsonArray;
     private RequestQueue rQueue;
@@ -191,19 +189,6 @@ public class ProgressActivity extends ActionBarActivity {
         //Toast.makeText(getApplicationContext(), "Loading All Schemes Please Wait...", Toast.LENGTH_SHORT).show();
     }
 
-    private class SchemeSelectionListener implements AdapterView.OnItemSelectedListener {
-        @Override
-        public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-            String txtScheme = spnSchemes.getSelectedItem().toString();
-            getUserWorks(txtScheme);
-        }
-
-        @Override
-        public void onNothingSelected(AdapterView<?> adapterView) {
-
-        }
-    }
-
     private void getUserWorks(String SID) {
 
         final JSONObject jsonPost = new JSONObject();
@@ -272,6 +257,19 @@ public class ProgressActivity extends ActionBarActivity {
         jsonObjReq.setTag(TAG);
         rQueue.add(jsonObjReq);
         //Toast.makeText(getApplicationContext(), "Loading All Schemes Please Wait...", Toast.LENGTH_SHORT).show();
+    }
+
+    private class SchemeSelectionListener implements AdapterView.OnItemSelectedListener {
+        @Override
+        public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+            String txtScheme = spnSchemes.getSelectedItem().toString();
+            getUserWorks(txtScheme);
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> adapterView) {
+
+        }
     }
 
     private class UpdateClickListener implements View.OnClickListener {

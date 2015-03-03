@@ -12,7 +12,7 @@ import com.github.abusalam.android.projectaio.R;
 
 import java.util.ArrayList;
 
-public class WorkAdapter  extends ArrayAdapter<Work> {
+public class WorkAdapter extends ArrayAdapter<Work> {
     ArrayList<Work> Works;
     int resource;
 
@@ -39,12 +39,12 @@ public class WorkAdapter  extends ArrayAdapter<Work> {
 
         Long lngWorkID = mWork.getWorkID();
         String txtWorkName = mWork.getWorkName();
-        Long lngBalance=mWork.getBalance();
+        Long lngBalance = mWork.getBalance();
 
         TextView tvSchemeID = (TextView) WorkView.findViewById(R.id.tvWorkID);
         TextView tvSchemeName = (TextView) WorkView.findViewById(R.id.tvWork);
 
-        tvSchemeID.setText(lngBalance.toString()+"%");
+        tvSchemeID.setText(lngBalance.toString() + "%");
         tvSchemeName.setText(lngWorkID.toString() + ":" + txtWorkName);
 
         return WorkView;

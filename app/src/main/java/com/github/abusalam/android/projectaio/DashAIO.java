@@ -42,20 +42,19 @@ public class DashAIO extends ActionBarActivity
 
     public static final String TAG = DashAIO.class.getSimpleName();
     public static final String API_HOST = "10.173.168.169";
+    static final String API_URL = "http://" + API_HOST + "/apps/android/api.php";
     public static final String KEY_SENT_ON = "ST";
     public static final String KEY_STATUS = "MSG";
     public static final String KEY_API = "API";
-    static final int UPDATE_PROFILE_REQUEST = 0;
-    static final String API_URL = "http://" + API_HOST + "/apps/android/api.php";
     public static final String SECRET_PREF_NAME = "mPrefSecrets";
+    public static final String PREF_KEY_UserMapID = "mUserMapID";
 
     // WebServer Request URL
     //String serverURL = "http://echo.jsontest.com/key/value/one/two";
     //String serverURL = "http://10.42.0.1/apps/android/api.php";
     //String serverURL = "http://www.paschimmedinipur.gov.in/apps/android/api.php";
-
-    public static final String PREF_KEY_UserMapID = "mUserMapID";
     public static final String PREF_KEY_MOBILE = "pref_mobile";
+    static final int UPDATE_PROFILE_REQUEST = 0;
     static final String PREF_KEY_NAME = "pref_display_name";
     static final String PREF_KEY_POST = "pref_designation";
     static final String PREF_KEY_EMAIL = "pref_email";
@@ -226,45 +225,6 @@ public class DashAIO extends ActionBarActivity
         }
     }
 
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
-
-        public PlaceholderFragment() {
-        }
-
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            return inflater.inflate(R.layout.fragment_dash_aio, container, false);
-        }
-
-        @Override
-        public void onAttach(Activity activity) {
-            super.onAttach(activity);
-            ((DashAIO) activity).onSectionAttached(
-                    getArguments().getInt(ARG_SECTION_NUMBER));
-        }
-    }
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -329,5 +289,44 @@ public class DashAIO extends ActionBarActivity
         jsonObjReq.setTag(TAG);
         rQueue.add(jsonObjReq);
         Toast.makeText(getApplicationContext(), "Synchronizing Profile Please Wait...", Toast.LENGTH_LONG).show();
+    }
+
+    /**
+     * A placeholder fragment containing a simple view.
+     */
+    public static class PlaceholderFragment extends Fragment {
+        /**
+         * The fragment argument representing the section number for this
+         * fragment.
+         */
+        private static final String ARG_SECTION_NUMBER = "section_number";
+
+        public PlaceholderFragment() {
+        }
+
+        /**
+         * Returns a new instance of this fragment for the given section
+         * number.
+         */
+        public static PlaceholderFragment newInstance(int sectionNumber) {
+            PlaceholderFragment fragment = new PlaceholderFragment();
+            Bundle args = new Bundle();
+            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+            fragment.setArguments(args);
+            return fragment;
+        }
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                                 Bundle savedInstanceState) {
+            return inflater.inflate(R.layout.fragment_dash_aio, container, false);
+        }
+
+        @Override
+        public void onAttach(Activity activity) {
+            super.onAttach(activity);
+            ((DashAIO) activity).onSectionAttached(
+                    getArguments().getInt(ARG_SECTION_NUMBER));
+        }
     }
 }

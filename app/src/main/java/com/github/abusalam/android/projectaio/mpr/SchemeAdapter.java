@@ -10,7 +10,6 @@ import android.widget.TextView;
 
 import com.github.abusalam.android.projectaio.R;
 
-
 import java.util.ArrayList;
 
 

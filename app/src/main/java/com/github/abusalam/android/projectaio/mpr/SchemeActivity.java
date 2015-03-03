@@ -1,10 +1,10 @@
 package com.github.abusalam.android.projectaio.mpr;
 
 
-import android.content.SharedPreferences;
 import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -19,7 +19,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
-
 import com.github.abusalam.android.projectaio.DashAIO;
 import com.github.abusalam.android.projectaio.R;
 import com.github.abusalam.android.projectaio.ajax.VolleyAPI;
@@ -33,13 +32,11 @@ import java.util.ArrayList;
 
 public class SchemeActivity extends ActionBarActivity {
     public static final String TAG = SchemeActivity.class.getSimpleName();
-    static final String API_URL = "http://" + DashAIO.API_HOST + "/apps/mpr/android/api.php";
-
-    static final String SECRET_PREF_NAME = "mPrefSecrets";
-    private SharedPreferences mPrefs;
-
-    static final String SID = "ID";
     public static final String UID = "UID";
+    static final String API_URL = "http://" + DashAIO.API_HOST + "/apps/mpr/android/api.php";
+    static final String SECRET_PREF_NAME = "mPrefSecrets";
+    static final String SID = "ID";
+    private SharedPreferences mPrefs;
     private JSONArray respJsonArray;
     private RequestQueue rQueue;
     private ArrayList<Scheme> SchemeList;

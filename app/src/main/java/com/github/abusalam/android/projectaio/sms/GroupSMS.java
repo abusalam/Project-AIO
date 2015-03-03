@@ -45,15 +45,13 @@ import java.util.ArrayList;
 public class GroupSMS extends ActionBarActivity {
 
     public static final String TAG = GroupSMS.class.getSimpleName();
+    static final String API_URL = "http://" + DashAIO.API_HOST + "/apps/smsgw/android/api.php";
     /**
      * Minimum amount of time (milliseconds) that has to elapse from the moment a HOTP code is
      * generated for an account until the moment the next code can be generated for the account.
      * This is to prevent the user from generating too many HOTP codes in a short period of time.
      */
     private static final long HOTP_MIN_TIME_INTERVAL_BETWEEN_CODES = 5000;
-
-    static final String API_URL = "http://" + DashAIO.API_HOST + "/apps/smsgw/android/api.php";
-
     private User mUser;
     private MsgItemAdapter lvMsgHistAdapter;
     private Spinner spnrAllGroups;
@@ -229,55 +227,6 @@ public class GroupSMS extends ActionBarActivity {
         rQueue.add(jsonObjReq);
     }
 
-    private class SendSMSClickListener implements View.OnClickListener {
-        private final Handler mHandler = new Handler();
-
-        @Override
-        public void onClick(View view) {
-
-            String txtMsg = etMsg.getText().toString();
-
-            if (txtMsg.length() > 0) {
-                Toast.makeText(getApplicationContext(), "Message Size: " + txtMsg.length(), Toast.LENGTH_SHORT).show();
-                try {
-                    String oldPin = mUser.pin;
-                    mUser.pin = mOtpProvider.getNextCode(mUser.MobileNo);
-                    if (mUser.pin.equals(oldPin) || !mUser.hotpCodeGenerationAllowed) {
-                        Toast.makeText(getApplicationContext(), "Please wait for a while to generate new OTP for"
-                                + " MDN:" + mUser.MobileNo, Toast.LENGTH_LONG).show();
-                        return;
-                    }
-                } catch (OtpSourceException e) {
-                    Toast.makeText(getApplicationContext(), "Error: " + e.getMessage()
-                            + " MDN:" + mUser.MobileNo, Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                // Temporarily disable code generation for this account
-                mUser.hotpCodeGenerationAllowed = false;
-
-                // The delayed operation below will be invoked once code generation is yet again allowed for
-                // this account. The delay is in wall clock time (monotonically increasing) and is thus not
-                // susceptible to system time jumps.
-                mHandler.postDelayed(
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                mUser.hotpCodeGenerationAllowed = true;
-                            }
-                        },
-                        HOTP_MIN_TIME_INTERVAL_BETWEEN_CODES
-                );
-
-                sendSMS();
-
-            } else {
-                Toast.makeText(getApplicationContext(), "Type your Message", Toast.LENGTH_SHORT).show();
-            }
-
-        }
-    }
-
     private void sendSMS() {
         final MsgItem newMsgItem = new MsgItem(spnrAllGroups.getSelectedItem().toString(),
                 etMsg.getText().toString(), getString(R.string.default_msg_status));
@@ -329,6 +278,55 @@ public class GroupSMS extends ActionBarActivity {
         // Adding request to request queue
         jsonObjReq.setTag(TAG);
         rQueue.add(jsonObjReq);
+    }
+
+    private class SendSMSClickListener implements View.OnClickListener {
+        private final Handler mHandler = new Handler();
+
+        @Override
+        public void onClick(View view) {
+
+            String txtMsg = etMsg.getText().toString();
+
+            if (txtMsg.length() > 0) {
+                Toast.makeText(getApplicationContext(), "Message Size: " + txtMsg.length(), Toast.LENGTH_SHORT).show();
+                try {
+                    String oldPin = mUser.pin;
+                    mUser.pin = mOtpProvider.getNextCode(mUser.MobileNo);
+                    if (mUser.pin.equals(oldPin) || !mUser.hotpCodeGenerationAllowed) {
+                        Toast.makeText(getApplicationContext(), "Please wait for a while to generate new OTP for"
+                                + " MDN:" + mUser.MobileNo, Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                } catch (OtpSourceException e) {
+                    Toast.makeText(getApplicationContext(), "Error: " + e.getMessage()
+                            + " MDN:" + mUser.MobileNo, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                // Temporarily disable code generation for this account
+                mUser.hotpCodeGenerationAllowed = false;
+
+                // The delayed operation below will be invoked once code generation is yet again allowed for
+                // this account. The delay is in wall clock time (monotonically increasing) and is thus not
+                // susceptible to system time jumps.
+                mHandler.postDelayed(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                mUser.hotpCodeGenerationAllowed = true;
+                            }
+                        },
+                        HOTP_MIN_TIME_INTERVAL_BETWEEN_CODES
+                );
+
+                sendSMS();
+
+            } else {
+                Toast.makeText(getApplicationContext(), "Type your Message", Toast.LENGTH_SHORT).show();
+            }
+
+        }
     }
 
 }
