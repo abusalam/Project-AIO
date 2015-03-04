@@ -85,7 +85,7 @@
     <!-- Button on manual account entry page, cancels adding account, returns to main page -->
     <string name="cancel">Cancel</string>
     <string name="btn_qr_code_description">Scan QR Code</string>
-    <string name="title_activity_progress_mpr">Update MPR</string>
+    <string name="title_activity_progress_mpr">Progress</string>
     <string name="lblSchemes">Scheme:</string>
     <string name="lblWorks">Work:</string>
     <string name="lblPhyPrg">Physical Progress(%):</string>
@@ -99,6 +99,6 @@
     <string name="title_activity_work">Select Work</string>
     <string name="lbl_work_id">Work ID: </string>
     <string name="lbl_work_name">Work Description</string>
-    <string name="lbl_works">Work Progress</string>
+    <string name="lbl_works">Work Progress:</string>
 
 </resources>

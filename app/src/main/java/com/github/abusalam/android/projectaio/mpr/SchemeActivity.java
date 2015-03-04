@@ -36,6 +36,7 @@ public class SchemeActivity extends ActionBarActivity {
     static final String API_URL = "http://" + DashAIO.API_HOST + "/apps/mpr/android/api.php";
     static final String SECRET_PREF_NAME = "mPrefSecrets";
     static final String SID = "ID";
+    static final String SN = "SN";
     private SharedPreferences mPrefs;
     private JSONArray respJsonArray;
     private RequestQueue rQueue;
@@ -175,12 +176,14 @@ public class SchemeActivity extends ActionBarActivity {
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
             Long SchemeID = SchemeList.get(i).getSchemeID();
+            String SchemeName=SchemeList.get(i).getSchemeName();
             Toast.makeText(getApplicationContext(),
                     "Scheme ID: " + SchemeID
                             + " User: " + UserID,
                     Toast.LENGTH_SHORT).show();
             Intent iWorks = new Intent(getApplicationContext(), WorkActivity.class);
             iWorks.putExtra(SchemeActivity.SID, SchemeID);
+            iWorks.putExtra(SchemeActivity.SN, SchemeName);
             iWorks.putExtra(SchemeActivity.UID, UserID);
             startActivity(iWorks);
         }

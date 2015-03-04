@@ -1,5 +1,7 @@
 package com.github.abusalam.android.projectaio.mpr;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -47,9 +49,22 @@ public class WorkActivity extends ActionBarActivity {
 
         lvWorks.setOnItemClickListener(new SelectWorkClickListener());
         WorkList = new ArrayList<Work>();
+        if (savedInstanceState != null) {
+            // Restore value of members from saved state
+            UserID = savedInstanceState.getString(UID);
+        } else {
+            Bundle mBundle = getIntent().getExtras();
+            if (mBundle == null) {
+                UserID = mPrefs.getString(SchemeActivity.UID, "");
+            } else {
+                UserID = mBundle.getString(SchemeActivity.UID);
+            }
+        }
         Log.e("Populate Works:", "Found-" + getIntent().getExtras().getLong(SchemeActivity.SID));
         getUserWorks(getIntent().getExtras().getString(SchemeActivity.UID),
                 getIntent().getExtras().getLong(SchemeActivity.SID));
+        setTitle(getIntent().getExtras().getString(SchemeActivity.SN)
+                + " : " + getString(R.string.title_activity_work));
     }
 
     @Override
@@ -72,6 +87,22 @@ public class WorkActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        // Save the user's current game state
+        savedInstanceState.putString(UID, UserID);
+        // Always call the superclass so it can save the view hierarchy state
+        super.onSaveInstanceState(savedInstanceState);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        SharedPreferences.Editor ed = mPrefs.edit();
+        ed.putString(UID, UserID);
+        ed.apply();
     }
 
     @Override
@@ -117,7 +148,6 @@ public class WorkActivity extends ActionBarActivity {
                                     R.layout.work_view, WorkList));
                         } catch (JSONException e) {
                             e.printStackTrace();
-                            return;
                         }
 
                     }
@@ -144,9 +174,11 @@ public class WorkActivity extends ActionBarActivity {
             Toast.makeText(getApplicationContext(),
                     "Work ID: " + WorkList.get(i).getWorkID(),
                     Toast.LENGTH_SHORT).show();
-            //Intent mWorks = new Intent(getApplicationContext(), WorkActivity.class);
-            //mWorks.putExtra(SchemeActivity.SID,WorkList.get(i).getSchemeID());
-            //startActivity(mWorks);
+            Intent iPrg = new Intent(getApplicationContext(), ProgressActivity.class);
+            iPrg.putExtra(WorkID,WorkList.get(i).getWorkID());
+            iPrg.putExtra(ProgressActivity.DYN_TITLE,getIntent().getExtras().getString(SchemeActivity.SN)
+                    + " : " + WorkList.get(i).getWorkID());
+            startActivity(iPrg);
         }
     }
 }

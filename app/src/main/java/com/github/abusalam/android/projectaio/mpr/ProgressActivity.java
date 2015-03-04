@@ -1,6 +1,5 @@
 package com.github.abusalam.android.projectaio.mpr;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
@@ -9,11 +8,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -49,6 +46,8 @@ public class ProgressActivity extends ActionBarActivity {
      * This is to prevent the user from generating too many HOTP codes in a short period of time.
      */
     private static final long HOTP_MIN_TIME_INTERVAL_BETWEEN_CODES = 5000;
+
+    public static final String DYN_TITLE ="WPT";
     protected User mUser;
     private JSONArray respJsonArray;
     private RequestQueue rQueue;
@@ -57,13 +56,10 @@ public class ProgressActivity extends ActionBarActivity {
 
     private HashMap<String, String> mScheme;
 
-    private Spinner spnSchemes;
-    private Spinner spnWorks;
     private EditText etExpAmount;
     private EditText etRemarks;
     private Button btnSave;
-
-    private int mSelectedItemIndex;
+    private Bundle WorkProgress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,19 +73,18 @@ public class ProgressActivity extends ActionBarActivity {
 
         mUser = new User();
         mUser.UserMapID = mInSecurePrefs.getLong(DashAIO.PREF_KEY_UserMapID, 0);
+        mUser.MobileNo=mInSecurePrefs.getString(DashAIO.PREF_KEY_MOBILE, "");
         rQueue = VolleyAPI.getInstance(this).getRequestQueue();
 
-        spnSchemes = (Spinner) findViewById(R.id.spnSchemes);
-        spnWorks = (Spinner) findViewById(R.id.spnWorks);
         etExpAmount = (EditText) findViewById(R.id.etExpAmount);
         etRemarks = (EditText) findViewById(R.id.etRemarks);
         btnSave = (Button) findViewById(R.id.btnSave);
 
         mScheme = new HashMap<String, String>();
+        setTitle(getIntent().getExtras().getString(DYN_TITLE)
+                + " : " + getString(R.string.title_activity_progress_mpr));
+        getWorkProgress();
 
-        getUserSchemes();
-
-        spnSchemes.setOnItemSelectedListener(new SchemeSelectionListener());
         btnSave.setOnClickListener(new UpdateClickListener());
     }
 
@@ -122,15 +117,15 @@ public class ProgressActivity extends ActionBarActivity {
         rQueue.cancelAll(TAG);
     }
 
-    private void getUserSchemes() {
+    private void getWorkProgress() {
 
         final JSONObject jsonPost = new JSONObject();
 
         Log.e("P-Counter: ", "" + mAccountDb.getCounter(mUser.MobileNo));
 
         try {
-            jsonPost.put("API", "US");
-            jsonPost.put("UID", "5"); // TODO Supply Dynamic UserMapID instead of Static
+            jsonPost.put("API", "WP");
+            jsonPost.put("WID", "5"); // TODO Supply Dynamic UserMapID instead of Static
         } catch (JSONException e) {
             e.printStackTrace();
             return;
@@ -154,9 +149,9 @@ public class ProgressActivity extends ActionBarActivity {
                                 SchemeList.add(respJsonArray.getJSONObject(i).optString("SN"));
                             }
                             // Spinner adapter
-                            spnSchemes.setAdapter(new ArrayAdapter<String>(ProgressActivity.this,
-                                    android.R.layout.simple_spinner_dropdown_item,
-                                    SchemeList));
+                            //spnSchemes.setAdapter(new ArrayAdapter<String>(ProgressActivity.this,
+                            //        android.R.layout.simple_spinner_dropdown_item,
+                            //        SchemeList));
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -187,89 +182,6 @@ public class ProgressActivity extends ActionBarActivity {
         jsonObjReq.setTag(TAG);
         rQueue.add(jsonObjReq);
         //Toast.makeText(getApplicationContext(), "Loading All Schemes Please Wait...", Toast.LENGTH_SHORT).show();
-    }
-
-    private void getUserWorks(String SID) {
-
-        final JSONObject jsonPost = new JSONObject();
-
-        //Toast.makeText(getApplicationContext(),
-        //        "SchemeID: " + mScheme.get(SID) + " : " + SID,
-        //        Toast.LENGTH_SHORT).show();
-
-        try {
-            jsonPost.put("API", "UW");
-            jsonPost.put("UID", "5"); // TODO Supply Dynamic UserMapID instead of Static
-            jsonPost.put("SID", mScheme.get(SID));
-        } catch (JSONException e) {
-            e.printStackTrace();
-            return;
-        }
-
-        JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST,
-                API_URL, jsonPost,
-                new Response.Listener<JSONObject>() {
-
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        Log.e(TAG, "UserWorks: " + response.toString());
-                        Toast.makeText(getApplicationContext(), response.optString(DashAIO.KEY_STATUS), Toast.LENGTH_SHORT).show();
-                        try {
-                            respJsonArray = response.getJSONArray("DB");
-                            ArrayList<String> WorkList = new ArrayList<String>();
-
-                            for (int i = 0; i < respJsonArray.length(); i++) {
-                                WorkList.add(respJsonArray.getJSONObject(i).optString("WorkID")
-                                        + ": " + respJsonArray.getJSONObject(i).optString("Work"));
-                            }
-                            // Spinner adapter
-                            spnWorks.setAdapter(new ArrayAdapter<String>(ProgressActivity.this,
-                                    android.R.layout.simple_spinner_dropdown_item,
-                                    WorkList));
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                            return;
-                        }
-
-                    }
-                }, new Response.ErrorListener() {
-
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                VolleyLog.d(TAG, "Error: " + error.getMessage());
-                Log.e(TAG, jsonPost.toString());
-            }
-        }
-        );
-
-        Handler mHandler = new Handler();
-        mHandler.postDelayed(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        mUser.hotpCodeGenerationAllowed = true;
-                    }
-                },
-                HOTP_MIN_TIME_INTERVAL_BETWEEN_CODES
-        );
-
-        // Adding request to request queue
-        jsonObjReq.setTag(TAG);
-        rQueue.add(jsonObjReq);
-        //Toast.makeText(getApplicationContext(), "Loading All Schemes Please Wait...", Toast.LENGTH_SHORT).show();
-    }
-
-    private class SchemeSelectionListener implements AdapterView.OnItemSelectedListener {
-        @Override
-        public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-            String txtScheme = spnSchemes.getSelectedItem().toString();
-            getUserWorks(txtScheme);
-        }
-
-        @Override
-        public void onNothingSelected(AdapterView<?> adapterView) {
-
-        }
     }
 
     private class UpdateClickListener implements View.OnClickListener {
@@ -316,7 +228,7 @@ public class ProgressActivity extends ActionBarActivity {
 
             } else {
                 Toast.makeText(getApplicationContext(), getString(R.string.msg_warn_remarks), Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(getApplicationContext(), SchemeActivity.class));
+                //startActivity(new Intent(getApplicationContext(), SchemeActivity.class));
             }
 
         }
