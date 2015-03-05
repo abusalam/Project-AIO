@@ -39,13 +39,15 @@ public class WorkAdapter extends ArrayAdapter<Work> {
 
         Long lngWorkID = mWork.getWorkID();
         String txtWorkName = mWork.getWorkName();
-        Long lngBalance = mWork.getBalance();
+        String txtWorkPrg = getContext().getString(R.string.lbl_works) + " (" + mWork.getProgress() + "%)";
 
-        TextView tvSchemeID = (TextView) WorkView.findViewById(R.id.tvWorkID);
-        TextView tvSchemeName = (TextView) WorkView.findViewById(R.id.tvWork);
+        TextView tvWorkPrg = (TextView) WorkView.findViewById(R.id.tvWorkPrg);
+        TextView tvWorkBal = (TextView) WorkView.findViewById(R.id.tvWorkBal);
+        TextView tvWorkName = (TextView) WorkView.findViewById(R.id.tvWork);
 
-        tvSchemeID.setText(lngBalance.toString() + "%");
-        tvSchemeName.setText(lngWorkID.toString() + ":" + txtWorkName);
+        tvWorkPrg.setText(txtWorkPrg);
+        tvWorkBal.setText(mWork.getBalance());
+        tvWorkName.setText(lngWorkID.toString() + ":" + txtWorkName);
 
         return WorkView;
     }

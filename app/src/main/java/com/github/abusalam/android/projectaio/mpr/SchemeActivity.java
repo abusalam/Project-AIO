@@ -4,6 +4,7 @@ package com.github.abusalam.android.projectaio.mpr;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -56,17 +57,14 @@ public class SchemeActivity extends ActionBarActivity {
 
         lvSchemes.setOnItemClickListener(new SelectSchemeClickListener());
         SchemeList = new ArrayList<Scheme>();
-        if (savedInstanceState != null) {
-            // Restore value of members from saved state
-            UserID = savedInstanceState.getString(UID);
+
+        Bundle mBundle = getIntent().getExtras();
+        if (mBundle == null) {
+            UserID = mPrefs.getString(SchemeActivity.UID, "");
         } else {
-            Bundle mBundle = getIntent().getExtras();
-            if (mBundle == null) {
-                UserID = mPrefs.getString(SchemeActivity.UID, "");
-            } else {
-                UserID = mBundle.getString(SchemeActivity.UID);
-            }
+            UserID = mBundle.getString(SchemeActivity.UID);
         }
+
         getUserSchemes(UserID);
     }
 
@@ -102,6 +100,13 @@ public class SchemeActivity extends ActionBarActivity {
     }
 
     @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        // Restore value of members from saved state
+        UserID = savedInstanceState.getString(UID);
+        super.onRestoreInstanceState(savedInstanceState);
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         rQueue.cancelAll(TAG);
@@ -121,7 +126,7 @@ public class SchemeActivity extends ActionBarActivity {
 
         try {
             jsonPost.put(DashAIO.KEY_API, "US");
-            jsonPost.put("UID", UID); // TODO Supply Dynamic UserMapID instead of Static
+            jsonPost.put("UID", UID);
             Log.e(TAG, "UserMapID: " + UID);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -151,7 +156,6 @@ public class SchemeActivity extends ActionBarActivity {
                                     R.layout.scheme_view, SchemeList));
                         } catch (JSONException e) {
                             e.printStackTrace();
-                            return;
                         }
 
                     }
@@ -176,11 +180,11 @@ public class SchemeActivity extends ActionBarActivity {
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
             Long SchemeID = SchemeList.get(i).getSchemeID();
-            String SchemeName=SchemeList.get(i).getSchemeName();
-            Toast.makeText(getApplicationContext(),
-                    "Scheme ID: " + SchemeID
-                            + " User: " + UserID,
-                    Toast.LENGTH_SHORT).show();
+            String SchemeName = SchemeList.get(i).getSchemeName();
+            //Toast.makeText(getApplicationContext(),
+            //        "Scheme ID: " + SchemeID
+            //                + " User: " + UserID,
+            //        Toast.LENGTH_SHORT).show();
             Intent iWorks = new Intent(getApplicationContext(), WorkActivity.class);
             iWorks.putExtra(SchemeActivity.SID, SchemeID);
             iWorks.putExtra(SchemeActivity.SN, SchemeName);

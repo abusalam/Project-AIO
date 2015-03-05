@@ -41,7 +41,7 @@ public class DashAIO extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 
     public static final String TAG = DashAIO.class.getSimpleName();
-    public static final String API_HOST = "10.173.168.169";
+    public static final String API_HOST = "10.42.0.1";
     static final String API_URL = "http://" + API_HOST + "/apps/android/api.php";
     public static final String KEY_SENT_ON = "ST";
     public static final String KEY_STATUS = "MSG";
@@ -175,7 +175,8 @@ public class DashAIO extends ActionBarActivity
                 break;
 
             case 2:
-                startActivity(new Intent(getApplicationContext(), SchemeActivity.class).putExtra(SchemeActivity.UID, "5"));
+                startActivity(new Intent(getApplicationContext(), SchemeActivity.class)
+                        .putExtra(SchemeActivity.UID, "5"));// TODO Supply Dynamic UserMapID instead of Static
                 break;
 
             case 3:

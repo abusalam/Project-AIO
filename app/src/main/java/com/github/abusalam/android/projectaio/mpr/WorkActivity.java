@@ -3,6 +3,7 @@ package com.github.abusalam.android.projectaio.mpr;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -31,40 +32,50 @@ import java.util.ArrayList;
 public class WorkActivity extends ActionBarActivity {
     public static final String TAG = WorkActivity.class.getSimpleName();
     public static final String WorkID = "WorkID";
-    public static final String Work = "Work";
+    public static final String WorkName = "Work";
     public static final String Progress = "Progress";
+    public static final String Funds = "Funds";
+    public static final String Bal = "Balance";
+    public static final String WR = "WorkRemarks";
+
+    static final String SECRET_PREF_NAME = "mPrefSecrets";
+    private SharedPreferences mPrefs;
 
     private JSONArray respJsonArray;
     private RequestQueue rQueue;
     private ArrayList<Work> WorkList;
     private ListView lvWorks;
 
+    private String UserID;
+    private Long SchemeID;
+    private String SchemeName;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_work);
 
+        mPrefs = getSharedPreferences(SECRET_PREF_NAME, MODE_PRIVATE);
         rQueue = VolleyAPI.getInstance(this).getRequestQueue();
         lvWorks = (ListView) findViewById(R.id.lvWorks);
 
         lvWorks.setOnItemClickListener(new SelectWorkClickListener());
         WorkList = new ArrayList<Work>();
-        if (savedInstanceState != null) {
-            // Restore value of members from saved state
-            UserID = savedInstanceState.getString(UID);
+
+        Bundle mBundle = getIntent().getExtras();
+        if (mBundle == null) {
+            UserID = mPrefs.getString(SchemeActivity.UID, "");
+            SchemeID = mPrefs.getLong(SchemeActivity.SID, 0);
+            SchemeName = mPrefs.getString(SchemeActivity.SN, "");
         } else {
-            Bundle mBundle = getIntent().getExtras();
-            if (mBundle == null) {
-                UserID = mPrefs.getString(SchemeActivity.UID, "");
-            } else {
-                UserID = mBundle.getString(SchemeActivity.UID);
-            }
+            UserID = mBundle.getString(SchemeActivity.UID);
+            SchemeID = mBundle.getLong(SchemeActivity.SID);
+            SchemeName = mBundle.getString(SchemeActivity.SN);
         }
-        Log.e("Populate Works:", "Found-" + getIntent().getExtras().getLong(SchemeActivity.SID));
-        getUserWorks(getIntent().getExtras().getString(SchemeActivity.UID),
-                getIntent().getExtras().getLong(SchemeActivity.SID));
-        setTitle(getIntent().getExtras().getString(SchemeActivity.SN)
-                + " : " + getString(R.string.title_activity_work));
+
+        Log.e("Populate Works:", "Found-" + UserID);
+        getUserWorks(UserID, SchemeID);
+        setTitle(SchemeName + " : " + getString(R.string.title_activity_work));
     }
 
     @Override
@@ -91,17 +102,29 @@ public class WorkActivity extends ActionBarActivity {
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
-        // Save the user's current game state
-        savedInstanceState.putString(UID, UserID);
+        // Save the user's current state
+        savedInstanceState.putString(SchemeActivity.UID, UserID);
+        savedInstanceState.putLong(SchemeActivity.SID, SchemeID);
+        savedInstanceState.putString(SchemeActivity.SN, SchemeName);
         // Always call the superclass so it can save the view hierarchy state
         super.onSaveInstanceState(savedInstanceState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        UserID = savedInstanceState.getString(SchemeActivity.UID);
+        SchemeID = savedInstanceState.getLong(SchemeActivity.SID);
+        SchemeName = savedInstanceState.getString(SchemeActivity.SN);
+        super.onRestoreInstanceState(savedInstanceState);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         SharedPreferences.Editor ed = mPrefs.edit();
-        ed.putString(UID, UserID);
+        ed.putString(SchemeActivity.UID, UserID);
+        ed.putLong(SchemeActivity.SID, SchemeID);
+        ed.putString(SchemeActivity.SN, SchemeName);
         ed.apply();
     }
 
@@ -139,8 +162,11 @@ public class WorkActivity extends ActionBarActivity {
                             for (int i = 0; i < respJsonArray.length(); i++) {
                                 Work mWork = new Work();
                                 mWork.setWorkID(respJsonArray.getJSONObject(i).getInt(WorkID));
-                                mWork.setWorkName(respJsonArray.getJSONObject(i).optString(Work));
-                                mWork.setBalance(respJsonArray.getJSONObject(i).optLong(Progress));
+                                mWork.setWorkName(respJsonArray.getJSONObject(i).optString(WorkName));
+                                mWork.setBalance(respJsonArray.getJSONObject(i).optString(Bal));
+                                mWork.setFunds(respJsonArray.getJSONObject(i).optString(Funds));
+                                mWork.setProgress(respJsonArray.getJSONObject(i).optInt(Progress));
+                                mWork.setWorkRemarks(respJsonArray.getJSONObject(i).optString(WR));
                                 WorkList.add(mWork);
                             }
                             // Spinner adapter
@@ -175,8 +201,8 @@ public class WorkActivity extends ActionBarActivity {
                     "Work ID: " + WorkList.get(i).getWorkID(),
                     Toast.LENGTH_SHORT).show();
             Intent iPrg = new Intent(getApplicationContext(), ProgressActivity.class);
-            iPrg.putExtra(WorkID,WorkList.get(i).getWorkID());
-            iPrg.putExtra(ProgressActivity.DYN_TITLE,getIntent().getExtras().getString(SchemeActivity.SN)
+            iPrg.putExtra(WorkName, WorkList.get(i));
+            iPrg.putExtra(ProgressActivity.DYN_TITLE, SchemeName
                     + " : " + WorkList.get(i).getWorkID());
             startActivity(iPrg);
         }

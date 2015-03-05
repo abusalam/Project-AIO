@@ -11,6 +11,8 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -39,7 +41,7 @@ import java.util.HashMap;
 
 public class ProgressActivity extends ActionBarActivity {
     public static final String TAG = ProgressActivity.class.getSimpleName();
-    static final String API_URL = "http://10.42.0.1/apps/mpr/AndroidAPI.php";
+
     /**
      * Minimum amount of time (milliseconds) that has to elapse from the moment a HOTP code is
      * generated for an account until the moment the next code can be generated for the account.
@@ -49,17 +51,15 @@ public class ProgressActivity extends ActionBarActivity {
 
     public static final String DYN_TITLE ="WPT";
     protected User mUser;
-    private JSONArray respJsonArray;
     private RequestQueue rQueue;
     private AccountDb mAccountDb;
     private OtpSource mOtpProvider;
 
-    private HashMap<String, String> mScheme;
-
+    private TextView tvPrgVal;
+    private SeekBar sbProgress;
     private EditText etExpAmount;
     private EditText etRemarks;
-    private Button btnSave;
-    private Bundle WorkProgress;
+    private Work mWork;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,14 +76,25 @@ public class ProgressActivity extends ActionBarActivity {
         mUser.MobileNo=mInSecurePrefs.getString(DashAIO.PREF_KEY_MOBILE, "");
         rQueue = VolleyAPI.getInstance(this).getRequestQueue();
 
+        TextView tvWork = (TextView) findViewById(R.id.tvWork);
+        TextView tvWorkBal = (TextView) findViewById(R.id.tvLblBalance);
+        tvPrgVal = (TextView) findViewById(R.id.tvPrgVal);
+        sbProgress = (SeekBar) findViewById(R.id.sbProgress);
         etExpAmount = (EditText) findViewById(R.id.etExpAmount);
         etRemarks = (EditText) findViewById(R.id.etRemarks);
-        btnSave = (Button) findViewById(R.id.btnSave);
+        Button btnSave = (Button) findViewById(R.id.btnSave);
 
-        mScheme = new HashMap<String, String>();
+        mWork = getIntent().getExtras().getParcelable(WorkActivity.WorkName);
+
+
+        tvWork.setText(mWork.getWorkName());
+        tvWorkBal.setText(getString(R.string.lbl_balance) + mWork.getBalance());
+        tvPrgVal.setText(": (" + mWork.getProgress() + "%)");
+        sbProgress.setProgress(mWork.getProgress());
+        sbProgress.setOnSeekBarChangeListener(new sbPrgListener());
+
         setTitle(getIntent().getExtras().getString(DYN_TITLE)
-                + " : " + getString(R.string.title_activity_progress_mpr));
-        getWorkProgress();
+                + " : " + getString(R.string.title_activity_progress_mpr) + " (" + mWork.getProgress() + "%)");
 
         btnSave.setOnClickListener(new UpdateClickListener());
     }
@@ -117,71 +128,23 @@ public class ProgressActivity extends ActionBarActivity {
         rQueue.cancelAll(TAG);
     }
 
-    private void getWorkProgress() {
+    private class sbPrgListener implements SeekBar.OnSeekBarChangeListener{
 
-        final JSONObject jsonPost = new JSONObject();
-
-        Log.e("P-Counter: ", "" + mAccountDb.getCounter(mUser.MobileNo));
-
-        try {
-            jsonPost.put("API", "WP");
-            jsonPost.put("WID", "5"); // TODO Supply Dynamic UserMapID instead of Static
-        } catch (JSONException e) {
-            e.printStackTrace();
-            return;
+        @Override
+        public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+            tvPrgVal.setText(": (" + i + "%)");
+            mWork.setProgress(seekBar.getProgress());
         }
 
-        JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST,
-                API_URL, jsonPost,
-                new Response.Listener<JSONObject>() {
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar) {
 
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        Log.e(TAG, "UserSchemes: " + response.toString());
-                        Toast.makeText(getApplicationContext(), response.optString(DashAIO.KEY_STATUS), Toast.LENGTH_SHORT).show();
-                        try {
-                            respJsonArray = response.getJSONArray("DB");
-                            ArrayList<String> SchemeList = new ArrayList<String>();
-
-                            for (int i = 0; i < respJsonArray.length(); i++) {
-                                mScheme.put(respJsonArray.getJSONObject(i).optString("SN"),
-                                        respJsonArray.getJSONObject(i).optString("ID"));
-                                SchemeList.add(respJsonArray.getJSONObject(i).optString("SN"));
-                            }
-                            // Spinner adapter
-                            //spnSchemes.setAdapter(new ArrayAdapter<String>(ProgressActivity.this,
-                            //        android.R.layout.simple_spinner_dropdown_item,
-                            //        SchemeList));
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                    }
-                }, new Response.ErrorListener() {
-
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                VolleyLog.d(TAG, "Error: " + error.getMessage());
-                Log.e(TAG, jsonPost.toString());
-            }
         }
-        );
 
-        Handler mHandler = new Handler();
-        mHandler.postDelayed(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        mUser.hotpCodeGenerationAllowed = true;
-                    }
-                },
-                HOTP_MIN_TIME_INTERVAL_BETWEEN_CODES
-        );
-
-        // Adding request to request queue
-        jsonObjReq.setTag(TAG);
-        rQueue.add(jsonObjReq);
-        //Toast.makeText(getApplicationContext(), "Loading All Schemes Please Wait...", Toast.LENGTH_SHORT).show();
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) {
+            seekBar.setProgress(mWork.getProgress());
+        }
     }
 
     private class UpdateClickListener implements View.OnClickListener {
@@ -193,7 +156,7 @@ public class ProgressActivity extends ActionBarActivity {
             String txtMsg = etRemarks.getText().toString();
 
             if (txtMsg.length() > 0) {
-                Toast.makeText(getApplicationContext(), "Message Size: " + txtMsg.length(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Updating ... ", Toast.LENGTH_SHORT).show();
                 try {
                     String oldPin = mUser.pin;
                     mUser.pin = mOtpProvider.getNextCode(mUser.MobileNo);
@@ -201,6 +164,8 @@ public class ProgressActivity extends ActionBarActivity {
                         Toast.makeText(getApplicationContext(), "Please wait for a while to generate new OTP for"
                                 + " MDN:" + mUser.MobileNo, Toast.LENGTH_LONG).show();
                         return;
+                    } else {
+                        setProgress();
                     }
                 } catch (OtpSourceException e) {
                     Toast.makeText(getApplicationContext(), "Error: " + e.getMessage()
@@ -228,10 +193,64 @@ public class ProgressActivity extends ActionBarActivity {
 
             } else {
                 Toast.makeText(getApplicationContext(), getString(R.string.msg_warn_remarks), Toast.LENGTH_SHORT).show();
-                //startActivity(new Intent(getApplicationContext(), SchemeActivity.class));
             }
 
         }
     }
 
+    private void setProgress() {
+
+        final JSONObject jsonPost = new JSONObject();
+
+        Log.e("P-Counter: ", "" + mAccountDb.getCounter(mUser.MobileNo));
+
+        try {
+            jsonPost.put("API", "UP");
+            jsonPost.put("WID", mWork.getWorkID());
+            jsonPost.put("EA", etExpAmount.getText());
+            jsonPost.put("P", sbProgress.getProgress());
+            jsonPost.put("B", mWork.getBalance());
+            jsonPost.put("R", etRemarks.getText());
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST,
+                SchemeActivity.API_URL, jsonPost,
+                new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.e(TAG, "Update Progress: " + response.toString());
+                        Toast.makeText(getApplicationContext(),
+                                response.optString(DashAIO.KEY_STATUS),
+                                Toast.LENGTH_SHORT).show();
+                    }
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.d(TAG, "Error: " + error.getMessage());
+                Log.e(TAG, jsonPost.toString());
+            }
+        }
+        );
+
+        Handler mHandler = new Handler();
+        mHandler.postDelayed(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        mUser.hotpCodeGenerationAllowed = true;
+                    }
+                },
+                HOTP_MIN_TIME_INTERVAL_BETWEEN_CODES
+        );
+
+        // Adding request to request queue
+        jsonObjReq.setTag(TAG);
+        rQueue.add(jsonObjReq);
+        //Toast.makeText(getApplicationContext(), "Loading All Schemes Please Wait...", Toast.LENGTH_SHORT).show();
+    }
 }
