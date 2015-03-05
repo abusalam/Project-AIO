@@ -103,5 +103,7 @@
     <string name="lbl_prg_val">: (0%)</string>
     <string name="lbl_balance">Balance:</string>
     <string name="bal_val">0</string>
+    <string name="msg_insufficient_balance">Expenditure is more than balance.</string>
+    <string name="lbl_work_remark">Work Remarks:</string>
 
 </resources>

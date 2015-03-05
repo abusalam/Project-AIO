@@ -37,6 +37,7 @@ public class WorkActivity extends ActionBarActivity {
     public static final String Funds = "Funds";
     public static final String Bal = "Balance";
     public static final String WR = "WorkRemarks";
+    public static final String Rem = "Remarks";
 
     static final String SECRET_PREF_NAME = "mPrefSecrets";
     private SharedPreferences mPrefs;
@@ -163,10 +164,12 @@ public class WorkActivity extends ActionBarActivity {
                                 Work mWork = new Work();
                                 mWork.setWorkID(respJsonArray.getJSONObject(i).getInt(WorkID));
                                 mWork.setWorkName(respJsonArray.getJSONObject(i).optString(WorkName));
-                                mWork.setBalance(respJsonArray.getJSONObject(i).optString(Bal));
+                                mWork.setBalance(Integer.parseInt(respJsonArray.getJSONObject(i)
+                                        .optString(Bal).replaceAll(",","")));
                                 mWork.setFunds(respJsonArray.getJSONObject(i).optString(Funds));
                                 mWork.setProgress(respJsonArray.getJSONObject(i).optInt(Progress));
                                 mWork.setWorkRemarks(respJsonArray.getJSONObject(i).optString(WR));
+                                mWork.setRemarks(respJsonArray.getJSONObject(i).optString(Rem));
                                 WorkList.add(mWork);
                             }
                             // Spinner adapter

@@ -16,11 +16,12 @@ public class Work implements Parcelable {
     };
     private long WorkID;
     private String WorkName;
-    private String Balance;
+    private long Balance;
     private String Funds;
     private int Progress;
     private int initialPrg;
     private String WorkRemarks;
+    private String Remarks;
 
     public Work() {
         initialPrg = 0;
@@ -32,12 +33,13 @@ public class Work implements Parcelable {
          */
         setWorkID(in.readLong());
         setWorkName(in.readString());
-        setBalance(in.readString());
+        setBalance(in.readLong());
         setFunds(in.readString());
         int iPrg = in.readInt();
         setProgress(iPrg);
         setInitialPrg(iPrg);
         setWorkRemarks(in.readString());
+        setRemarks(in.readString());
     }
 
     private void setInitialPrg(int iPrg) {
@@ -62,11 +64,11 @@ public class Work implements Parcelable {
         WorkName = workName;
     }
 
-    public String getBalance() {
+    public long getBalance() {
         return Balance;
     }
 
-    public void setBalance(String balance) {
+    public void setBalance(long balance) {
         Balance = balance;
     }
 
@@ -98,6 +100,14 @@ public class Work implements Parcelable {
         WorkRemarks = workRemarks;
     }
 
+    public String getRemarks() {
+        return Remarks;
+    }
+
+    public void setRemarks(String remarks) {
+        Remarks = remarks;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -107,10 +117,11 @@ public class Work implements Parcelable {
     public void writeToParcel(Parcel p, int i) {
         p.writeLong(getWorkID());
         p.writeString(getWorkName());
-        p.writeString(getBalance());
+        p.writeLong(getBalance());
         p.writeString(getFunds());
         p.writeInt(getProgress());
         p.writeString(getWorkRemarks());
+        p.writeString(getRemarks());
     }
 
     @Override

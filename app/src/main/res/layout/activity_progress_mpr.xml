@@ -74,12 +74,23 @@
                 android:inputType="number" />
 
             <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="@string/lbl_work_remark"
+                android:id="@+id/tvWorkRemark"
+                android:layout_below="@+id/etExpAmount"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:paddingTop="10dp"/>
+
+            <TextView
                 android:id="@+id/tvRemarks"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
-                android:layout_below="@+id/etExpAmount"
+                android:layout_below="@+id/tvWorkRemark"
                 android:text="@string/lblRemarks"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:paddingTop="10dp" />
@@ -91,7 +102,8 @@
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
                 android:layout_below="@+id/tvRemarks"
-                android:inputType="textAutoComplete" />
+                android:inputType="textAutoComplete"
+                android:hint="@string/msg_warn_remarks" />
 
             <Button
                 android:id="@+id/btnSave"
@@ -100,6 +112,6 @@
                 android:layout_below="@+id/etRemarks"
                 android:layout_centerHorizontal="true"
                 android:text="@string/lblBtnSave" />
-            </RelativeLayout>
+        </RelativeLayout>
     </ScrollView>
 </RelativeLayout>

@@ -59,6 +59,7 @@ public class ProgressActivity extends ActionBarActivity {
     private SeekBar sbProgress;
     private EditText etExpAmount;
     private EditText etRemarks;
+    private Button btnSave;
     private Work mWork;
 
     @Override
@@ -81,8 +82,10 @@ public class ProgressActivity extends ActionBarActivity {
         tvPrgVal = (TextView) findViewById(R.id.tvPrgVal);
         sbProgress = (SeekBar) findViewById(R.id.sbProgress);
         etExpAmount = (EditText) findViewById(R.id.etExpAmount);
+        TextView tvWorkRemark=(TextView) findViewById(R.id.tvWorkRemark);
+        TextView tvRemark=(TextView) findViewById(R.id.tvRemarks);
         etRemarks = (EditText) findViewById(R.id.etRemarks);
-        Button btnSave = (Button) findViewById(R.id.btnSave);
+        btnSave = (Button) findViewById(R.id.btnSave);
 
         mWork = getIntent().getExtras().getParcelable(WorkActivity.WorkName);
 
@@ -92,9 +95,12 @@ public class ProgressActivity extends ActionBarActivity {
         tvPrgVal.setText(": (" + mWork.getProgress() + "%)");
         sbProgress.setProgress(mWork.getProgress());
         sbProgress.setOnSeekBarChangeListener(new sbPrgListener());
+        tvWorkRemark.setText(getString(R.string.lbl_work_remark) + mWork.getWorkRemarks());
+        tvRemark.setText(getString(R.string.lblRemarks) + mWork.getRemarks());
 
         setTitle(getIntent().getExtras().getString(DYN_TITLE)
-                + " : " + getString(R.string.title_activity_progress_mpr) + " (" + mWork.getProgress() + "%)");
+                + " : " + getString(R.string.title_activity_progress_mpr)
+                + " (" + mWork.getProgress() + "%)");
 
         btnSave.setOnClickListener(new UpdateClickListener());
     }
@@ -154,6 +160,13 @@ public class ProgressActivity extends ActionBarActivity {
         public void onClick(View view) {
 
             String txtMsg = etRemarks.getText().toString();
+            Long etExpAmt=Long.parseLong(etExpAmount.getText().toString());
+            if(etExpAmt>mWork.getBalance()){
+                Toast.makeText(getApplicationContext(),
+                        getString(R.string.msg_insufficient_balance),
+                        Toast.LENGTH_SHORT).show();
+                return;
+            }
 
             if (txtMsg.length() > 0) {
                 Toast.makeText(getApplicationContext(), "Updating ... ", Toast.LENGTH_SHORT).show();
@@ -226,6 +239,10 @@ public class ProgressActivity extends ActionBarActivity {
                         Toast.makeText(getApplicationContext(),
                                 response.optString(DashAIO.KEY_STATUS),
                                 Toast.LENGTH_SHORT).show();
+                        if(response.optBoolean(DashAIO.KEY_API)){
+                            btnSave.setVisibility(View.GONE);
+                        }
+
                     }
                 }, new Response.ErrorListener() {
 

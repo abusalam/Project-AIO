@@ -46,7 +46,7 @@ public class WorkAdapter extends ArrayAdapter<Work> {
         TextView tvWorkName = (TextView) WorkView.findViewById(R.id.tvWork);
 
         tvWorkPrg.setText(txtWorkPrg);
-        tvWorkBal.setText(mWork.getBalance());
+        tvWorkBal.setText(" " + mWork.getBalance());
         tvWorkName.setText(lngWorkID.toString() + ":" + txtWorkName);
 
         return WorkView;
