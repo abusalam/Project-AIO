@@ -3,9 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".DashAIO">
     <item
-        android:id="@+id/sync_profile"
+        android:id="@+id/sync_otp"
         android:orderInCategory="100"
-        android:title="@string/sync_profile_text"
+        android:title="@string/sync_otp_text"
         app:showAsAction="never" />
     <item
         android:id="@+id/register_again"

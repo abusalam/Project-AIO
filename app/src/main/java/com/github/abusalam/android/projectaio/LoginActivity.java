@@ -35,6 +35,7 @@ import com.github.abusalam.android.projectaio.GoogleAuthenticator.TotpClock;
 import com.github.abusalam.android.projectaio.GoogleAuthenticator.Utilities;
 import com.github.abusalam.android.projectaio.ajax.VolleyAPI;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -449,7 +450,9 @@ public class LoginActivity extends ActionBarActivity {
                         public void onResponse(JSONObject response) {
                             Log.d(TAG, response.toString());
 
-                            Toast.makeText(getApplicationContext(), response.optString(DashAIO.KEY_STATUS), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(),
+                                    response.optString(DashAIO.KEY_STATUS),
+                                    Toast.LENGTH_SHORT).show();
                             apiRespUserStat = response;
                             if (response.optBoolean(DashAIO.KEY_API)) {
                                 etSecretKey.setVisibility(View.VISIBLE);
@@ -489,13 +492,17 @@ public class LoginActivity extends ActionBarActivity {
             Intent data = new Intent();
             data.putExtra(DashAIO.PREF_KEY_MOBILE, mUser.MobileNo);
             try {
-                JSONObject userData = apiRespUserStat.getJSONObject("DB").getJSONObject("USER");
+                JSONObject userData = apiRespUserStat.getJSONObject("DB").getJSONArray("USER").getJSONObject(0);
                 data.putExtra(DashAIO.PREF_KEY_NAME, userData.optString("UserName"));
                 data.putExtra(DashAIO.PREF_KEY_POST, userData.optString("Designation"));
                 data.putExtra(DashAIO.PREF_KEY_EMAIL, userData.optString("eMailID"));
+                data.putExtra(DashAIO.PREF_KEY_UserMapID, userData.optString("UserMapID"));
             } catch (JSONException e) {
                 e.printStackTrace();
-                Toast.makeText(getApplicationContext(), "Profile Error:" + e.getMessage(), Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(),
+                        "Profile Error:" + e.getMessage(),
+                        Toast.LENGTH_LONG).show();
+                Log.e(TAG,"Profile Error:" + e.getMessage());
             }
             setResult(RESULT_OK, data);
             finish();

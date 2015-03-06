@@ -130,6 +130,13 @@
                     android:layout_marginLeft="@dimen/activity_vertical_margin" />
             </LinearLayout>
 
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:id="@+id/tvMsg"
+                android:layout_gravity="center_horizontal|bottom" />
+
 
         </LinearLayout>
 

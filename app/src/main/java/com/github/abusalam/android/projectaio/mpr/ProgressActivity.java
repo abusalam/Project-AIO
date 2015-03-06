@@ -8,7 +8,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SeekBar;
@@ -31,25 +30,19 @@ import com.github.abusalam.android.projectaio.R;
 import com.github.abusalam.android.projectaio.User;
 import com.github.abusalam.android.projectaio.ajax.VolleyAPI;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.HashMap;
 
 
 public class ProgressActivity extends ActionBarActivity {
     public static final String TAG = ProgressActivity.class.getSimpleName();
-
+    public static final String DYN_TITLE = "WPT";
     /**
      * Minimum amount of time (milliseconds) that has to elapse from the moment a HOTP code is
      * generated for an account until the moment the next code can be generated for the account.
      * This is to prevent the user from generating too many HOTP codes in a short period of time.
      */
     private static final long HOTP_MIN_TIME_INTERVAL_BETWEEN_CODES = 5000;
-
-    public static final String DYN_TITLE ="WPT";
     protected User mUser;
     private RequestQueue rQueue;
     private AccountDb mAccountDb;
@@ -73,8 +66,8 @@ public class ProgressActivity extends ActionBarActivity {
         mOtpProvider = new OtpProvider(mAccountDb, new TotpClock(this));
 
         mUser = new User();
-        mUser.UserMapID = mInSecurePrefs.getLong(DashAIO.PREF_KEY_UserMapID, 0);
-        mUser.MobileNo=mInSecurePrefs.getString(DashAIO.PREF_KEY_MOBILE, "");
+        mUser.UserMapID = mInSecurePrefs.getString(DashAIO.PREF_KEY_UserMapID, "Not Available");
+        mUser.MobileNo = mInSecurePrefs.getString(DashAIO.PREF_KEY_MOBILE, "");
         rQueue = VolleyAPI.getInstance(this).getRequestQueue();
 
         TextView tvWork = (TextView) findViewById(R.id.tvWork);
@@ -82,8 +75,8 @@ public class ProgressActivity extends ActionBarActivity {
         tvPrgVal = (TextView) findViewById(R.id.tvPrgVal);
         sbProgress = (SeekBar) findViewById(R.id.sbProgress);
         etExpAmount = (EditText) findViewById(R.id.etExpAmount);
-        TextView tvWorkRemark=(TextView) findViewById(R.id.tvWorkRemark);
-        TextView tvRemark=(TextView) findViewById(R.id.tvRemarks);
+        TextView tvWorkRemark = (TextView) findViewById(R.id.tvWorkRemark);
+        TextView tvRemark = (TextView) findViewById(R.id.tvRemarks);
         etRemarks = (EditText) findViewById(R.id.etRemarks);
         btnSave = (Button) findViewById(R.id.btnSave);
 
@@ -134,85 +127,7 @@ public class ProgressActivity extends ActionBarActivity {
         rQueue.cancelAll(TAG);
     }
 
-    private class sbPrgListener implements SeekBar.OnSeekBarChangeListener{
-
-        @Override
-        public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-            tvPrgVal.setText(": (" + i + "%)");
-            mWork.setProgress(seekBar.getProgress());
-        }
-
-        @Override
-        public void onStartTrackingTouch(SeekBar seekBar) {
-
-        }
-
-        @Override
-        public void onStopTrackingTouch(SeekBar seekBar) {
-            seekBar.setProgress(mWork.getProgress());
-        }
-    }
-
-    private class UpdateClickListener implements View.OnClickListener {
-        private final Handler mHandler = new Handler();
-
-        @Override
-        public void onClick(View view) {
-
-            String txtMsg = etRemarks.getText().toString();
-            Long etExpAmt=Long.parseLong(etExpAmount.getText().toString());
-            if(etExpAmt>mWork.getBalance()){
-                Toast.makeText(getApplicationContext(),
-                        getString(R.string.msg_insufficient_balance),
-                        Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            if (txtMsg.length() > 0) {
-                Toast.makeText(getApplicationContext(), "Updating ... ", Toast.LENGTH_SHORT).show();
-                try {
-                    String oldPin = mUser.pin;
-                    mUser.pin = mOtpProvider.getNextCode(mUser.MobileNo);
-                    if (mUser.pin.equals(oldPin) || !mUser.hotpCodeGenerationAllowed) {
-                        Toast.makeText(getApplicationContext(), "Please wait for a while to generate new OTP for"
-                                + " MDN:" + mUser.MobileNo, Toast.LENGTH_LONG).show();
-                        return;
-                    } else {
-                        setProgress();
-                    }
-                } catch (OtpSourceException e) {
-                    Toast.makeText(getApplicationContext(), "Error: " + e.getMessage()
-                            + " MDN:" + mUser.MobileNo, Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                // Temporarily disable code generation for this account
-                mUser.hotpCodeGenerationAllowed = false;
-
-                // The delayed operation below will be invoked once code generation is yet again allowed for
-                // this account. The delay is in wall clock time (monotonically increasing) and is thus not
-                // susceptible to system time jumps.
-                mHandler.postDelayed(
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                mUser.hotpCodeGenerationAllowed = true;
-                            }
-                        },
-                        HOTP_MIN_TIME_INTERVAL_BETWEEN_CODES
-                );
-
-                //UpdateProgress();
-
-            } else {
-                Toast.makeText(getApplicationContext(), getString(R.string.msg_warn_remarks), Toast.LENGTH_SHORT).show();
-            }
-
-        }
-    }
-
     private void setProgress() {
-
         final JSONObject jsonPost = new JSONObject();
 
         Log.e("P-Counter: ", "" + mAccountDb.getCounter(mUser.MobileNo));
@@ -239,7 +154,7 @@ public class ProgressActivity extends ActionBarActivity {
                         Toast.makeText(getApplicationContext(),
                                 response.optString(DashAIO.KEY_STATUS),
                                 Toast.LENGTH_SHORT).show();
-                        if(response.optBoolean(DashAIO.KEY_API)){
+                        if (response.optBoolean(DashAIO.KEY_API)) {
                             btnSave.setVisibility(View.GONE);
                         }
 
@@ -265,9 +180,90 @@ public class ProgressActivity extends ActionBarActivity {
                 HOTP_MIN_TIME_INTERVAL_BETWEEN_CODES
         );
 
-        // Adding request to request queue
         jsonObjReq.setTag(TAG);
         rQueue.add(jsonObjReq);
-        //Toast.makeText(getApplicationContext(), "Loading All Schemes Please Wait...", Toast.LENGTH_SHORT).show();
+    }
+
+    private class sbPrgListener implements SeekBar.OnSeekBarChangeListener {
+
+        @Override
+        public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+            tvPrgVal.setText(": (" + i + "%)");
+            mWork.setProgress(seekBar.getProgress());
+        }
+
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar) {
+
+        }
+
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) {
+            seekBar.setProgress(mWork.getProgress());
+        }
+    }
+
+    private class UpdateClickListener implements View.OnClickListener {
+        private final Handler mHandler = new Handler();
+
+        @Override
+        public void onClick(View view) {
+
+            String txtMsg = etRemarks.getText().toString();
+            Long etExpAmt = Long.parseLong(etExpAmount.getText().toString());
+            if (etExpAmt > mWork.getBalance()) {
+                Toast.makeText(getApplicationContext(),
+                        getString(R.string.msg_insufficient_balance),
+                        Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (txtMsg.length() > 0) {
+                Toast.makeText(getApplicationContext(),
+                        "Updating ... ", Toast.LENGTH_SHORT).show();
+                try {
+                    String oldPin = mUser.pin;
+                    mUser.pin = mOtpProvider.getNextCode(mUser.MobileNo);
+                    if (mUser.pin.equals(oldPin) || !mUser.hotpCodeGenerationAllowed) {
+                        Toast.makeText(getApplicationContext(),
+                                getString(R.string.msg_otp_delayed) + mUser.MobileNo,
+                                Toast.LENGTH_LONG).show();
+                        return;
+                    } else {
+                        setProgress();
+                    }
+                } catch (OtpSourceException e) {
+                    Toast.makeText(getApplicationContext(), "Error: " + e.getMessage()
+                            + " MDN:" + mUser.MobileNo, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                // Temporarily disable code generation for this account
+                mUser.hotpCodeGenerationAllowed = false;
+
+                /**
+                 * The delayed operation below will be invoked once code
+                 * generation is yet again allowed for this account. The delay is in wall
+                 * clock time (monotonically increasing) and is thus not susceptible
+                 * to system time jumps.
+                 */
+
+                mHandler.postDelayed(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                mUser.hotpCodeGenerationAllowed = true;
+                            }
+                        },
+                        HOTP_MIN_TIME_INTERVAL_BETWEEN_CODES
+                );
+
+            } else {
+                Toast.makeText(getApplicationContext(),
+                        getString(R.string.msg_warn_remarks),
+                        Toast.LENGTH_SHORT).show();
+            }
+
+        }
     }
 }

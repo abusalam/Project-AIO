@@ -7,7 +7,7 @@ package com.github.abusalam.android.projectaio;
  */
 public class User {
     public String pin; // calculated OTP, or a placeholder if not calculated
-    public Long UserMapID;
+    public String UserMapID;
     public String MobileNo;
     public boolean isHotp = true; // used to see if button needs to be displayed
 

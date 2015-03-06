@@ -28,12 +28,6 @@
     <string name="default_msg_status">Sending…</string>
     <string name="btn_send_msg_content_description">Sent this message</string>
 
-    <string-array name="sms_groups">
-        <item>Test Group</item>
-        <item>All BDOs</item>
-        <item>All SDOs</item>
-        <item>All OCs</item>
-    </string-array>
     <string-array name="drawer_menu_list">
         <item>User Profile</item>
         <item>Scheme Progress</item>
@@ -43,15 +37,16 @@
 
     <string name="title_activity_login">Sign In</string>
     <string name="update_profile">Update Profile</string>
-    <string name="login_message">Please enter your mobile no to use with the Group Messaging System.</string>
+    <string name="login_message">Mobile No</string>
     <string name="btn_update_profile_text">Update Profile</string>
     <string name="img_btn_update_profile_text">Login/Update Profile</string>
-    <string name="login_wait_message">Checking your registration data with the SMS Gateway Server to sync your profile...</string>
+    <string name="login_wait_message">Checking your registration data with the SMS Gateway Server to sync your profile…</string>
     <string name="btn_login_text">Start</string>
-    <string name="btn_scan_barcode_text">Verify OTP</string>
-    <string name="btn_enter_key_text">Save Key</string>
+    <string name="btn_scan_barcode_text">2. Verify OTP</string>
+    <string name="btn_enter_key_text">1. Save Key</string>
     <!-- Confirmation message displayed in a toast after adding new account -->
     <string name="secret_saved">Secret saved</string>
+    <string name="msg_otp_delayed">Please wait for a while to generate new OTP for Mobile No:</string>
 
     <!--
          Question asking user to confirm adding a new account, the details of which were obtained
@@ -78,7 +73,7 @@
     <string name="install_dialog_title">Install barcode scanner?</string>
 
     <!-- Error message displayed when user attempts to scan a barcode without a scanner app. -->
-    <string name="install_dialog_message">    To scan barcodes containing keys, you must install the ZXing barcode scanner.</string>
+    <string name="install_dialog_message">To scan barcode containing keys, you must install the ZXing barcode scanner.</string>
 
     <!-- Text on button user clicks to start installation of barcode scanning app -->
     <string name="install_button">Install</string>
@@ -89,10 +84,10 @@
     <string name="lblSchemes">Scheme:</string>
     <string name="lblWorks">Work:</string>
     <string name="lblPhyPrg">Physical Progress</string>
-    <string name="lblExpAmount">Expenditure Amount:</string>
+    <string name="lblExpAmount">Expenditure Amount</string>
     <string name="lblRemarks">Remarks:</string>
     <string name="lblBtnSave">Update Progress</string>
-    <string name="msg_warn_remarks">Type Some Remarks</string>
+    <string name="msg_warn_remarks">Enter Some Remarks</string>
     <string name="title_activity_scheme">Select Scheme</string>
     <string name="lbl_scheme_id">Scheme ID: </string>
     <string name="lbl_scheme_name">Scheme</string>
@@ -105,5 +100,7 @@
     <string name="bal_val">0</string>
     <string name="msg_insufficient_balance">Expenditure is more than balance.</string>
     <string name="lbl_work_remark">Work Remarks:</string>
-
+    <string name="ea_hint">Enter Expenditure Amount</string>
+    <string name="sync_otp_text">Sync OTP Generation</string>
+    <string name="msg_sync_otp">Synchronizing…</string>
 </resources>

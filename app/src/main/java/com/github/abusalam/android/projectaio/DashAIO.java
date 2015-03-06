@@ -47,7 +47,7 @@ public class DashAIO extends ActionBarActivity
     public static final String KEY_STATUS = "MSG";
     public static final String KEY_API = "API";
     public static final String SECRET_PREF_NAME = "mPrefSecrets";
-    public static final String PREF_KEY_UserMapID = "mUserMapID";
+    public static final String PREF_KEY_UserMapID = "UserMapID";
 
     // WebServer Request URL
     //String serverURL = "http://echo.jsontest.com/key/value/one/two";
@@ -63,6 +63,7 @@ public class DashAIO extends ActionBarActivity
     private AccountDb mAccountDb;
     private OtpSource mOtpProvider;
     private RequestQueue rQueue;
+    private TextView tvMsg;
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -99,16 +100,20 @@ public class DashAIO extends ActionBarActivity
         TextView tvDesg = (TextView) findViewById(R.id.tvDesignation);
         TextView tvEMail = (TextView) findViewById(R.id.tvEMailID);
         TextView tvMobile = (TextView) findViewById(R.id.tvMobileNo);
+        tvMsg = (TextView) findViewById(R.id.tvMsg);
+
+        SharedPreferences settings = getSharedPreferences(SECRET_PREF_NAME, MODE_PRIVATE);
+        tvUserName.setText(settings.getString(PREF_KEY_NAME, ""));
+        tvDesg.setText(settings.getString(PREF_KEY_POST, ""));
+        tvEMail.setText(settings.getString(PREF_KEY_EMAIL, ""));
+        tvMobile.setText(settings.getString(PREF_KEY_MOBILE, ""));
+        mUser.UserMapID=settings.getString(PREF_KEY_UserMapID, "Not Available");
 
         if (IC.isDeviceConnected()) {
             tvNetConn.setText(getString(R.string.IC));
-            SharedPreferences settings = getSharedPreferences(SECRET_PREF_NAME, MODE_PRIVATE);
-            tvUserName.setText(settings.getString(PREF_KEY_NAME, ""));
-            tvDesg.setText(settings.getString(PREF_KEY_POST, ""));
-            tvEMail.setText(settings.getString(PREF_KEY_EMAIL, ""));
-            tvMobile.setText(settings.getString(PREF_KEY_MOBILE, ""));
         } else {
             tvNetConn.setText(getString(R.string.NC));
+            tvMsg.setText("ID: " + mUser.UserMapID);
         }
 
     }
@@ -141,19 +146,22 @@ public class DashAIO extends ActionBarActivity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        if (id == R.id.sync_profile) {
-            SyncProfile();
-            return true;
-        }
+        switch (id) {
+            case R.id.sync_otp:
+                SyncOTP();
+                return true;
 
-        if (id == R.id.register_again) {
-            SharedPreferences mInSecurePrefs = getSharedPreferences(DashAIO.SECRET_PREF_NAME, MODE_PRIVATE);
-            SharedPreferences.Editor prefEdit = mInSecurePrefs.edit();
-            prefEdit.clear();
-            prefEdit.apply();
-            Toast.makeText(getApplicationContext(), getString(R.string.register_again_msg), Toast.LENGTH_LONG).show();
-            finish();
-            return true;
+            case R.id.register_again:
+                SharedPreferences mInSecurePrefs = getSharedPreferences(DashAIO.SECRET_PREF_NAME,
+                        MODE_PRIVATE);
+                SharedPreferences.Editor prefEdit = mInSecurePrefs.edit();
+                prefEdit.clear();
+                prefEdit.apply();
+                Toast.makeText(getApplicationContext(),
+                        getString(R.string.register_again_msg),
+                        Toast.LENGTH_LONG).show();
+                finish();
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -163,43 +171,36 @@ public class DashAIO extends ActionBarActivity
         String[] mDrawerMenuList = getResources().getStringArray(R.array.drawer_menu_list);
 
         if (number == mDrawerMenuList.length) {
-            number = 0;
+            Intent intent = new Intent(Intent.ACTION_MAIN);
+            intent.addCategory(Intent.CATEGORY_HOME);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish();
         }
-//      else {
-//            mTitle = mDrawerMenuList[number - 1];
-//        }
         Log.e("MenuLink-Number: ", "" + number);
-        switch (number) {
-            case 1:
-                //startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
-                break;
-
-            case 2:
-                startActivity(new Intent(getApplicationContext(), SchemeActivity.class)
-                        .putExtra(SchemeActivity.UID, "5"));// TODO Supply Dynamic UserMapID instead of Static
-                break;
-
-            case 3:
-                SharedPreferences mInSecurePrefs = getSharedPreferences(SECRET_PREF_NAME, MODE_PRIVATE);
-                if (mInSecurePrefs == null) {
-                    Log.e("StartLogin: ", "Preference not found");
-                } else {
-                    String MobileNo = mInSecurePrefs.getString(PREF_KEY_MOBILE, null);
-                    if (MobileNo == null) {
-                        startActivityForResult(new Intent(getApplicationContext(), LoginActivity.class), UPDATE_PROFILE_REQUEST);
-                    } else {
+        SharedPreferences mInSecurePrefs = getSharedPreferences(SECRET_PREF_NAME,
+                MODE_PRIVATE);
+        if (mInSecurePrefs == null) {
+            Log.e("StartLogin: ", "Preference not found");
+        } else {
+            String MobileNo = mInSecurePrefs.getString(PREF_KEY_MOBILE, null);
+            if (MobileNo == null) {
+                startActivityForResult(new Intent(getApplicationContext(),
+                        LoginActivity.class), UPDATE_PROFILE_REQUEST);
+            } else {
+                switch (number) {
+                    case 1:
+                        //startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
+                        break;
+                    case 2:
+                        startActivity(new Intent(getApplicationContext(), SchemeActivity.class)
+                                .putExtra(SchemeActivity.UID, mUser.UserMapID));
+                        break;
+                    case 3:
                         startActivity(new Intent(getApplicationContext(), GroupSMS.class));
-                    }
+                        break;
                 }
-                break;
-
-            case 0: //Exit Menu
-                Intent intent = new Intent(Intent.ACTION_MAIN);
-                intent.addCategory(Intent.CATEGORY_HOME);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-                finish();
-                break;
+            }
         }
     }
 
@@ -208,7 +209,8 @@ public class DashAIO extends ActionBarActivity
 
         if (requestCode == UPDATE_PROFILE_REQUEST) {
             if (resultCode == RESULT_OK) {
-                SharedPreferences mInSecurePrefs = getSharedPreferences(SECRET_PREF_NAME, MODE_PRIVATE);
+                SharedPreferences mInSecurePrefs = getSharedPreferences(SECRET_PREF_NAME,
+                        MODE_PRIVATE);
                 SharedPreferences.Editor prefEdit = mInSecurePrefs.edit();
                 prefEdit.putString(PREF_KEY_UserMapID, data.getStringExtra(PREF_KEY_UserMapID));
                 prefEdit.putString(PREF_KEY_MOBILE, data.getStringExtra(PREF_KEY_MOBILE));
@@ -216,12 +218,15 @@ public class DashAIO extends ActionBarActivity
                 prefEdit.putString(PREF_KEY_EMAIL, data.getStringExtra(PREF_KEY_EMAIL));
                 prefEdit.putString(PREF_KEY_POST, data.getStringExtra(PREF_KEY_POST));
                 prefEdit.apply();
-                Log.e("onActivityResult", "GroupSMS-RequestCode: " + requestCode
-                        + ":" + resultCode + " UserMapID:" + data.getStringExtra(PREF_KEY_UserMapID)
+                Log.e("onActivityResult", "GroupSMS-RequestCode: " + requestCode + ":"
+                        + resultCode + " UserMapID:" + data.getStringExtra(PREF_KEY_UserMapID)
                         + " =>" + mInSecurePrefs.getAll().toString());
-                startActivity(new Intent(getApplicationContext(), GroupSMS.class));
+                startActivity(new Intent(getApplicationContext(), DashAIO.class));
+                finish();
             } else {
-                Toast.makeText(getApplicationContext(), "Unable to update profile.", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(),
+                        "Unable to update profile.",
+                        Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -233,19 +238,25 @@ public class DashAIO extends ActionBarActivity
         rQueue.cancelAll(TAG);
     }
 
-    private void SyncProfile() {
+    private void SyncOTP() {
         final JSONObject jsonPost = new JSONObject();
+        String OTP1;
+        String OTP2;
 
         try {
+            OTP1 = mOtpProvider.getNextCode(mUser.MobileNo);
+            OTP2 = mOtpProvider.getNextCode(mUser.MobileNo);
             mUser.pin = mOtpProvider.getNextCode(mUser.MobileNo);
         } catch (OtpSourceException e) {
-            Toast.makeText(getApplicationContext(), "Error: " + e.getMessage()
-                    + " MDN:" + mUser.MobileNo, Toast.LENGTH_SHORT).show();
+            tvMsg.setText("Error: " + e.getMessage()
+                    + " Mobile:" + mUser.MobileNo);
             return;
         }
 
         try {
             jsonPost.put("API", "SP");
+            jsonPost.put("OTP1", OTP1);
+            jsonPost.put("OTP2", OTP2);
             jsonPost.put("MDN", mUser.MobileNo);
             jsonPost.put("OTP", mUser.pin);
         } catch (JSONException e) {
@@ -260,19 +271,23 @@ public class DashAIO extends ActionBarActivity
                     @Override
                     public void onResponse(JSONObject response) {
                         Log.d(TAG, "Group-SMS " + response.toString());
-                        Toast.makeText(getApplicationContext(), response.optString(DashAIO.KEY_STATUS), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(),
+                                response.optString(DashAIO.KEY_STATUS),
+                                Toast.LENGTH_LONG).show();
                         try {
-                            JSONObject respJson = response.getJSONObject("DB");
-                            SharedPreferences mInSecurePrefs = getSharedPreferences(DashAIO.SECRET_PREF_NAME, MODE_PRIVATE);
+                            JSONObject respJson = response.getJSONArray("DB").getJSONObject(0);
+                            SharedPreferences mInSecurePrefs =
+                                    getSharedPreferences(DashAIO.SECRET_PREF_NAME, MODE_PRIVATE);
                             SharedPreferences.Editor prefEdit = mInSecurePrefs.edit();
-                            prefEdit.putString(DashAIO.PREF_KEY_MOBILE, mUser.MobileNo);
-                            prefEdit.putString(DashAIO.PREF_KEY_NAME, respJson.optString("UserName"));
-                            prefEdit.putString(DashAIO.PREF_KEY_EMAIL, respJson.optString("eMailID"));
-                            prefEdit.putString(DashAIO.PREF_KEY_POST, respJson.optString("Designation"));
-                            prefEdit.putString(DashAIO.PREF_KEY_UserMapID, respJson.optString("UserMapID"));
+                            prefEdit.putString(PREF_KEY_MOBILE, mUser.MobileNo);
+                            prefEdit.putString(PREF_KEY_NAME, respJson.optString("UserName"));
+                            prefEdit.putString(PREF_KEY_EMAIL, respJson.optString("UserID"));
+                            prefEdit.putString(PREF_KEY_POST, respJson.optString("UserName"));
+                            prefEdit.putString(PREF_KEY_UserMapID, respJson.optString("UserMapID"));
                             prefEdit.apply();
                         } catch (JSONException e) {
                             e.printStackTrace();
+                            tvMsg.setText("Error: " + e.getMessage());
                         }
 
                     }
@@ -281,7 +296,7 @@ public class DashAIO extends ActionBarActivity
             @Override
             public void onErrorResponse(VolleyError error) {
                 VolleyLog.d(TAG, "Error: " + error.getMessage());
-                Log.e(TAG, jsonPost.toString());
+                tvMsg.setText("Error: " + error.getMessage());
             }
         }
         );
@@ -289,7 +304,11 @@ public class DashAIO extends ActionBarActivity
         // Adding request to request queue
         jsonObjReq.setTag(TAG);
         rQueue.add(jsonObjReq);
-        Toast.makeText(getApplicationContext(), "Synchronizing Profile Please Wait...", Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(),
+                getString(R.string.msg_sync_otp),
+                Toast.LENGTH_LONG).show();
+        Log.e(TAG, jsonPost.toString() + mAccountDb.getSecret(mUser.MobileNo)
+                + " " + mAccountDb.getCounter(mUser.MobileNo));
     }
 
     /**
