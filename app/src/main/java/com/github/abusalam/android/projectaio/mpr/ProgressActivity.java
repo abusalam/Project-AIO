@@ -94,8 +94,13 @@ public class ProgressActivity extends ActionBarActivity {
         setTitle(getIntent().getExtras().getString(DYN_TITLE)
                 + " : " + getString(R.string.title_activity_progress_mpr)
                 + " (" + mWork.getProgress() + "%)");
+        
+        if (mUser.UserMapID.equals("" + mWork.getUserMapID())) {
+            btnSave.setOnClickListener(new UpdateClickListener());
+        } else {
+            btnSave.setVisibility(View.GONE);
+        }
 
-        btnSave.setOnClickListener(new UpdateClickListener());
     }
 
     @Override

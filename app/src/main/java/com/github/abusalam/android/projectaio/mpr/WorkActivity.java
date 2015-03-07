@@ -32,6 +32,7 @@ import java.util.ArrayList;
 public class WorkActivity extends ActionBarActivity {
     public static final String TAG = WorkActivity.class.getSimpleName();
     public static final String WorkID = "WorkID";
+    public static final String UID = "UserMapID";
     public static final String WorkName = "Work";
     public static final String Progress = "Progress";
     public static final String Funds = "Funds";
@@ -135,13 +136,13 @@ public class WorkActivity extends ActionBarActivity {
         rQueue.cancelAll(TAG);
     }
 
-    private void getUserWorks(String UID, Long SID) {
+    private void getUserWorks(String mUID, Long SID) {
 
         final JSONObject jsonPost = new JSONObject();
 
         try {
             jsonPost.put(DashAIO.KEY_API, "UW");
-            jsonPost.put("UID", UID);
+            jsonPost.put("UID", mUID);
             jsonPost.put("SID", SID);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -163,6 +164,7 @@ public class WorkActivity extends ActionBarActivity {
                             for (int i = 0; i < respJsonArray.length(); i++) {
                                 Work mWork = new Work();
                                 mWork.setWorkID(respJsonArray.getJSONObject(i).getInt(WorkID));
+                                mWork.setUserMapID(respJsonArray.getJSONObject(i).getInt(UID));
                                 mWork.setWorkName(respJsonArray.getJSONObject(i).optString(WorkName));
                                 mWork.setBalance(Integer.parseInt(respJsonArray.getJSONObject(i)
                                         .optString(Bal).replaceAll(",","")));

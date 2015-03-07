@@ -22,6 +22,7 @@ public class Work implements Parcelable {
     private int initialPrg;
     private String WorkRemarks;
     private String Remarks;
+    private int UserMapID;
 
     public Work() {
         initialPrg = 0;
@@ -40,12 +41,22 @@ public class Work implements Parcelable {
         setInitialPrg(iPrg);
         setWorkRemarks(in.readString());
         setRemarks(in.readString());
+        setUserMapID(in.readInt());
+
     }
 
     private void setInitialPrg(int iPrg) {
         if (initialPrg == 0) {
             initialPrg = iPrg;
         }
+    }
+
+    public int getUserMapID() {
+        return UserMapID;
+    }
+
+    public void setUserMapID(int userMapID) {
+        UserMapID = userMapID;
     }
 
     public long getWorkID() {
@@ -122,6 +133,7 @@ public class Work implements Parcelable {
         p.writeInt(getProgress());
         p.writeString(getWorkRemarks());
         p.writeString(getRemarks());
+        p.writeInt(getUserMapID());
     }
 
     @Override
