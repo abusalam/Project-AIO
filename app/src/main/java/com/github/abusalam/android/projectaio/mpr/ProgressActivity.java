@@ -84,12 +84,12 @@ public class ProgressActivity extends ActionBarActivity {
 
 
         tvWork.setText(mWork.getWorkName());
-        tvWorkBal.setText(getString(R.string.lbl_balance) + mWork.getBalance());
+        tvWorkBal.setText(getString(R.string.lbl_balance) + " " + mWork.getBalance());
         tvPrgVal.setText(": (" + mWork.getProgress() + "%)");
         sbProgress.setProgress(mWork.getProgress());
         sbProgress.setOnSeekBarChangeListener(new sbPrgListener());
-        tvWorkRemark.setText(getString(R.string.lbl_work_remark) + mWork.getWorkRemarks());
-        tvRemark.setText(getString(R.string.lblRemarks) + mWork.getRemarks());
+        tvWorkRemark.setText(mWork.getWorkRemarks());
+        tvRemark.setText(getString(R.string.lblRemarks) + " " + mWork.getRemarks());
 
         setTitle(getIntent().getExtras().getString(DYN_TITLE)
                 + " : " + getString(R.string.title_activity_progress_mpr)
