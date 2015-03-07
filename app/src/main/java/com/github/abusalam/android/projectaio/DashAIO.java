@@ -33,6 +33,7 @@ import com.github.abusalam.android.projectaio.ajax.VolleyAPI;
 import com.github.abusalam.android.projectaio.mpr.SchemeActivity;
 import com.github.abusalam.android.projectaio.sms.GroupSMS;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -107,7 +108,7 @@ public class DashAIO extends ActionBarActivity
         tvDesg.setText(settings.getString(PREF_KEY_POST, ""));
         tvEMail.setText(settings.getString(PREF_KEY_EMAIL, ""));
         tvMobile.setText(settings.getString(PREF_KEY_MOBILE, ""));
-        mUser.UserMapID=settings.getString(PREF_KEY_UserMapID, "Not Available");
+        mUser.UserMapID = settings.getString(PREF_KEY_UserMapID, "Not Available");
 
         if (IC.isDeviceConnected()) {
             tvNetConn.setText(getString(R.string.IC));
@@ -190,7 +191,7 @@ public class DashAIO extends ActionBarActivity
             } else {
                 switch (number) {
                     case 1:
-                        //startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
+                        showAttendance();
                         break;
                     case 2:
                         startActivity(new Intent(getApplicationContext(), SchemeActivity.class)
@@ -307,6 +308,63 @@ public class DashAIO extends ActionBarActivity
         Toast.makeText(getApplicationContext(),
                 getString(R.string.msg_sync_otp),
                 Toast.LENGTH_LONG).show();
+        Log.e(TAG, jsonPost.toString() + mAccountDb.getSecret(mUser.MobileNo)
+                + " " + mAccountDb.getCounter(mUser.MobileNo));
+    }
+
+    private void showAttendance() {
+        final JSONObject jsonPost = new JSONObject();
+        final String AR_API = "http://" + API_HOST + "/apps/nic/android/api.php";
+
+        try {
+            mUser.pin = mOtpProvider.getNextCode(mUser.MobileNo);
+        } catch (OtpSourceException e) {
+            tvMsg.setText("Error: " + e.getMessage()
+                    + " Mobile:" + mUser.MobileNo);
+            return;
+        }
+
+        try {
+            jsonPost.put("API", "AR");
+            jsonPost.put("MDN", mUser.MobileNo);
+            jsonPost.put("OTP", mUser.pin);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            tvMsg.setText("Error: " + e.getMessage()
+                    + " Mobile:" + mUser.MobileNo);
+            return;
+        }
+
+        JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST,
+                AR_API, jsonPost,
+                new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            if (!response.optString(DashAIO.KEY_STATUS).equals("NA")) {
+                                JSONArray respJson = response.getJSONArray("DB");
+                                tvMsg.setText(respJson.toString());
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            tvMsg.setText("Error: " + e.getMessage());
+                        }
+
+                    }
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.d(TAG, "Error: " + error.getMessage());
+                tvMsg.setText("Error: " + error.getMessage());
+            }
+        }
+        );
+
+        // Adding request to request queue
+        jsonObjReq.setTag(TAG);
+        rQueue.add(jsonObjReq);
         Log.e(TAG, jsonPost.toString() + mAccountDb.getSecret(mUser.MobileNo)
                 + " " + mAccountDb.getCounter(mUser.MobileNo));
     }
