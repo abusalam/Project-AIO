@@ -35,7 +35,6 @@ import com.github.abusalam.android.projectaio.GoogleAuthenticator.TotpClock;
 import com.github.abusalam.android.projectaio.GoogleAuthenticator.Utilities;
 import com.github.abusalam.android.projectaio.ajax.VolleyAPI;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -85,41 +84,6 @@ public class LoginActivity extends ActionBarActivity {
     private OtpSource mOtpProvider;
     private User mUser;
 
-    /**
-     * Saves the secret key to local storage on the phone.
-     *
-     * @param user         the user email address. When editing, the new user email.
-     * @param secret       the secret key
-     * @param originalUser If editing, the original user email, otherwise null.
-     * @param type         hotp vs totp
-     * @param counter      only important for the hotp type
-     * @return {@code true} if the secret was saved, {@code false} otherwise.
-     */
-    static boolean saveSecret(Context context, String user, String secret,
-                              String originalUser, AccountDb.OtpType type, Integer counter) {
-        if (originalUser == null) {  // new user account
-            originalUser = user;
-        }
-        if (secret != null) {
-            AccountDb accountDb = new AccountDb(context);
-            accountDb.update(user, secret, originalUser, type, counter);
-            //DependencyInjector.getOptionalFeatures().onAuthenticatorActivityAccountSaved(context, user);
-            // TODO: Consider having a display message that activities can call and it
-            //       will present a toast with a uniform duration, and perhaps update
-            //       status messages (presuming we have a way to remove them after they
-            //       are stale).
-            Toast.makeText(context, R.string.secret_saved, Toast.LENGTH_LONG).show();
-            ((Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE))
-                    .vibrate(VIBRATE_DURATION);
-            accountDb.close();
-            return true;
-        } else {
-            Log.e(TAG, "Trying to save an empty secret key");
-            Toast.makeText(context, R.string.error_empty_secret, Toast.LENGTH_LONG).show();
-            return false;
-        }
-    }
-
     private static String validateAndGetUserInPath(String path) {
         if (path == null || !path.startsWith("/")) {
             return null;
@@ -130,6 +94,45 @@ public class LoginActivity extends ActionBarActivity {
             return null; // only white spaces.
         }
         return user;
+    }
+
+    /**
+     * Saves the secret key to local storage on the phone.
+     *
+     * @param user         the user email address. When editing, the new user email.
+     * @param secret       the secret key
+     * @param originalUser If editing, the original user email, otherwise null.
+     * @param type         hotp vs totp
+     * @param counter      only important for the hotp type
+     * @return {@code true} if the secret was saved, {@code false} otherwise.
+     */
+    boolean saveSecret(Context context, String user, String secret,
+                       String originalUser, AccountDb.OtpType type, Integer counter) {
+        if (originalUser == null) {  // new user account
+            originalUser = user;
+        }
+        if (secret != null) {
+            if (validateKeyAndUpdateStatus(true)) {
+                AccountDb accountDb = new AccountDb(context);
+                accountDb.update(user, secret, originalUser, type, counter);
+                //DependencyInjector.getOptionalFeatures().onAuthenticatorActivityAccountSaved(context, user);
+                // TODO: Consider having a display message that activities can call and it
+                //       will present a toast with a uniform duration, and perhaps update
+                //       status messages (presuming we have a way to remove them after they
+                //       are stale).
+                Toast.makeText(context, R.string.secret_saved, Toast.LENGTH_LONG).show();
+                ((Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE))
+                        .vibrate(VIBRATE_DURATION);
+                accountDb.close();
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            Log.e(TAG, "Trying to save an empty secret key");
+            Toast.makeText(context, R.string.error_empty_secret, Toast.LENGTH_LONG).show();
+            return false;
+        }
     }
 
     /**
@@ -381,6 +384,13 @@ public class LoginActivity extends ActionBarActivity {
         }
 
         etSecretKey.setText(secret);
+        saveSecret(LoginActivity.this,
+                etMobileNo.getText().toString(),
+                getEnteredKey(),
+                null,
+                AccountDb.OtpType.HOTP,
+                AccountDb.DEFAULT_HOTP_COUNTER);
+        btnVerifyOTP.performClick();
     }
 
     @Override
@@ -394,7 +404,7 @@ public class LoginActivity extends ActionBarActivity {
     protected void onDestroy() {
         super.onDestroy();
         mAccountDb.close();
-        VolleyAPI.getInstance(LoginActivity.this).getRequestQueue().cancelAll(TAG);
+        rQueue.cancelAll(TAG);
     }
 
     @Override
@@ -403,25 +413,11 @@ public class LoginActivity extends ActionBarActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+        return id == R.id.action_settings || super.onOptionsItemSelected(item);
     }
 
     /**
-     * Register User: Register User with Mobile No. to get the Secret Key for HOTP
-     * <p/>
-     * Request:
-     * JSONObject={"API":"RU",
-     * "MDN":"9876543210"}
-     * <p/>
-     * Response:
-     * JSONObject={"API":true,
-     * "DB": // Unused till now
-     * "MSG":"Key Sent to Mobile No. 9876543210",
-     * "ET":2.0987,
-     * "ST":"Wed 20 Aug 08:31:23 PM"}
+     * Register User: Register User with Mobile No. to get the Secret Key for OTP
      */
     private class RegisterButtonListener implements OnClickListener {
         @Override
@@ -502,7 +498,7 @@ public class LoginActivity extends ActionBarActivity {
                 Toast.makeText(getApplicationContext(),
                         "Profile Error:" + e.getMessage(),
                         Toast.LENGTH_LONG).show();
-                Log.e(TAG,"Profile Error:" + e.getMessage());
+                Log.e(TAG, "Profile Error:" + e.getMessage());
             }
             setResult(RESULT_OK, data);
             finish();
@@ -510,7 +506,7 @@ public class LoginActivity extends ActionBarActivity {
     }
 
     /**
-     * Listener for the Button that Validates and Saves the HOTP Secret Key of the user.
+     * Listener for the Button that Validates and Saves the OTP Secret Key of the user.
      */
     private class SaveKeyButtonListener implements OnClickListener {
         @Override
@@ -527,24 +523,7 @@ public class LoginActivity extends ActionBarActivity {
     }
 
     /**
-     * Listener for the Button that generates the next OTP value.
-     * <p/>
-     * Request:
-     * JSONObject={"API":"RU",
-     * "MDN":"9876543210"}
-     * <p/>
-     * Response:
-     * JSONObject={"API":true,
-     * "DB": {'KeyUpdated':1,
-     * "USER":{"UserName":"", TODO Store User Profile Data received from server.
-     * "Designation":"",
-     * "eMailID":""}
-     * }
-     * "MSG":"Mobile No. 9876543210 is Registered Successfully.",
-     * "ET":2.0987,
-     * "ST":"Wed 20 Aug 08:31:23 PM"}
-     *
-     * @author adhintz@google.com (Drew Hintz)
+     * Listener for the Button that generates the next OTP value and tests it.
      */
     private class NextOtpButtonListener implements OnClickListener {
         private final Handler mHandler = new Handler();
@@ -560,8 +539,6 @@ public class LoginActivity extends ActionBarActivity {
             try {
                 computeAndDisplayPin(mAccount.MobileNo, /*position,*/ true);
             } catch (OtpSourceException e) {
-                //DependencyInjector.getOptionalFeatures().onAuthenticatorActivityGetNextOtpFailed(
-                //        AuthenticatorActivity.this, mAccount.user, e);
                 return;
             }
 
