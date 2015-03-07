@@ -489,7 +489,7 @@ public class LoginActivity extends ActionBarActivity {
             data.putExtra(DashAIO.PREF_KEY_MOBILE, mUser.MobileNo);
             try {
                 JSONObject userData = apiRespUserStat.getJSONObject("DB").getJSONArray("USER").getJSONObject(0);
-                data.putExtra(DashAIO.PREF_KEY_NAME, userData.optString("UserName"));
+                data.putExtra(DashAIO.PREF_KEY_NAME, userData.optString("DisplayName"));
                 data.putExtra(DashAIO.PREF_KEY_POST, userData.optString("Designation"));
                 data.putExtra(DashAIO.PREF_KEY_EMAIL, userData.optString("eMailID"));
                 data.putExtra(DashAIO.PREF_KEY_UserMapID, userData.optString("UserMapID"));

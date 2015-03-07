@@ -281,7 +281,7 @@ public class DashAIO extends ActionBarActivity
                                     getSharedPreferences(DashAIO.SECRET_PREF_NAME, MODE_PRIVATE);
                             SharedPreferences.Editor prefEdit = mInSecurePrefs.edit();
                             prefEdit.putString(PREF_KEY_MOBILE, mUser.MobileNo);
-                            prefEdit.putString(PREF_KEY_NAME, respJson.optString("UserName"));
+                            prefEdit.putString(PREF_KEY_NAME, respJson.optString("DisplayName"));
                             prefEdit.putString(PREF_KEY_EMAIL, respJson.optString("UserID"));
                             prefEdit.putString(PREF_KEY_POST, respJson.optString("UserName"));
                             prefEdit.putString(PREF_KEY_UserMapID, respJson.optString("UserMapID"));
