@@ -41,9 +41,8 @@
     <string name="btn_update_profile_text">Update Profile</string>
     <string name="img_btn_update_profile_text">Login/Update Profile</string>
     <string name="login_wait_message">Checking your registration data with the SMS Gateway Server to sync your profile…</string>
-    <string name="btn_login_text">Start</string>
-    <string name="btn_scan_barcode_text">2. Verify OTP</string>
-    <string name="btn_enter_key_text">1. Save Key</string>
+    <string name="btn_login_text">Start using the App</string>
+    <string name="btn_scan_barcode_text">Generate and Verify OTP</string>
     <!-- Confirmation message displayed in a toast after adding new account -->
     <string name="secret_saved">Secret saved</string>
     <string name="msg_otp_delayed">Please wait for a while to generate new OTP for Mobile No:</string>

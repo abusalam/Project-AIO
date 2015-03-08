@@ -29,7 +29,6 @@
         android:layout_toLeftOf="@+id/btnUpdateProfile"
         android:phoneNumber="true"
         android:textStyle="bold"
-        android:textSize="@dimen/abc_action_bar_title_text_size"
         android:editable="true" />
 
     <ImageButton
@@ -56,26 +55,10 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/btn_login_text"
-        android:id="@+id/btnStart"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:text="@string/btn_scan_barcode_text"
         android:id="@+id/btnVerifyOTP"
         android:layout_centerVertical="true"
-        android:layout_alignRight="@+id/btnUpdateProfile" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/btn_enter_key_text"
-        android:id="@+id/btnSaveKey"
-        android:layout_alignTop="@+id/btnVerifyOTP"
-        android:layout_alignParentLeft="true" />
+        android:layout_centerHorizontal="true" />
 
     <EditText
         android:layout_width="match_parent"
@@ -106,4 +89,21 @@
         android:contentDescription="@string/btn_qr_code_description"
         android:layout_alignParentRight="true"
         android:layout_above="@+id/btnVerifyOTP" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/btn_login_text"
+        android:id="@+id/btnStart"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="100dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tvStatus"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="160dp" />
 </RelativeLayout>

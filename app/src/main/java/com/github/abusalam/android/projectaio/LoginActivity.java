@@ -8,10 +8,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Vibrator;
+import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -68,12 +67,16 @@ public class LoginActivity extends ActionBarActivity {
     protected TextView tvLoginMessage;
     protected ProgressBar pbLoginWait;
     protected Button btnStartMessaging;
-    protected Button btnSaveKey;
+
     protected TextView tvOTP;
     protected Button btnVerifyOTP;
     protected ImageButton btnScanOR;
     protected RequestQueue rQueue;
     protected JSONObject apiRespUserStat;
+
+    private TextView tvStatus;
+    private String mActivityStatus;
+    private String mRespMsg;
     /**
      * Phase of TOTP countdown indicators. The phase is in {@code [0, 1]} with {@code 1} meaning
      * full time step remaining until the code refreshes, and {@code 0} meaning the code is refreshing
@@ -94,6 +97,124 @@ public class LoginActivity extends ActionBarActivity {
             return null; // only white spaces.
         }
         return user;
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_login);
+
+        mAccountDb = new AccountDb(this);
+        mOtpProvider = new OtpProvider(mAccountDb, new TotpClock(this));
+
+        tvLoginMessage = (TextView) findViewById(R.id.tvLoginMessage);
+        etMobileNo = (EditText) findViewById(R.id.etUserMobile);
+        etSecretKey = (EditText) findViewById(R.id.etSecretKey);
+        pbLoginWait = (ProgressBar) findViewById(R.id.pbLoginWait);
+        btnStartMessaging = (Button) findViewById(R.id.btnStart);
+
+        btnVerifyOTP = (Button) findViewById(R.id.btnVerifyOTP);
+        tvOTP = (TextView) findViewById(R.id.tvOTP);
+        mUser = new User();
+        btnScanOR = (ImageButton) findViewById(R.id.btnScanQR);
+        btnScanOR.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                scanBarcode();
+            }
+        });
+
+
+        btnRegister = (ImageButton) findViewById(R.id.btnUpdateProfile);
+
+        pbLoginWait.setVisibility(View.GONE);
+        btnStartMessaging.setVisibility(View.GONE);
+
+        btnVerifyOTP.setVisibility(View.GONE);
+        etSecretKey.setVisibility(View.GONE);
+        tvOTP.setVisibility(View.GONE);
+        btnScanOR.setVisibility(View.GONE);
+
+        btnRegister.setOnClickListener(new RegisterButtonListener());
+        btnStartMessaging.setOnClickListener(new StartButtonListener());
+
+        btnVerifyOTP.setOnClickListener(new GenerateAndVerifyOtpButtonListener(mUser));
+
+        rQueue = VolleyAPI.getInstance(this).getRequestQueue();
+        if (savedInstanceState == null) {
+            mActivityStatus = "AC";
+        } else {
+
+            if (savedInstanceState.getString("ST").equals("SP")) {
+                etMobileNo.setVisibility(View.GONE);
+                btnRegister.setVisibility(View.GONE);
+                etSecretKey.setVisibility(View.GONE);
+                btnStartMessaging.setVisibility(View.VISIBLE);
+                btnVerifyOTP.setVisibility(View.GONE);
+                tvOTP.setVisibility(View.GONE);
+                btnScanOR.setVisibility(View.GONE);
+                tvLoginMessage.setText(savedInstanceState.getString("MSG"));
+            } else if (!savedInstanceState.getString("ST").equals("AC")) {
+                etMobileNo.setVisibility(View.GONE);
+                btnRegister.setVisibility(View.GONE);
+                mUser.MobileNo = etMobileNo.getText().toString();
+                etSecretKey.setVisibility(View.VISIBLE);
+                tvOTP.setVisibility(View.VISIBLE);
+                btnVerifyOTP.setVisibility(View.VISIBLE);
+                btnScanOR.setVisibility(View.VISIBLE);
+                tvLoginMessage.setText(savedInstanceState.getString("MSG"));
+            }
+            mActivityStatus = savedInstanceState.getString("ST");
+        }
+
+        tvStatus = (TextView) findViewById(R.id.tvStatus);
+        tvStatus.setText(""); //mActivityStatus);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        // Save the user's current state
+        savedInstanceState.putString("ST", mActivityStatus);
+        savedInstanceState.putString("MSG", mRespMsg);
+        if (!mActivityStatus.equals("AC")) {
+            savedInstanceState.putString("API", apiRespUserStat.toString());
+            savedInstanceState.putString("MDN", mUser.MobileNo);
+        }
+        // Always call the superclass so it can save the view hierarchy state
+        super.onSaveInstanceState(savedInstanceState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        mActivityStatus = savedInstanceState.getString("ST");
+        mRespMsg = savedInstanceState.getString("MSG");
+        if (!mActivityStatus.equals("AC")) {
+            mUser.MobileNo = savedInstanceState.getString("MDN");
+            try {
+                apiRespUserStat = new JSONObject(savedInstanceState.getString("API"));
+            } catch (JSONException e) {
+                Log.e(TAG, e.getMessage());
+            }
+        }
+        super.onRestoreInstanceState(savedInstanceState);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        Log.i(getString(R.string.app_name), TAG + ": onActivityResult");
+        if (requestCode == SCAN_REQUEST && resultCode == Activity.RESULT_OK) {
+            // Grab the scan results and convert it into a URI
+            String scanResult = (intent != null) ? intent.getStringExtra("SCAN_RESULT") : null;
+            Uri uri = (scanResult != null) ? Uri.parse(scanResult) : null;
+            interpretScanResult(uri, false);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mAccountDb.close();
+        rQueue.cancelAll(TAG);
     }
 
     /**
@@ -120,7 +241,7 @@ public class LoginActivity extends ActionBarActivity {
                 //       will present a toast with a uniform duration, and perhaps update
                 //       status messages (presuming we have a way to remove them after they
                 //       are stale).
-                Toast.makeText(context, R.string.secret_saved, Toast.LENGTH_LONG).show();
+                //Toast.makeText(context, R.string.secret_saved, Toast.LENGTH_LONG).show();
                 ((Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE))
                         .vibrate(VIBRATE_DURATION);
                 accountDb.close();
@@ -222,61 +343,6 @@ public class LoginActivity extends ActionBarActivity {
                 startActivity(intent);
             }
             Toast.makeText(this, R.string.install_dialog_message, Toast.LENGTH_LONG).show();
-        }
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
-
-        mAccountDb = new AccountDb(this);
-        mOtpProvider = new OtpProvider(mAccountDb, new TotpClock(this));
-
-        tvLoginMessage = (TextView) findViewById(R.id.tvLoginMessage);
-        etMobileNo = (EditText) findViewById(R.id.etUserMobile);
-        etSecretKey = (EditText) findViewById(R.id.etSecretKey);
-        pbLoginWait = (ProgressBar) findViewById(R.id.pbLoginWait);
-        btnStartMessaging = (Button) findViewById(R.id.btnStart);
-        btnSaveKey = (Button) findViewById(R.id.btnSaveKey);
-        btnVerifyOTP = (Button) findViewById(R.id.btnVerifyOTP);
-        tvOTP = (TextView) findViewById(R.id.tvOTP);
-        mUser = new User();
-        btnScanOR = (ImageButton) findViewById(R.id.btnScanQR);
-        btnScanOR.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                scanBarcode();
-            }
-        });
-
-
-        btnRegister = (ImageButton) findViewById(R.id.btnUpdateProfile);
-
-        pbLoginWait.setVisibility(View.GONE);
-        btnStartMessaging.setVisibility(View.GONE);
-        btnSaveKey.setVisibility(View.GONE);
-        btnVerifyOTP.setVisibility(View.GONE);
-        etSecretKey.setVisibility(View.GONE);
-        tvOTP.setVisibility(View.GONE);
-        btnScanOR.setVisibility(View.GONE);
-
-        btnRegister.setOnClickListener(new RegisterButtonListener());
-        btnStartMessaging.setOnClickListener(new StartMessagingButtonListener());
-        btnSaveKey.setOnClickListener(new SaveKeyButtonListener());
-        btnVerifyOTP.setOnClickListener(new NextOtpButtonListener(mUser));
-
-        rQueue = VolleyAPI.getInstance(this).getRequestQueue();
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        Log.i(getString(R.string.app_name), TAG + ": onActivityResult");
-        if (requestCode == SCAN_REQUEST && resultCode == Activity.RESULT_OK) {
-            // Grab the scan results and convert it into a URI
-            String scanResult = (intent != null) ? intent.getStringExtra("SCAN_RESULT") : null;
-            Uri uri = (scanResult != null) ? Uri.parse(scanResult) : null;
-            interpretScanResult(uri, false);
         }
     }
 
@@ -390,30 +456,8 @@ public class LoginActivity extends ActionBarActivity {
                 null,
                 AccountDb.OtpType.HOTP,
                 AccountDb.DEFAULT_HOTP_COUNTER);
+        mActivityStatus = "OT";
         btnVerifyOTP.performClick();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.login, menu);
-        return true;
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mAccountDb.close();
-        rQueue.cancelAll(TAG);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        return id == R.id.action_settings || super.onOptionsItemSelected(item);
     }
 
     /**
@@ -422,7 +466,7 @@ public class LoginActivity extends ActionBarActivity {
     private class RegisterButtonListener implements OnClickListener {
         @Override
         public void onClick(View view) {
-
+            mActivityStatus = "Requested for Registration";
             etMobileNo.setVisibility(View.GONE);
             btnRegister.setVisibility(View.GONE);
             tvLoginMessage.setText(getText(R.string.login_wait_message));
@@ -435,7 +479,7 @@ public class LoginActivity extends ActionBarActivity {
                 jsonPost.put("API", "RU");
                 jsonPost.put("MDN", etMobileNo.getText());
             } catch (JSONException e) {
-                e.printStackTrace();
+                Log.e(TAG, e.getMessage());
             }
 
             JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST,
@@ -445,28 +489,24 @@ public class LoginActivity extends ActionBarActivity {
                         @Override
                         public void onResponse(JSONObject response) {
                             Log.d(TAG, response.toString());
-
-                            Toast.makeText(getApplicationContext(),
-                                    response.optString(DashAIO.KEY_STATUS),
-                                    Toast.LENGTH_SHORT).show();
                             apiRespUserStat = response;
                             if (response.optBoolean(DashAIO.KEY_API)) {
                                 etSecretKey.setVisibility(View.VISIBLE);
-                                btnSaveKey.setVisibility(View.VISIBLE);
                                 tvOTP.setVisibility(View.VISIBLE);
                                 btnVerifyOTP.setVisibility(View.VISIBLE);
                                 btnScanOR.setVisibility(View.VISIBLE);
+                                mActivityStatus = "WK";
                             }
                             pbLoginWait.setVisibility(View.GONE);
-                            tvLoginMessage.setText(response.optString(DashAIO.KEY_STATUS));
+                            mRespMsg = response.optString(DashAIO.KEY_STATUS);
+                            tvLoginMessage.setText(mRespMsg);
                         }
                     }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     String msgError = "Error: " + error.getMessage();
                     Log.e(TAG, msgError);
-                    Toast.makeText(getApplicationContext(), msgError, Toast.LENGTH_LONG).show();
-
+                    tvLoginMessage.setText(msgError);
                     finish();
                 }
             }
@@ -479,38 +519,19 @@ public class LoginActivity extends ActionBarActivity {
     }
 
     /**
-     * Listener for the Button that saves the user Credentials for future use
-     * and completes the registration process.
+     * Listener for the Verify OTP Button that generates the next OTP value and tests it.
      */
-    private class StartMessagingButtonListener implements OnClickListener {
-        @Override
-        public void onClick(View view) {
-            Intent data = new Intent();
-            data.putExtra(DashAIO.PREF_KEY_MOBILE, mUser.MobileNo);
-            try {
-                JSONObject userData = apiRespUserStat.getJSONObject("DB").getJSONArray("USER").getJSONObject(0);
-                data.putExtra(DashAIO.PREF_KEY_NAME, userData.optString("DisplayName"));
-                data.putExtra(DashAIO.PREF_KEY_POST, userData.optString("Designation"));
-                data.putExtra(DashAIO.PREF_KEY_EMAIL, userData.optString("eMailID"));
-                data.putExtra(DashAIO.PREF_KEY_UserMapID, userData.optString("UserMapID"));
-            } catch (JSONException e) {
-                e.printStackTrace();
-                Toast.makeText(getApplicationContext(),
-                        "Profile Error:" + e.getMessage(),
-                        Toast.LENGTH_LONG).show();
-                Log.e(TAG, "Profile Error:" + e.getMessage());
-            }
-            setResult(RESULT_OK, data);
-            finish();
-        }
-    }
+    private class GenerateAndVerifyOtpButtonListener implements OnClickListener {
+        private final Handler mHandler = new Handler();
+        private final User mAccount;
 
-    /**
-     * Listener for the Button that Validates and Saves the OTP Secret Key of the user.
-     */
-    private class SaveKeyButtonListener implements OnClickListener {
+        private GenerateAndVerifyOtpButtonListener(User account) {
+            mAccount = account;
+        }
+
         @Override
-        public void onClick(View view) {
+        public void onClick(View v) {
+
             if (validateKeyAndUpdateStatus(true)) {
                 saveSecret(LoginActivity.this,
                         etMobileNo.getText().toString(),
@@ -519,26 +540,11 @@ public class LoginActivity extends ActionBarActivity {
                         AccountDb.OtpType.HOTP,
                         AccountDb.DEFAULT_HOTP_COUNTER);
             }
-        }
-    }
-
-    /**
-     * Listener for the Button that generates the next OTP value and tests it.
-     */
-    private class NextOtpButtonListener implements OnClickListener {
-        private final Handler mHandler = new Handler();
-        private final User mAccount;
-
-        private NextOtpButtonListener(User account) {
-            mAccount = account;
-        }
-
-        @Override
-        public void onClick(View v) {
 
             try {
                 computeAndDisplayPin(mAccount.MobileNo, /*position,*/ true);
             } catch (OtpSourceException e) {
+                Log.e(TAG, "CDP:MDN: " + mAccount.MobileNo + e.getMessage());
                 return;
             }
 
@@ -549,7 +555,7 @@ public class LoginActivity extends ActionBarActivity {
             tvOTP.setText(pin); //mUserAdapter.notifyDataSetChanged();
 
             // Verify the PIN with Server
-            JSONObject jsonPost = new JSONObject();
+            final JSONObject jsonPost = new JSONObject();
 
             try {
                 jsonPost.put("API", "OT");
@@ -559,6 +565,8 @@ public class LoginActivity extends ActionBarActivity {
                 e.printStackTrace();
             }
 
+            mActivityStatus = "OT";
+
             JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST,
                     DashAIO.API_URL, jsonPost,
                     new Response.Listener<JSONObject>() {
@@ -566,25 +574,24 @@ public class LoginActivity extends ActionBarActivity {
                         @Override
                         public void onResponse(JSONObject response) {
                             Log.d(TAG, response.toString());
-                            Toast.makeText(getApplicationContext(), response.optString(DashAIO.KEY_STATUS)
-                                    + " Counter: " + mAccountDb.getCounter(mAccount.MobileNo), Toast.LENGTH_SHORT).show();
                             apiRespUserStat = response;
                             if (response.optBoolean(DashAIO.KEY_API)) {
                                 etSecretKey.setVisibility(View.GONE);
                                 btnStartMessaging.setVisibility(View.VISIBLE);
-                                btnSaveKey.setVisibility(View.GONE);
                                 btnVerifyOTP.setVisibility(View.GONE);
                                 tvOTP.setVisibility(View.GONE);
                                 btnScanOR.setVisibility(View.GONE);
+                                mActivityStatus = "SP";
                             }
-                            tvLoginMessage.setText(response.optString(DashAIO.KEY_STATUS));
+                            mRespMsg = response.optString(DashAIO.KEY_STATUS);
+                            tvLoginMessage.setText(mRespMsg);
                         }
                     }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    String msgError = "Error: " + error.getMessage();
-                    Log.e(TAG, msgError);
-                    Toast.makeText(getApplicationContext(), msgError, Toast.LENGTH_LONG).show();
+                    String msgError = "OT Error: " + error.getMessage();
+                    Log.e(TAG, jsonPost.toString() + msgError);
+                    tvLoginMessage.setText(msgError);
                 }
             }
             );
@@ -592,7 +599,7 @@ public class LoginActivity extends ActionBarActivity {
             // Adding request to request queue
             jsonObjReq.setTag(TAG);
             rQueue.add(jsonObjReq);
-
+            //tvStatus.setText(apiRespUserStat.toString());
 
             // The delayed operation below will be invoked once code generation is yet again allowed for
             // this account. The delay is in wall clock time (monotonically increasing) and is thus not
@@ -622,6 +629,32 @@ public class LoginActivity extends ActionBarActivity {
                     },
                     HOTP_DISPLAY_TIMEOUT
             );
+        }
+    }
+
+    /**
+     * Listener for the Start Button that sends the user Credentials to the calling activity
+     * and completes the registration process.
+     */
+    private class StartButtonListener implements OnClickListener {
+        @Override
+        public void onClick(View view) {
+            Intent data = new Intent();
+            data.putExtra(DashAIO.PREF_KEY_MOBILE, mUser.MobileNo);
+            try {
+                JSONObject userData = apiRespUserStat.getJSONObject("DB").getJSONArray("USER").getJSONObject(0);
+                data.putExtra(DashAIO.PREF_KEY_NAME, userData.optString("DisplayName"));
+                data.putExtra(DashAIO.PREF_KEY_POST, userData.optString("Designation"));
+                data.putExtra(DashAIO.PREF_KEY_EMAIL, userData.optString("eMailID"));
+                data.putExtra(DashAIO.PREF_KEY_UserMapID, userData.optString("UserMapID"));
+            } catch (JSONException e) {
+                e.printStackTrace();
+                String msgError= "SP Error:" + e.getMessage();
+                Log.e(TAG, msgError);
+                tvLoginMessage.setText(msgError);
+            }
+            setResult(RESULT_OK, data);
+            finish();
         }
     }
 }
