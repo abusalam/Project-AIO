@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,6 +15,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -65,12 +68,17 @@ public class DashAIO extends ActionBarActivity
     private OtpSource mOtpProvider;
     private RequestQueue rQueue;
     private TextView tvMsg;
+    private ListView mDrawerList;
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
     private NavigationDrawerFragment mNavigationDrawerFragment;
 
+    /**
+     * Used to store the last screen title. For use in {@link #restoreActionBar()}.
+     */
+    private CharSequence mTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,6 +111,8 @@ public class DashAIO extends ActionBarActivity
         TextView tvMobile = (TextView) findViewById(R.id.tvMobileNo);
         tvMsg = (TextView) findViewById(R.id.tvMsg);
 
+        mDrawerList = (ListView) findViewById(R.id.lvNavDrawer);
+
         SharedPreferences settings = getSharedPreferences(SECRET_PREF_NAME, MODE_PRIVATE);
         tvUserName.setText(settings.getString(PREF_KEY_NAME, ""));
         tvDesg.setText(settings.getString(PREF_KEY_POST, ""));
@@ -117,6 +127,9 @@ public class DashAIO extends ActionBarActivity
             tvMsg.setText("ID: " + mUser.UserMapID);
         }
 
+        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+
+        showAttendance();
     }
 
     @Override
@@ -129,12 +142,19 @@ public class DashAIO extends ActionBarActivity
     }
 
     @Override
+    public void setTitle(CharSequence title) {
+        mTitle = title;
+        getActionBar().setTitle(mTitle);
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         if (!mNavigationDrawerFragment.isDrawerOpen()) {
             // Only show items in the action bar relevant to this screen
             // if the drawer is not showing. Otherwise, let the drawer
             // decide what to show in the action bar.
             getMenuInflater().inflate(R.menu.dash_aio, menu);
+            restoreActionBar();
             return true;
         }
         return super.onCreateOptionsMenu(menu);
@@ -169,40 +189,25 @@ public class DashAIO extends ActionBarActivity
     }
 
     public void onSectionAttached(int number) {
-        String[] mDrawerMenuList = getResources().getStringArray(R.array.drawer_menu_list);
+        switch (number) {
+            case 1:
+                mTitle = getString(R.string.title_Home);
+                //startActivity(new Intent(getApplicationContext(), FullscreenActivity.class));
+                break;
+            case 2:
+                mTitle = getString(R.string.title_activity_scheme);
+                break;
+            case 3:
+                mTitle = getString(R.string.title_activity_group_sms);
+                break;
+        }
+    }
 
-        if (number == mDrawerMenuList.length) {
-            Intent intent = new Intent(Intent.ACTION_MAIN);
-            intent.addCategory(Intent.CATEGORY_HOME);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
-            finish();
-        }
-        Log.e("MenuLink-Number: ", "" + number);
-        SharedPreferences mInSecurePrefs = getSharedPreferences(SECRET_PREF_NAME,
-                MODE_PRIVATE);
-        if (mInSecurePrefs == null) {
-            Log.e("StartLogin: ", "Preference not found");
-        } else {
-            String MobileNo = mInSecurePrefs.getString(PREF_KEY_MOBILE, null);
-            if (MobileNo == null) {
-                startActivityForResult(new Intent(getApplicationContext(),
-                        LoginActivity.class), UPDATE_PROFILE_REQUEST);
-            } else {
-                switch (number) {
-                    case 1:
-                        showAttendance();
-                        break;
-                    case 2:
-                        startActivity(new Intent(getApplicationContext(), SchemeActivity.class)
-                                .putExtra(SchemeActivity.UID, mUser.UserMapID));
-                        break;
-                    case 3:
-                        startActivity(new Intent(getApplicationContext(), GroupSMS.class));
-                        break;
-                }
-            }
-        }
+    public void restoreActionBar() {
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+        actionBar.setDisplayShowTitleEnabled(true);
+        actionBar.setTitle(mTitle);
     }
 
     protected void onActivityResult(int requestCode, int resultCode,
@@ -405,6 +410,41 @@ public class DashAIO extends ActionBarActivity
             super.onAttach(activity);
             ((DashAIO) activity).onSectionAttached(
                     getArguments().getInt(ARG_SECTION_NUMBER));
+        }
+    }
+
+    private class DrawerItemClickListener implements ListView.OnItemClickListener {
+        @Override
+        public void onItemClick(AdapterView parent, View view, int position, long id) {
+            Log.e("MenuLink-Number: ", "" + position);
+            SharedPreferences mInSecurePrefs = getSharedPreferences(SECRET_PREF_NAME,
+                    MODE_PRIVATE);
+            if (mInSecurePrefs == null) {
+                Log.e("StartLogin: ", "Preference not found");
+            } else {
+                String MobileNo = mInSecurePrefs.getString(PREF_KEY_MOBILE, null);
+                if (MobileNo == null) {
+                    startActivityForResult(new Intent(getApplicationContext(),
+                            LoginActivity.class), UPDATE_PROFILE_REQUEST);
+                } else {
+                    switch (position) {
+                        case 1:
+                            startActivity(new Intent(getApplicationContext(), SchemeActivity.class)
+                                    .putExtra(SchemeActivity.UID, mUser.UserMapID));
+                            break;
+                        case 2:
+                            startActivity(new Intent(getApplicationContext(), GroupSMS.class));
+                            break;
+                        case 3:
+                            Intent intent = new Intent(Intent.ACTION_MAIN);
+                            intent.addCategory(Intent.CATEGORY_HOME);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(intent);
+                            finish();
+                            break;
+                    }
+                }
+            }
         }
     }
 }

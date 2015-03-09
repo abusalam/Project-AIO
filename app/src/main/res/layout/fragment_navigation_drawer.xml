@@ -10,4 +10,5 @@
     android:footerDividersEnabled="false"
     android:focusableInTouchMode="true"
     android:drawSelectorOnTop="false"
-    android:headerDividersEnabled="true" />
+    android:headerDividersEnabled="true"
+    android:id="@+id/lvNavDrawer" />

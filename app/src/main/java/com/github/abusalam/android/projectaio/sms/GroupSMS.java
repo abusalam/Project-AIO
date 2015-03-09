@@ -113,7 +113,7 @@ public class GroupSMS extends ActionBarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.group_sm, menu);
+        //getMenuInflater().inflate(R.menu.group_sm, menu);
         return true;
     }
 
@@ -158,7 +158,7 @@ public class GroupSMS extends ActionBarActivity {
         int id = item.getItemId();
 
         if (id == R.id.action_settings) {
-            startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
+            //startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
             return true;
         }
         return super.onOptionsItemSelected(item);
