@@ -105,10 +105,10 @@ public class DashAIO extends ActionBarActivity
 
         NetConnection IC = new NetConnection(getApplicationContext());
         TextView tvNetConn = (TextView) findViewById(R.id.tvNetConn);
-        TextView tvUserName = (TextView) findViewById(R.id.tvUserName);
-        TextView tvDesg = (TextView) findViewById(R.id.tvDesignation);
-        TextView tvEMail = (TextView) findViewById(R.id.tvEMailID);
-        TextView tvMobile = (TextView) findViewById(R.id.tvMobileNo);
+        TextView tvUserName = (TextView) findViewById(R.id.tvNavUserName);
+        TextView tvDesg = (TextView) findViewById(R.id.tvNavDesg);
+        TextView tvEMail = (TextView) findViewById(R.id.tvNavEmail);
+        TextView tvMobile = (TextView) findViewById(R.id.tvNavMobile);
         tvMsg = (TextView) findViewById(R.id.tvMsg);
 
         mDrawerList = (ListView) findViewById(R.id.lvNavDrawer);
@@ -122,14 +122,15 @@ public class DashAIO extends ActionBarActivity
 
         if (IC.isDeviceConnected()) {
             tvNetConn.setText(getString(R.string.IC));
+            showAttendance();
         } else {
             tvNetConn.setText(getString(R.string.NC));
             tvMsg.setText("ID: " + mUser.UserMapID);
         }
 
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
-
-        showAttendance();
+        TextView tvAppVersion = (TextView) findViewById(R.id.tvAppVersion);
+        tvAppVersion.setText(getString(R.string.lbl_app_version) + " " + BuildConfig.VERSION_NAME);
     }
 
     @Override

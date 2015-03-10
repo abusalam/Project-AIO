@@ -29,7 +29,7 @@
     <string name="btn_send_msg_content_description">Sent this message</string>
 
     <string-array name="drawer_menu_list">
-        <item>User Profile</item>
+        <item>Update Profile</item>
         <item>Scheme Progress</item>
         <item>Group SMS</item>
         <item>Exit</item>
@@ -102,4 +102,5 @@
     <string name="ea_hint">Enter Expenditure Amount</string>
     <string name="sync_otp_text">Sync OTP Generation</string>
     <string name="msg_sync_otp">Synchronizing…</string>
+    <string name="lbl_app_version">App Version:</string>
 </resources>
