@@ -53,10 +53,6 @@ public class DashAIO extends ActionBarActivity
     public static final String SECRET_PREF_NAME = "mPrefSecrets";
     public static final String PREF_KEY_UserMapID = "UserMapID";
 
-    // WebServer Request URL
-    //String serverURL = "http://echo.jsontest.com/key/value/one/two";
-    //String serverURL = "http://10.42.0.1/apps/android/api.php";
-    //String serverURL = "http://www.paschimmedinipur.gov.in/apps/android/api.php";
     public static final String PREF_KEY_MOBILE = "pref_mobile";
     static final int UPDATE_PROFILE_REQUEST = 0;
     static final String PREF_KEY_NAME = "pref_display_name";
@@ -121,7 +117,7 @@ public class DashAIO extends ActionBarActivity
         mUser.UserMapID = settings.getString(PREF_KEY_UserMapID, "Not Available");
 
         if (IC.isDeviceConnected()) {
-            tvNetConn.setText(getString(R.string.IC));
+            tvNetConn.setVisibility(View.GONE);
             showAttendance();
         } else {
             tvNetConn.setText(getString(R.string.NC));
@@ -145,7 +141,7 @@ public class DashAIO extends ActionBarActivity
     @Override
     public void setTitle(CharSequence title) {
         mTitle = title;
-        getActionBar().setTitle(mTitle);
+        getSupportActionBar().setTitle(mTitle);
     }
 
     @Override
