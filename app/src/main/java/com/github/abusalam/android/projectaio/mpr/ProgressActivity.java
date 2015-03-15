@@ -1,8 +1,10 @@
 package com.github.abusalam.android.projectaio.mpr;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -94,7 +96,7 @@ public class ProgressActivity extends ActionBarActivity {
         setTitle(getIntent().getExtras().getString(DYN_TITLE)
                 + " : " + getString(R.string.title_activity_progress_mpr)
                 + " (" + mWork.getProgress() + "%)");
-        
+
         if (mUser.UserMapID.equals("" + mWork.getUserMapID())) {
             btnSave.setOnClickListener(new UpdateClickListener());
         } else {
@@ -115,11 +117,15 @@ public class ProgressActivity extends ActionBarActivity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                Intent intent = NavUtils.getParentActivityIntent(this);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                NavUtils.navigateUpTo(this, intent);
+                return true;
+            case R.id.action_settings:
+                return true;
         }
 
         return super.onOptionsItemSelected(item);

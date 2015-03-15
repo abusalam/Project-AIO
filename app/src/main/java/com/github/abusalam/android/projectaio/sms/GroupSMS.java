@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -31,7 +32,6 @@ import com.github.abusalam.android.projectaio.GoogleAuthenticator.OtpSource;
 import com.github.abusalam.android.projectaio.GoogleAuthenticator.OtpSourceException;
 import com.github.abusalam.android.projectaio.GoogleAuthenticator.TotpClock;
 import com.github.abusalam.android.projectaio.R;
-import com.github.abusalam.android.projectaio.SettingsActivity;
 import com.github.abusalam.android.projectaio.User;
 import com.github.abusalam.android.projectaio.ajax.VolleyAPI;
 
@@ -155,11 +155,16 @@ public class GroupSMS extends ActionBarActivity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        if (id == R.id.action_settings) {
-            //startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
-            return true;
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                Intent intent = NavUtils.getParentActivityIntent(this);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                NavUtils.navigateUpTo(this, intent);
+                return true;
+            case R.id.action_settings:
+                //startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
