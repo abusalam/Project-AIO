@@ -424,7 +424,7 @@ public class DashAIO extends ActionBarActivity
                     startActivityForResult(new Intent(getApplicationContext(),
                             LoginActivity.class), UPDATE_PROFILE_REQUEST);
                 } else {
-                    switch (position) {
+                    switch (position-1) {
                         case 1:
                             startActivity(new Intent(getApplicationContext(), SchemeActivity.class)
                                     .putExtra(SchemeActivity.UID, mUser.UserMapID));

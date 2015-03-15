@@ -103,4 +103,5 @@
     <string name="sync_otp_text">Sync OTP Generation</string>
     <string name="msg_sync_otp">Synchronizing…</string>
     <string name="lbl_app_version">App Version:</string>
+    <string name="msg_about">Developed by NIC, Paschim Medinipur</string>
 </resources>

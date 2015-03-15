@@ -18,10 +18,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
+
+import java.util.ArrayList;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer.
@@ -100,19 +101,18 @@ public class NavigationDrawerFragment extends Fragment {
                 selectItem(position);
             }
         });
+        View v = inflater.inflate(R.layout.profile_view, container);
+        mDrawerListView.addHeaderView(v);
 
+        ArrayList<AppMenu> mMenuList = new ArrayList<>();
         String[] mDrawerMenuList = getResources().getStringArray(R.array.drawer_menu_list);
-        mDrawerListView.setAdapter(new ArrayAdapter<String>(
-                getActionBar().getThemedContext(),
-                android.R.layout.simple_list_item_1,
-                android.R.id.text1,
-                mDrawerMenuList
-                /*new String[]{
-                        getString(R.string.title_Home),
-                        getString(R.string.title_GroupSMS),
-                        getString(R.string.title_Reports),
-                        getString(R.string.title_Login)
-                }*/));
+        for (String mMenuItem : mDrawerMenuList) {
+            AppMenu mAppMenu = new AppMenu();
+            mAppMenu.setCaption(mMenuItem);
+            mMenuList.add(mAppMenu);
+        }
+
+        mDrawerListView.setAdapter(new MenuAdapter(getActivity(), R.layout.fragment_dash_aio, mMenuList));
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
         return mDrawerContainer;
     }
@@ -256,7 +256,7 @@ public class NavigationDrawerFragment extends Fragment {
 
         if (item.getItemId() == R.id.action_about) {
 
-            Toast.makeText(getActivity(), "Developed by NIC", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), getActivity().getString(R.string.msg_about), Toast.LENGTH_SHORT).show();
             return true;
         }
 

@@ -19,10 +19,7 @@ public class NetConnection {
         ConnectivityManager connMgr = (ConnectivityManager) _context.getSystemService(Context.CONNECTIVITY_SERVICE);
         if (connMgr != null) {
             NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-            if (networkInfo != null && networkInfo.isConnected()) {
-                return true;
-            }
-            return false;
+            return networkInfo != null && networkInfo.isConnected();
         }
         return false;
     }

@@ -17,9 +17,6 @@ import com.android.volley.toolbox.Volley;
 
 import org.json.JSONObject;
 
-/**
- * Created by abu on 17/8/14.
- */
 public class VolleyAPI {
 
     public static final String TAG = VolleyAPI.class.getSimpleName();
