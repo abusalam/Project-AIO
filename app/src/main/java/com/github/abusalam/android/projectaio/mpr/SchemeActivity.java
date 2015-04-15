@@ -35,7 +35,7 @@ import java.util.ArrayList;
 public class SchemeActivity extends ActionBarActivity {
     public static final String TAG = SchemeActivity.class.getSimpleName();
     public static final String UID = "UID";
-    static final String API_URL = "http://" + DashAIO.API_HOST + "/apps/mpr/android/api.php";
+    static final String API_URL = DashAIO.API_HOST + "/apps/mpr/android/api.php";
     static final String SECRET_PREF_NAME = "mPrefSecrets";
     static final String SID = "ID";
     static final String SN = "SN";

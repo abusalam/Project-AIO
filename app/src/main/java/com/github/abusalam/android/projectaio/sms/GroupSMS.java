@@ -45,7 +45,7 @@ import java.util.ArrayList;
 public class GroupSMS extends ActionBarActivity {
 
     public static final String TAG = GroupSMS.class.getSimpleName();
-    static final String API_URL = "http://" + DashAIO.API_HOST + "/apps/smsgw/android/api.php";
+    static final String API_URL = DashAIO.API_HOST + "/apps/smsgw/android/api.php";
     /**
      * Minimum amount of time (milliseconds) that has to elapse from the moment a HOTP code is
      * generated for an account until the moment the next code can be generated for the account.

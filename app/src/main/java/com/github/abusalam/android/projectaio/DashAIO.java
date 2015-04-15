@@ -46,7 +46,7 @@ public class DashAIO extends ActionBarActivity
 
     public static final String TAG = DashAIO.class.getSimpleName();
     public static final String API_HOST = "10.42.0.1";
-    static final String API_URL = "http://" + API_HOST + "/apps/android/api.php";
+    static final String API_URL = API_HOST + "/apps/android/api.php";
     public static final String KEY_SENT_ON = "ST";
     public static final String KEY_STATUS = "MSG";
     public static final String KEY_API = "API";
@@ -316,13 +316,12 @@ public class DashAIO extends ActionBarActivity
 
     private void showAttendance() {
         final JSONObject jsonPost = new JSONObject();
-        final String AR_API = "http://" + API_HOST + "/apps/nic/android/api.php";
+        final String AR_API = API_HOST + "/apps/nic/android/api.php";
 
         try {
             mUser.pin = mOtpProvider.getNextCode(mUser.MobileNo);
         } catch (OtpSourceException e) {
-            tvMsg.setText("Error: " + e.getMessage()
-                    + " Mobile:" + mUser.MobileNo);
+            tvMsg.setText("You are not registered!");
             return;
         }
 
