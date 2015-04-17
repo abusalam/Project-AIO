@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -48,6 +49,7 @@ public class WorkActivity extends ActionBarActivity {
     private RequestQueue rQueue;
     private ArrayList<Work> WorkList;
     private ListView lvWorks;
+    private ProgressBar prgBar;
 
     private String UserID;
     private Long SchemeID;
@@ -61,9 +63,10 @@ public class WorkActivity extends ActionBarActivity {
         mPrefs = getSharedPreferences(SECRET_PREF_NAME, MODE_PRIVATE);
         rQueue = VolleyAPI.getInstance(this).getRequestQueue();
         lvWorks = (ListView) findViewById(R.id.lvWorks);
+        prgBar = (ProgressBar) findViewById(R.id.pbWorks);
 
         lvWorks.setOnItemClickListener(new SelectWorkClickListener());
-        WorkList = new ArrayList<Work>();
+        WorkList = new ArrayList<>();
 
         Bundle mBundle = getIntent().getExtras();
         if (mBundle == null) {
@@ -185,6 +188,7 @@ public class WorkActivity extends ActionBarActivity {
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
+                        prgBar.setVisibility(View.GONE);
 
                     }
                 }, new Response.ErrorListener() {

@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -45,6 +46,7 @@ public class SchemeActivity extends ActionBarActivity {
     private ArrayList<Scheme> SchemeList;
     private ListView lvSchemes;
     private String UserID;
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +57,7 @@ public class SchemeActivity extends ActionBarActivity {
 
         rQueue = VolleyAPI.getInstance(this).getRequestQueue();
         lvSchemes = (ListView) findViewById(R.id.lvSchemes);
-
+        progressBar = (ProgressBar) findViewById(R.id.pbSchemes);
         lvSchemes.setOnItemClickListener(new SelectSchemeClickListener());
         SchemeList = new ArrayList<>();
 
@@ -162,7 +164,7 @@ public class SchemeActivity extends ActionBarActivity {
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-
+                        progressBar.setVisibility(View.GONE);
                     }
                 }, new Response.ErrorListener() {
 
