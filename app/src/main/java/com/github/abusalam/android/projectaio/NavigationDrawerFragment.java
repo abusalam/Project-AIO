@@ -105,6 +105,7 @@ public class NavigationDrawerFragment extends Fragment {
         mDrawerListView.addHeaderView(v);
 
         ArrayList<AppMenu> mMenuList = new ArrayList<>();
+        //TODO: Dynamic Menu is to be prepared here.
         String[] mDrawerMenuList = getResources().getStringArray(R.array.drawer_menu_list);
         for (String mMenuItem : mDrawerMenuList) {
             AppMenu mAppMenu = new AppMenu();

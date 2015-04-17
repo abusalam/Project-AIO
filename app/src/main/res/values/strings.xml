@@ -95,7 +95,7 @@
     <string name="lbl_work_name">Work Description</string>
     <string name="lbl_works">Work Progress:</string>
     <string name="lbl_prg_val">: (0%)</string>
-    <string name="lbl_balance">Balance:</string>
+    <string name="lbl_balance">Balance: ₹ </string>
     <string name="bal_val">0</string>
     <string name="msg_insufficient_balance">Expenditure is more than balance.</string>
     <string name="lbl_work_remark">Work Remarks:</string>
@@ -104,4 +104,8 @@
     <string name="msg_sync_otp">Synchronizing…</string>
     <string name="lbl_app_version">App Version:</string>
     <string name="msg_about">Developed by NIC, Paschim Medinipur</string>
+    <string name="title_activity_user">Select User</string>
+    <string name="lbl_username">User Name</string>
+    <string name="lblSchemeCount">Schemes: Completed/Total</string>
+    <string name="lblSanctionedAmount">Sanctioned Amount</string>
 </resources>

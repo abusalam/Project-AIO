@@ -1,12 +1,11 @@
 package com.github.abusalam.android.projectaio.mpr;
 
-
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -32,50 +31,58 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+public class UserActivity extends ActionBarActivity {
+    public static final String TAG = WorkActivity.class.getSimpleName();
+    public static final String UserName = "UN";
+    public static final String UID = "ID";
+    public static final String Funds = "F";
+    public static final String Bal = "B";
+    public static final String MobileNo = "M";
+    public static final String SchCount = "S";
 
-public class SchemeActivity extends ActionBarActivity {
-    public static final String TAG = SchemeActivity.class.getSimpleName();
-    public static final String UID = "UID";
-    static final String API_URL = DashAIO.API_HOST + "/apps/mpr/android/api.php";
+
     static final String SECRET_PREF_NAME = "mPrefSecrets";
-    static final String SID = "ID";
-    static final String SN = "SN";
     private SharedPreferences mPrefs;
+
     private JSONArray respJsonArray;
     private RequestQueue rQueue;
-    private ArrayList<Scheme> SchemeList;
-    private ListView lvSchemes;
-    private String UserID;
-    private ProgressBar progressBar;
+    private ArrayList<User> UserList;
+    private ListView lvUsers;
+    private ProgressBar prgBar;
 
+    private Long SchemeID;
+    private String SchemeName;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_scheme);
+        setContentView(R.layout.activity_user);
 
         mPrefs = getSharedPreferences(SECRET_PREF_NAME, MODE_PRIVATE);
-
         rQueue = VolleyAPI.getInstance(this).getRequestQueue();
-        lvSchemes = (ListView) findViewById(R.id.lvSchemes);
-        progressBar = (ProgressBar) findViewById(R.id.pbSchemes);
-        lvSchemes.setOnItemClickListener(new SelectSchemeClickListener());
-        SchemeList = new ArrayList<>();
+        lvUsers = (ListView) findViewById(R.id.lvUsers);
+        prgBar = (ProgressBar) findViewById(R.id.pbUsers);
 
+        lvUsers.setOnItemClickListener(new SelectUserClickListener());
+        UserList = new ArrayList<>();
         Bundle mBundle = getIntent().getExtras();
         if (mBundle == null) {
-            UserID = mPrefs.getString(SchemeActivity.UID, "");
+            SchemeID = mPrefs.getLong(SchemeActivity.SID, 0);
+            SchemeName = mPrefs.getString(SchemeActivity.SN, "");
         } else {
-            UserID = mBundle.getString(SchemeActivity.UID);
+            SchemeID = mBundle.getLong(SchemeActivity.SID);
+            SchemeName = mBundle.getString(SchemeActivity.SN);
         }
 
-        getUserSchemes(UserID);
+        Log.e("Populate Users:", "Found-" + SchemeID);
+        getSchemeUsers(SchemeID);
+        setTitle(SchemeName + " : " + getString(R.string.title_activity_user));
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_scheme, menu);
+        getMenuInflater().inflate(R.menu.menu_user, menu);
         return true;
     }
 
@@ -98,19 +105,30 @@ public class SchemeActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
+
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
-        // Save the user's current game state
-        savedInstanceState.putString(UID, UserID);
+        // Save the user's current state
+        savedInstanceState.putLong(SchemeActivity.SID, SchemeID);
+        savedInstanceState.putString(SchemeActivity.SN, SchemeName);
         // Always call the superclass so it can save the view hierarchy state
         super.onSaveInstanceState(savedInstanceState);
     }
 
     @Override
     protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
-        // Restore value of members from saved state
-        UserID = savedInstanceState.getString(UID);
+        SchemeID = savedInstanceState.getLong(SchemeActivity.SID);
+        SchemeName = savedInstanceState.getString(SchemeActivity.SN);
         super.onRestoreInstanceState(savedInstanceState);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        SharedPreferences.Editor ed = mPrefs.edit();
+        ed.putLong(SchemeActivity.SID, SchemeID);
+        ed.putString(SchemeActivity.SN, SchemeName);
+        ed.apply();
     }
 
     @Override
@@ -119,52 +137,61 @@ public class SchemeActivity extends ActionBarActivity {
         rQueue.cancelAll(TAG);
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        SharedPreferences.Editor ed = mPrefs.edit();
-        ed.putString(UID, UserID);
-        ed.apply();
+    private class SelectUserClickListener implements ListView.OnItemClickListener {
+        @Override
+        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+            Intent iWorks = new Intent(getApplicationContext(), WorkActivity.class);
+            iWorks.putExtra(SchemeActivity.SID, SchemeID);
+            iWorks.putExtra(SchemeActivity.SN, SchemeName);
+            iWorks.putExtra(SchemeActivity.UID, "" + UserList.get(i).getUserID());
+            startActivity(iWorks);
+        }
     }
 
-    private void getUserSchemes(String UID) {
+    private void getSchemeUsers(Long SID) {
 
         final JSONObject jsonPost = new JSONObject();
 
         try {
-            jsonPost.put(DashAIO.KEY_API, "US");
-            jsonPost.put("UID", UID);
-            Log.e(TAG, "UserMapID: " + UID);
+            jsonPost.put(DashAIO.KEY_API, "SU");
+            jsonPost.put("SID", SID);
         } catch (JSONException e) {
             e.printStackTrace();
             return;
         }
 
         JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST,
-                API_URL, jsonPost,
+                SchemeActivity.API_URL, jsonPost,
                 new Response.Listener<JSONObject>() {
 
                     @Override
                     public void onResponse(JSONObject response) {
-                        Log.e(TAG, "UserSchemes: " + response.toString());
+                        Log.e(TAG, "SchemeUsers: " + response.toString());
                         Toast.makeText(getApplicationContext(),
                                 response.optString(DashAIO.KEY_STATUS),
                                 Toast.LENGTH_SHORT).show();
                         try {
                             respJsonArray = response.getJSONArray("DB");
                             for (int i = 0; i < respJsonArray.length(); i++) {
-                                Scheme mScheme = new Scheme();
-                                mScheme.setSchemeID(respJsonArray.getJSONObject(i).getInt("ID"));
-                                mScheme.setSchemeName(respJsonArray.getJSONObject(i).optString("SN"));
-                                SchemeList.add(mScheme);
+                                User mUser = new User();
+                                mUser.setUserID(respJsonArray.getJSONObject(i).getInt(UID));
+                                mUser.setUserName(respJsonArray.getJSONObject(i).optString(UserName));
+                                mUser.setBalance(Integer.parseInt(respJsonArray.getJSONObject(i)
+                                        .optString(Bal).replaceAll(",", "")));
+                                mUser.setSanctions(Integer.parseInt(respJsonArray.getJSONObject(i)
+                                        .optString(Funds).replaceAll(",", "")));
+                                mUser.setSchemes(respJsonArray.getJSONObject(i).optString(SchCount));
+                                mUser.setMobileNo(respJsonArray.getJSONObject(i).optString(MobileNo));
+                                UserList.add(mUser);
                             }
                             // Spinner adapter
-                            lvSchemes.setAdapter(new SchemeAdapter(SchemeActivity.this,
-                                    R.layout.scheme_view, SchemeList));
+                            lvUsers.setAdapter(new UserAdapter(UserActivity.this,
+                                    R.layout.user_view, UserList));
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                        progressBar.setVisibility(View.GONE);
+                        prgBar.setVisibility(View.GONE);
+
                     }
                 }, new Response.ErrorListener() {
 
@@ -182,21 +209,4 @@ public class SchemeActivity extends ActionBarActivity {
         //Toast.makeText(getApplicationContext(), "Loading All Schemes Please Wait...", Toast.LENGTH_SHORT).show();
     }
 
-    private class SelectSchemeClickListener implements ListView.OnItemClickListener {
-        @Override
-        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-
-            Long SchemeID = SchemeList.get(i).getSchemeID();
-            String SchemeName = SchemeList.get(i).getSchemeName();
-            //Toast.makeText(getApplicationContext(),
-            //        "Scheme ID: " + SchemeID
-            //                + " User: " + UserID,
-            //        Toast.LENGTH_SHORT).show();
-            Intent iWorks = new Intent(getApplicationContext(), UserActivity.class);
-            iWorks.putExtra(SchemeActivity.SID, SchemeID);
-            iWorks.putExtra(SchemeActivity.SN, SchemeName);
-            iWorks.putExtra(SchemeActivity.UID, UserID);
-            startActivity(iWorks);
-        }
-    }
 }
