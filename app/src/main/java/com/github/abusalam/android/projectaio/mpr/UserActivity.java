@@ -50,6 +50,7 @@ public class UserActivity extends ActionBarActivity {
     private ListView lvUsers;
     private ProgressBar prgBar;
 
+    private String UserID;
     private Long SchemeID;
     private String SchemeName;
     @Override
@@ -66,15 +67,17 @@ public class UserActivity extends ActionBarActivity {
         UserList = new ArrayList<>();
         Bundle mBundle = getIntent().getExtras();
         if (mBundle == null) {
+            UserID = mPrefs.getString(SchemeActivity.UID, "");
             SchemeID = mPrefs.getLong(SchemeActivity.SID, 0);
             SchemeName = mPrefs.getString(SchemeActivity.SN, "");
         } else {
+            UserID = mBundle.getString(SchemeActivity.UID);
             SchemeID = mBundle.getLong(SchemeActivity.SID);
             SchemeName = mBundle.getString(SchemeActivity.SN);
         }
 
         Log.e("Populate Users:", "Found-" + SchemeID);
-        getSchemeUsers(SchemeID);
+        getSchemeUsers(UserID, SchemeID);
         setTitle(SchemeName + " : " + getString(R.string.title_activity_user));
     }
 
@@ -109,6 +112,7 @@ public class UserActivity extends ActionBarActivity {
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         // Save the user's current state
+        savedInstanceState.putString(SchemeActivity.UID, UserID);
         savedInstanceState.putLong(SchemeActivity.SID, SchemeID);
         savedInstanceState.putString(SchemeActivity.SN, SchemeName);
         // Always call the superclass so it can save the view hierarchy state
@@ -117,6 +121,7 @@ public class UserActivity extends ActionBarActivity {
 
     @Override
     protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        UserID = savedInstanceState.getString(SchemeActivity.UID);
         SchemeID = savedInstanceState.getLong(SchemeActivity.SID);
         SchemeName = savedInstanceState.getString(SchemeActivity.SN);
         super.onRestoreInstanceState(savedInstanceState);
@@ -126,6 +131,7 @@ public class UserActivity extends ActionBarActivity {
     protected void onPause() {
         super.onPause();
         SharedPreferences.Editor ed = mPrefs.edit();
+        ed.putString(SchemeActivity.UID, UserID);
         ed.putLong(SchemeActivity.SID, SchemeID);
         ed.putString(SchemeActivity.SN, SchemeName);
         ed.apply();
@@ -148,12 +154,13 @@ public class UserActivity extends ActionBarActivity {
         }
     }
 
-    private void getSchemeUsers(Long SID) {
+    private void getSchemeUsers(String mUID, Long SID) {
 
         final JSONObject jsonPost = new JSONObject();
 
         try {
             jsonPost.put(DashAIO.KEY_API, "SU");
+            jsonPost.put("UID", mUID);
             jsonPost.put("SID", SID);
         } catch (JSONException e) {
             e.printStackTrace();

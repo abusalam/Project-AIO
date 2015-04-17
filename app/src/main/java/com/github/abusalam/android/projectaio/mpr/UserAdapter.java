@@ -47,7 +47,7 @@ public class UserAdapter extends ArrayAdapter<User> {
         tvBalance.setText("₹ " + mUsers.getBalance());
         tvUserName.setText(mUsers.getUserName());
         tvSanctioned.setText("₹ " + mUsers.getSanctions());
-        tvSchemes.setText(mUsers.getMobileNo());
+        tvSchemes.setText("[" + mUsers.getUserID() + "] " + mUsers.getMobileNo());
 
         return UserView;
     }
