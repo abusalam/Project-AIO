@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,7 +46,7 @@ public class DashAIO extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 
     public static final String TAG = DashAIO.class.getSimpleName();
-    public static final String API_HOST = "http://10.42.0.1";
+    public static final String API_HOST = "http://10.173.168.169";
     static final String API_URL = API_HOST + "/apps/android/api.php";
     public static final String KEY_SENT_ON = "ST";
     public static final String KEY_STATUS = "MSG";
@@ -65,6 +66,7 @@ public class DashAIO extends ActionBarActivity
     private RequestQueue rQueue;
     private TextView tvMsg;
     private ListView mDrawerList;
+    private SeekBar sbUserMapID;
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -105,6 +107,8 @@ public class DashAIO extends ActionBarActivity
         TextView tvDesg = (TextView) findViewById(R.id.tvNavDesg);
         TextView tvEMail = (TextView) findViewById(R.id.tvNavEmail);
         TextView tvMobile = (TextView) findViewById(R.id.tvNavMobile);
+        sbUserMapID = (SeekBar) findViewById(R.id.sbUserMapID);
+
         tvMsg = (TextView) findViewById(R.id.tvMsg);
 
         mDrawerList = (ListView) findViewById(R.id.lvNavDrawer);
@@ -127,6 +131,48 @@ public class DashAIO extends ActionBarActivity
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
         TextView tvAppVersion = (TextView) findViewById(R.id.tvAppVersion);
         tvAppVersion.setText(getString(R.string.lbl_app_version) + " " + BuildConfig.VERSION_NAME);
+
+        sbUserMapID.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                tvMsg.setText("ID: " + progress);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                tvMsg.setText("Progress: " + seekBar.getProgress());
+            }
+        });
+
+        sbUserMapID.setVisibility(View.INVISIBLE);
+
+        tvAppVersion.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+
+                if(sbUserMapID.getVisibility()==View.INVISIBLE){
+                    sbUserMapID.setVisibility(View.VISIBLE);
+                } else {
+                    sbUserMapID.setVisibility(View.INVISIBLE);
+                    SharedPreferences mInSecurePrefs = getSharedPreferences(SECRET_PREF_NAME,
+                            MODE_PRIVATE);
+                    SharedPreferences.Editor prefEdit = mInSecurePrefs.edit();
+                    prefEdit.putString(PREF_KEY_UserMapID, "" + sbUserMapID.getProgress());
+                    prefEdit.apply();
+                }
+
+                Toast.makeText(getApplicationContext(),
+                        getString(R.string.lbl_app_version) + " " + BuildConfig.VERSION_NAME,
+                        Toast.LENGTH_LONG).show();
+
+                return false;
+            }
+        });
     }
 
     @Override
@@ -189,7 +235,7 @@ public class DashAIO extends ActionBarActivity
         switch (number) {
             case 1:
                 mTitle = getString(R.string.title_Home);
-                //startActivity(new Intent(getApplicationContext(), FullscreenActivity.class));
+                //startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
                 break;
             case 2:
                 mTitle = getString(R.string.title_activity_scheme);
