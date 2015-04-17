@@ -135,7 +135,7 @@ public class DashAIO extends ActionBarActivity
         sbUserMapID.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                tvMsg.setText("ID: " + progress);
+                tvMsg.setText("Progress: " + progress);
             }
 
             @Override
@@ -145,7 +145,7 @@ public class DashAIO extends ActionBarActivity
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                tvMsg.setText("Progress: " + seekBar.getProgress());
+                tvMsg.setText("Selected: " + seekBar.getProgress());
             }
         });
 
@@ -155,7 +155,7 @@ public class DashAIO extends ActionBarActivity
             @Override
             public boolean onLongClick(View v) {
 
-                if(sbUserMapID.getVisibility()==View.INVISIBLE){
+                if (sbUserMapID.getVisibility() == View.INVISIBLE) {
                     sbUserMapID.setVisibility(View.VISIBLE);
                 } else {
                     sbUserMapID.setVisibility(View.INVISIBLE);
@@ -164,6 +164,7 @@ public class DashAIO extends ActionBarActivity
                     SharedPreferences.Editor prefEdit = mInSecurePrefs.edit();
                     prefEdit.putString(PREF_KEY_UserMapID, "" + sbUserMapID.getProgress());
                     prefEdit.apply();
+                    mUser.UserMapID = "" + sbUserMapID.getProgress();
                 }
 
                 Toast.makeText(getApplicationContext(),
@@ -177,7 +178,7 @@ public class DashAIO extends ActionBarActivity
 
     @Override
     public void onNavigationDrawerItemSelected(int position) {
-        // update the main content by replacing fragments
+        // TODO: update the main content by replacing fragments
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
                 .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
@@ -461,15 +462,18 @@ public class DashAIO extends ActionBarActivity
             Log.e("MenuLink-Number: ", "" + position);
             SharedPreferences mInSecurePrefs = getSharedPreferences(SECRET_PREF_NAME,
                     MODE_PRIVATE);
+            //TODO: Proper Menu decoding to be done here so that position could be avoided
+            final int ExitMenu = 3;
+            int MenuIndex = position - 1;
             if (mInSecurePrefs == null) {
                 Log.e("StartLogin: ", "Preference not found");
             } else {
                 String MobileNo = mInSecurePrefs.getString(PREF_KEY_MOBILE, null);
-                if (MobileNo == null) {
+                if ((MobileNo == null) && (MenuIndex < ExitMenu)) {
                     startActivityForResult(new Intent(getApplicationContext(),
                             LoginActivity.class), UPDATE_PROFILE_REQUEST);
                 } else {
-                    switch (position-1) {
+                    switch (MenuIndex) {
                         case 1:
                             startActivity(new Intent(getApplicationContext(), SchemeActivity.class)
                                     .putExtra(SchemeActivity.UID, mUser.UserMapID));
@@ -477,7 +481,7 @@ public class DashAIO extends ActionBarActivity
                         case 2:
                             startActivity(new Intent(getApplicationContext(), GroupSMS.class));
                             break;
-                        case 3:
+                        case ExitMenu:
                             Intent intent = new Intent(Intent.ACTION_MAIN);
                             intent.addCategory(Intent.CATEGORY_HOME);
                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
