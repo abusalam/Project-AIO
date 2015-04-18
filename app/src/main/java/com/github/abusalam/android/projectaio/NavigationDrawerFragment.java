@@ -113,7 +113,7 @@ public class NavigationDrawerFragment extends Fragment {
             mMenuList.add(mAppMenu);
         }
 
-        mDrawerListView.setAdapter(new MenuAdapter(getActivity(), R.layout.fragment_dash_aio, mMenuList));
+        mDrawerListView.setAdapter(new MenuAdapter(getActivity(), R.layout.fragment_navigation_menuitem, mMenuList));
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
         return mDrawerContainer;
     }

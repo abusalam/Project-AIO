@@ -15,8 +15,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -65,7 +63,6 @@ public class DashAIO extends ActionBarActivity
     private OtpSource mOtpProvider;
     private RequestQueue rQueue;
     private TextView tvMsg;
-    private ListView mDrawerList;
     private SeekBar sbUserMapID;
 
     /**
@@ -111,8 +108,6 @@ public class DashAIO extends ActionBarActivity
 
         tvMsg = (TextView) findViewById(R.id.tvMsg);
 
-        mDrawerList = (ListView) findViewById(R.id.lvNavDrawer);
-
         SharedPreferences settings = getSharedPreferences(SECRET_PREF_NAME, MODE_PRIVATE);
         tvUserName.setText(settings.getString(PREF_KEY_NAME, ""));
         tvDesg.setText(settings.getString(PREF_KEY_POST, ""));
@@ -128,7 +123,6 @@ public class DashAIO extends ActionBarActivity
             tvMsg.setText("ID: " + mUser.UserMapID);
         }
 
-        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
         TextView tvAppVersion = (TextView) findViewById(R.id.tvAppVersion);
         tvAppVersion.setText(getString(R.string.lbl_app_version) + " " + BuildConfig.VERSION_NAME);
 
@@ -174,15 +168,53 @@ public class DashAIO extends ActionBarActivity
                 return false;
             }
         });
+        //TODO: Not to be set title here while using fragment.
+        mTitle = getString(R.string.title_Home);
+        setTitle(mTitle);
     }
 
     @Override
-    public void onNavigationDrawerItemSelected(int position) {
+    public void onNavigationDrawerItemSelected(int MenuIndex) {
         // TODO: update the main content by replacing fragments
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
-                .commit();
+        SharedPreferences mInSecurePrefs = getSharedPreferences(SECRET_PREF_NAME,
+                MODE_PRIVATE);
+        //TODO: Proper Menu decoding to be done here so that position could be avoided
+        final int ExitMenu = 4;
+
+        if (mInSecurePrefs == null) {
+            Log.e("StartLogin: ", "Preference not found");
+        } else {
+            String MobileNo = mInSecurePrefs.getString(PREF_KEY_MOBILE, null);
+            if ((MobileNo == null) && (MenuIndex < ExitMenu)) {
+                startActivityForResult(new Intent(getApplicationContext(),
+                        LoginActivity.class), UPDATE_PROFILE_REQUEST);
+            } else {
+                switch (MenuIndex) {
+                    case 1:
+                        FragmentManager fragmentManager = getSupportFragmentManager();
+
+                        fragmentManager.beginTransaction()
+                                .replace(R.id.fragmentHolder, PlaceholderFragment.newInstance(MenuIndex + 1))
+                                .commit();
+                        setTitle(getString(R.string.btn_update_profile_text));
+                        break;
+                    case 2:
+                        startActivity(new Intent(getApplicationContext(), SchemeActivity.class)
+                                .putExtra(SchemeActivity.UID, mUser.UserMapID));
+                        break;
+                    case 3:
+                        startActivity(new Intent(getApplicationContext(), GroupSMS.class));
+                        break;
+                    case ExitMenu:
+                        Intent intent = new Intent(Intent.ACTION_MAIN);
+                        intent.addCategory(Intent.CATEGORY_HOME);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+                        finish();
+                        break;
+                }
+            }
+        }
     }
 
     @Override
@@ -236,13 +268,12 @@ public class DashAIO extends ActionBarActivity
         switch (number) {
             case 1:
                 mTitle = getString(R.string.title_Home);
-                //startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
                 break;
             case 2:
-                mTitle = getString(R.string.title_activity_scheme);
+                //mTitle = getString(R.string.title_activity_scheme);
                 break;
             case 3:
-                mTitle = getString(R.string.title_activity_group_sms);
+                //mTitle = getString(R.string.title_activity_group_sms);
                 break;
         }
     }
@@ -369,7 +400,8 @@ public class DashAIO extends ActionBarActivity
             mUser.pin = mOtpProvider.getNextCode(mUser.MobileNo);
         } catch (OtpSourceException e) {
             tvMsg.setText("You are not registered!");
-            startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+            startActivityForResult(new Intent(getApplicationContext(),
+                    LoginActivity.class), UPDATE_PROFILE_REQUEST);
             return;
         }
 
@@ -454,44 +486,6 @@ public class DashAIO extends ActionBarActivity
             super.onAttach(activity);
             ((DashAIO) activity).onSectionAttached(
                     getArguments().getInt(ARG_SECTION_NUMBER));
-        }
-    }
-
-    private class DrawerItemClickListener implements ListView.OnItemClickListener {
-        @Override
-        public void onItemClick(AdapterView parent, View view, int position, long id) {
-            Log.e("MenuLink-Number: ", "" + position);
-            SharedPreferences mInSecurePrefs = getSharedPreferences(SECRET_PREF_NAME,
-                    MODE_PRIVATE);
-            //TODO: Proper Menu decoding to be done here so that position could be avoided
-            final int ExitMenu = 3;
-            int MenuIndex = position - 1;
-            if (mInSecurePrefs == null) {
-                Log.e("StartLogin: ", "Preference not found");
-            } else {
-                String MobileNo = mInSecurePrefs.getString(PREF_KEY_MOBILE, null);
-                if ((MobileNo == null) && (MenuIndex < ExitMenu)) {
-                    startActivityForResult(new Intent(getApplicationContext(),
-                            LoginActivity.class), UPDATE_PROFILE_REQUEST);
-                } else {
-                    switch (MenuIndex) {
-                        case 1:
-                            startActivity(new Intent(getApplicationContext(), SchemeActivity.class)
-                                    .putExtra(SchemeActivity.UID, mUser.UserMapID));
-                            break;
-                        case 2:
-                            startActivity(new Intent(getApplicationContext(), GroupSMS.class));
-                            break;
-                        case ExitMenu:
-                            Intent intent = new Intent(Intent.ACTION_MAIN);
-                            intent.addCategory(Intent.CATEGORY_HOME);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            startActivity(intent);
-                            finish();
-                            break;
-                    }
-                }
-            }
         }
     }
 }

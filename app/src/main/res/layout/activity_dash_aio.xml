@@ -41,6 +41,12 @@
                 android:id="@+id/sbUserMapID"
                 android:layout_gravity="center" />
 
+            <FrameLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_gravity="center"
+                android:id="@+id/fragmentHolder"></FrameLayout>
+
 
         </LinearLayout>
 
