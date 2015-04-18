@@ -15,40 +15,40 @@ import java.util.ArrayList;
 
 public class SchemeAdapter extends ArrayAdapter<Scheme> {
 
-    ArrayList<Scheme> Schemes;
-    int resource;
+  ArrayList<Scheme> Schemes;
+  int resource;
 
-    public SchemeAdapter(Context context, int resource, ArrayList<Scheme> Schemes) {
-        super(context, resource, Schemes);
-        this.resource = resource;
-        this.Schemes = Schemes;
+  public SchemeAdapter(Context context, int resource, ArrayList<Scheme> Schemes) {
+    super(context, resource, Schemes);
+    this.resource = resource;
+    this.Schemes = Schemes;
+  }
+
+  @Override
+  public View getView(int position, View convertView, ViewGroup parent) {
+    LinearLayout SchemeView;
+    Scheme mScheme = getItem(position);
+
+    if (convertView == null) {
+      SchemeView = new LinearLayout(getContext());
+      String inflater = Context.LAYOUT_INFLATER_SERVICE;
+      LayoutInflater li;
+      li = (LayoutInflater) getContext().getSystemService(inflater);
+      li.inflate(resource, SchemeView, true);
+    } else {
+      SchemeView = (LinearLayout) convertView;
     }
 
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        LinearLayout SchemeView;
-        Scheme mScheme = getItem(position);
+    Long lngSchemeID = mScheme.getSchemeID();
+    String txtSchemeName = mScheme.getSchemeName();
 
-        if (convertView == null) {
-            SchemeView = new LinearLayout(getContext());
-            String inflater = Context.LAYOUT_INFLATER_SERVICE;
-            LayoutInflater li;
-            li = (LayoutInflater) getContext().getSystemService(inflater);
-            li.inflate(resource, SchemeView, true);
-        } else {
-            SchemeView = (LinearLayout) convertView;
-        }
+    TextView tvSchemeID = (TextView) SchemeView.findViewById(R.id.tvSchemeID);
+    TextView tvSchemeName = (TextView) SchemeView.findViewById(R.id.tvSchemeName);
 
-        Long lngSchemeID = mScheme.getSchemeID();
-        String txtSchemeName = mScheme.getSchemeName();
+    tvSchemeID.setText(lngSchemeID.toString());
+    tvSchemeName.setText(txtSchemeName);
 
-        TextView tvSchemeID = (TextView) SchemeView.findViewById(R.id.tvSchemeID);
-        TextView tvSchemeName = (TextView) SchemeView.findViewById(R.id.tvSchemeName);
-
-        tvSchemeID.setText(lngSchemeID.toString());
-        tvSchemeName.setText(txtSchemeName);
-
-        return SchemeView;
-    }
+    return SchemeView;
+  }
 
 }

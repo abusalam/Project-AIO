@@ -7,8 +7,8 @@ android {
         applicationId 'com.github.abusalam.android.projectaio'
         minSdkVersion 14
         targetSdkVersion 21
-        versionCode 24
-        versionName '1.1.5 20150417'
+        versionCode 25
+        versionName '1.1.5 20150418'
     }
     buildTypes {
         release {

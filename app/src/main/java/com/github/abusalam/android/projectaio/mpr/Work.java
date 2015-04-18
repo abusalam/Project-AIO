@@ -4,147 +4,147 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class Work implements Parcelable {
-    public static final Parcelable.Creator<Work> CREATOR
-            = new Parcelable.Creator<Work>() {
-        public Work createFromParcel(Parcel in) {
-            return new Work(in);
-        }
-
-        public Work[] newArray(int size) {
-            return new Work[size];
-        }
-    };
-    private long WorkID;
-    private String WorkName;
-    private long Balance;
-    private String Funds;
-    private int Progress;
-    private int initialPrg;
-    private String WorkRemarks;
-    private String Remarks;
-    private int UserMapID;
-
-    public Work() {
-        initialPrg = 0;
+  public static final Parcelable.Creator<Work> CREATOR
+    = new Parcelable.Creator<Work>() {
+    public Work createFromParcel(Parcel in) {
+      return new Work(in);
     }
 
-    private Work(Parcel in) {
-        /**
-         * Order of assignment should be same as writeToParcel()
-         */
-        setWorkID(in.readLong());
-        setWorkName(in.readString());
-        setBalance(in.readLong());
-        setFunds(in.readString());
-        int iPrg = in.readInt();
-        setProgress(iPrg);
-        setInitialPrg(iPrg);
-        setWorkRemarks(in.readString());
-        setRemarks(in.readString());
-        setUserMapID(in.readInt());
-
+    public Work[] newArray(int size) {
+      return new Work[size];
     }
+  };
+  private long WorkID;
+  private String WorkName;
+  private long Balance;
+  private String Funds;
+  private int Progress;
+  private int initialPrg;
+  private String WorkRemarks;
+  private String Remarks;
+  private int UserMapID;
 
-    private void setInitialPrg(int iPrg) {
-        if (initialPrg == 0) {
-            initialPrg = iPrg;
-        }
-    }
+  public Work() {
+    initialPrg = 0;
+  }
 
-    public int getUserMapID() {
-        return UserMapID;
-    }
+  private Work(Parcel in) {
+    /**
+     * Order of assignment should be same as writeToParcel()
+     */
+    setWorkID(in.readLong());
+    setWorkName(in.readString());
+    setBalance(in.readLong());
+    setFunds(in.readString());
+    int iPrg = in.readInt();
+    setProgress(iPrg);
+    setInitialPrg(iPrg);
+    setWorkRemarks(in.readString());
+    setRemarks(in.readString());
+    setUserMapID(in.readInt());
 
-    public void setUserMapID(int userMapID) {
-        UserMapID = userMapID;
-    }
+  }
 
-    public long getWorkID() {
-        return WorkID;
+  private void setInitialPrg(int iPrg) {
+    if (initialPrg == 0) {
+      initialPrg = iPrg;
     }
+  }
 
-    public void setWorkID(long workID) {
-        WorkID = workID;
-    }
+  public int getUserMapID() {
+    return UserMapID;
+  }
 
-    public String getWorkName() {
-        return WorkName;
-    }
+  public void setUserMapID(int userMapID) {
+    UserMapID = userMapID;
+  }
 
-    public void setWorkName(String workName) {
-        WorkName = workName;
-    }
+  public long getWorkID() {
+    return WorkID;
+  }
 
-    public long getBalance() {
-        return Balance;
-    }
+  public void setWorkID(long workID) {
+    WorkID = workID;
+  }
 
-    public void setBalance(long balance) {
-        Balance = balance;
-    }
+  public String getWorkName() {
+    return WorkName;
+  }
 
-    public String getFunds() {
-        return Funds;
-    }
+  public void setWorkName(String workName) {
+    WorkName = workName;
+  }
 
-    public void setFunds(String funds) {
-        Funds = funds;
-    }
+  public long getBalance() {
+    return Balance;
+  }
 
-    public int getProgress() {
-        return Progress;
-    }
+  public void setBalance(long balance) {
+    Balance = balance;
+  }
 
-    public void setProgress(int progress) {
-        if (initialPrg <= progress) {
-            Progress = progress;
-        } else {
-            Progress=initialPrg;
-        }
-    }
+  public String getFunds() {
+    return Funds;
+  }
 
-    public String getWorkRemarks() {
-        return WorkRemarks;
-    }
+  public void setFunds(String funds) {
+    Funds = funds;
+  }
 
-    public void setWorkRemarks(String workRemarks) {
-        WorkRemarks = workRemarks;
-    }
+  public int getProgress() {
+    return Progress;
+  }
 
-    public String getRemarks() {
-        return Remarks;
+  public void setProgress(int progress) {
+    if (initialPrg <= progress) {
+      Progress = progress;
+    } else {
+      Progress = initialPrg;
     }
+  }
 
-    public void setRemarks(String remarks) {
-        Remarks = remarks;
-    }
+  public String getWorkRemarks() {
+    return WorkRemarks;
+  }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
+  public void setWorkRemarks(String workRemarks) {
+    WorkRemarks = workRemarks;
+  }
 
-    @Override
-    public void writeToParcel(Parcel p, int i) {
-        p.writeLong(getWorkID());
-        p.writeString(getWorkName());
-        p.writeLong(getBalance());
-        p.writeString(getFunds());
-        p.writeInt(getProgress());
-        p.writeString(getWorkRemarks());
-        p.writeString(getRemarks());
-        p.writeInt(getUserMapID());
-    }
+  public String getRemarks() {
+    return Remarks;
+  }
 
-    @Override
-    public String toString() {
-        return "Work{" +
-                "WorkID=" + WorkID +
-                ", WorkName='" + WorkName + '\'' +
-                ", Balance=" + Balance +
-                ", Funds=" + Funds +
-                ", Progress=" + Progress +
-                ", WorkRemarks='" + WorkRemarks + '\'' +
-                '}';
-    }
+  public void setRemarks(String remarks) {
+    Remarks = remarks;
+  }
+
+  @Override
+  public int describeContents() {
+    return 0;
+  }
+
+  @Override
+  public void writeToParcel(Parcel p, int i) {
+    p.writeLong(getWorkID());
+    p.writeString(getWorkName());
+    p.writeLong(getBalance());
+    p.writeString(getFunds());
+    p.writeInt(getProgress());
+    p.writeString(getWorkRemarks());
+    p.writeString(getRemarks());
+    p.writeInt(getUserMapID());
+  }
+
+  @Override
+  public String toString() {
+    return "Work{" +
+      "WorkID=" + WorkID +
+      ", WorkName='" + WorkName + '\'' +
+      ", Balance=" + Balance +
+      ", Funds=" + Funds +
+      ", Progress=" + Progress +
+      ", WorkRemarks='" + WorkRemarks + '\'' +
+      '}';
+  }
 }
