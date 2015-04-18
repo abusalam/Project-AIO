@@ -369,6 +369,7 @@ public class DashAIO extends ActionBarActivity
             mUser.pin = mOtpProvider.getNextCode(mUser.MobileNo);
         } catch (OtpSourceException e) {
             tvMsg.setText("You are not registered!");
+            startActivity(new Intent(getApplicationContext(), LoginActivity.class));
             return;
         }
 
