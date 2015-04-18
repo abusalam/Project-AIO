@@ -398,27 +398,31 @@ public class LoginActivity extends ActionBarActivity {
             return;
         }
 
-        if (TOTP.equals(authority)) {
-            type = AccountDb.OtpType.TOTP;
-            counter = AccountDb.DEFAULT_HOTP_COUNTER; // only interesting for HOTP
-        } else if (HOTP.equals(authority)) {
-            type = AccountDb.OtpType.HOTP;
-            String counterParameter = uri.getQueryParameter(COUNTER_PARAM);
-            if (counterParameter != null) {
-                try {
-                    counter = Integer.parseInt(counterParameter);
-                } catch (NumberFormatException e) {
-                    Log.e(getString(R.string.app_name), TAG + ": Invalid counter in uri");
-                    Toast.makeText(this, "Invalid QR Code Counter", Toast.LENGTH_LONG).show();
-                    return;
+        switch (authority) {
+            case TOTP:
+                type = AccountDb.OtpType.TOTP;
+                counter = AccountDb.DEFAULT_HOTP_COUNTER; // only interesting for HOTP
+
+                break;
+            case HOTP:
+                type = AccountDb.OtpType.HOTP;
+                String counterParameter = uri.getQueryParameter(COUNTER_PARAM);
+                if (counterParameter != null) {
+                    try {
+                        counter = Integer.parseInt(counterParameter);
+                    } catch (NumberFormatException e) {
+                        Log.e(getString(R.string.app_name), TAG + ": Invalid counter in uri");
+                        Toast.makeText(this, "Invalid QR Code Counter", Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                } else {
+                    counter = AccountDb.DEFAULT_HOTP_COUNTER;
                 }
-            } else {
-                counter = AccountDb.DEFAULT_HOTP_COUNTER;
-            }
-        } else {
-            Log.e(getString(R.string.app_name), TAG + ": Invalid or missing authority in uri");
-            Toast.makeText(this, "Invalid QR Code", Toast.LENGTH_LONG).show();
-            return;
+                break;
+            default:
+                Log.e(getString(R.string.app_name), TAG + ": Invalid or missing authority in uri");
+                Toast.makeText(this, "Invalid QR Code", Toast.LENGTH_LONG).show();
+                return;
         }
 
         user = validateAndGetUserInPath(path);
@@ -466,55 +470,61 @@ public class LoginActivity extends ActionBarActivity {
     private class RegisterButtonListener implements OnClickListener {
         @Override
         public void onClick(View view) {
-            mActivityStatus = "Requested for Registration";
-            etMobileNo.setVisibility(View.GONE);
-            btnRegister.setVisibility(View.GONE);
-            tvLoginMessage.setText(getText(R.string.login_wait_message));
-            pbLoginWait.setVisibility(View.VISIBLE);
-            mUser.MobileNo = etMobileNo.getText().toString();
 
-            JSONObject jsonPost = new JSONObject();
+            if (etMobileNo.getText().length() == 10) {
 
-            try {
-                jsonPost.put("API", "RU");
-                jsonPost.put("MDN", etMobileNo.getText());
-            } catch (JSONException e) {
-                Log.e(TAG, e.getMessage());
-            }
+                mActivityStatus = "Requested for Registration";
+                etMobileNo.setVisibility(View.GONE);
+                btnRegister.setVisibility(View.GONE);
+                tvLoginMessage.setText(getText(R.string.login_wait_message));
+                pbLoginWait.setVisibility(View.VISIBLE);
+                mUser.MobileNo = etMobileNo.getText().toString();
 
-            JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST,
-                    DashAIO.API_URL, jsonPost,
-                    new Response.Listener<JSONObject>() {
+                JSONObject jsonPost = new JSONObject();
 
-                        @Override
-                        public void onResponse(JSONObject response) {
-                            Log.d(TAG, response.toString());
-                            apiRespUserStat = response;
-                            if (response.optBoolean(DashAIO.KEY_API)) {
-                                etSecretKey.setVisibility(View.VISIBLE);
-                                tvOTP.setVisibility(View.VISIBLE);
-                                btnVerifyOTP.setVisibility(View.VISIBLE);
-                                btnScanOR.setVisibility(View.VISIBLE);
-                                mActivityStatus = "WK";
-                            }
-                            pbLoginWait.setVisibility(View.GONE);
-                            mRespMsg = response.optString(DashAIO.KEY_STATUS);
-                            tvLoginMessage.setText(mRespMsg);
-                        }
-                    }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    String msgError = "Error: " + error.getMessage();
-                    Log.e(TAG, msgError);
-                    tvLoginMessage.setText(msgError);
-                    finish();
+                try {
+                    jsonPost.put("API", "RU");
+                    jsonPost.put("MDN", etMobileNo.getText());
+                } catch (JSONException e) {
+                    Log.e(TAG, e.getMessage());
                 }
-            }
-            );
 
-            // Adding request to request queue
-            jsonObjReq.setTag(TAG);
-            rQueue.add(jsonObjReq);
+                JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST,
+                        DashAIO.API_URL, jsonPost,
+                        new Response.Listener<JSONObject>() {
+
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                Log.d(TAG, response.toString());
+                                apiRespUserStat = response;
+                                if (response.optBoolean(DashAIO.KEY_API)) {
+                                    etSecretKey.setVisibility(View.VISIBLE);
+                                    tvOTP.setVisibility(View.VISIBLE);
+                                    btnVerifyOTP.setVisibility(View.VISIBLE);
+                                    btnScanOR.setVisibility(View.VISIBLE);
+                                    mActivityStatus = "WK";
+                                }
+                                pbLoginWait.setVisibility(View.GONE);
+                                mRespMsg = response.optString(DashAIO.KEY_STATUS);
+                                tvLoginMessage.setText(mRespMsg);
+                            }
+                        }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        String msgError = "Error: " + error.getMessage();
+                        Log.e(TAG, msgError);
+                        tvLoginMessage.setText(msgError);
+                        finish();
+                    }
+                }
+                );
+
+                // Adding request to request queue
+                jsonObjReq.setTag(TAG);
+                rQueue.add(jsonObjReq);
+            } else {
+                Toast.makeText(LoginActivity.this, "Invalid Mobile No!", Toast.LENGTH_LONG).show();
+            }
         }
     }
 
@@ -649,7 +659,7 @@ public class LoginActivity extends ActionBarActivity {
                 data.putExtra(DashAIO.PREF_KEY_UserMapID, userData.optString("UserMapID"));
             } catch (JSONException e) {
                 e.printStackTrace();
-                String msgError= "SP Error:" + e.getMessage();
+                String msgError = "SP Error:" + e.getMessage();
                 Log.e(TAG, msgError);
                 tvLoginMessage.setText(msgError);
             }
