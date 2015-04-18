@@ -141,10 +141,19 @@ public class ProgressActivity extends ActionBarActivity {
     private void setProgress() {
         final JSONObject jsonPost = new JSONObject();
 
-        Log.e("P-Counter: ", "" + mAccountDb.getCounter(mUser.MobileNo));
+        try {
+            mUser.pin = mOtpProvider.getNextCode(mUser.MobileNo);
+        } catch (OtpSourceException e) {
+            Log.e("Error OTP: ", "" + e.getMessage()
+                    + mAccountDb.getCounter(mUser.MobileNo));
+            return;
+        }
 
         try {
             jsonPost.put("API", "UP");
+            jsonPost.put("MDN", mUser.MobileNo);
+            jsonPost.put("OTP", mUser.pin);
+            jsonPost.put("UID", mUser.UserMapID);
             jsonPost.put("WID", mWork.getWorkID());
             jsonPost.put("EA", etExpAmount.getText());
             jsonPost.put("P", sbProgress.getProgress());
