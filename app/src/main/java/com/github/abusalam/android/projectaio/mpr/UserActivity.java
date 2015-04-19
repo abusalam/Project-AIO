@@ -64,6 +64,9 @@ public class UserActivity extends ActionBarActivity {
     lvUsers = (ListView) findViewById(R.id.lvUsers);
     prgBar = (ProgressBar) findViewById(R.id.pbUsers);
 
+    View v = getLayoutInflater().inflate(R.layout.user_view, null);
+    lvUsers.addHeaderView(v);
+
     lvUsers.setOnItemClickListener(new SelectUserClickListener());
     UserList = new ArrayList<>();
     Bundle mBundle = getIntent().getExtras();

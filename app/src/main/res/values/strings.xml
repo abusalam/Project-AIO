@@ -106,6 +106,6 @@
     <string name="msg_about">Developed by NIC, Paschim Medinipur</string>
     <string name="title_activity_user">Select User</string>
     <string name="lbl_username">User Name</string>
-    <string name="lblSchemeCount">Schemes: Completed/Total</string>
-    <string name="lblSanctionedAmount">Sanctioned Amount</string>
+    <string name="lblSchemeCount">[ID] Mobile</string>
+    <string name="lblSanctionedAmount">Sanction: ₹ </string>
 </resources>
