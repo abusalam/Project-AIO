@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.github.abusalam.android.projectaio.R;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 
@@ -43,9 +44,9 @@ public class UserAdapter extends ArrayAdapter<User> {
     TextView tvSanctioned = (TextView) UserView.findViewById(R.id.tvSanctioned);
     TextView tvSchemes = (TextView) UserView.findViewById(R.id.tvSchemes);
 
-    tvBalance.setText("₹ " + mUsers.getBalance());
+    tvBalance.setText("₹ " + new DecimalFormat().format(mUsers.getBalance()));
     tvUserName.setText(mUsers.getUserName());
-    tvSanctioned.setText("₹ " + mUsers.getSanctions());
+    tvSanctioned.setText("₹ " + new DecimalFormat().format(mUsers.getSanctions()));
     tvSchemes.setText("[" + mUsers.getUserID() + "] " + mUsers.getMobileNo());
 
     return UserView;
