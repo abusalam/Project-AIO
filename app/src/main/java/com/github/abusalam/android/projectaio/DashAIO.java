@@ -33,6 +33,7 @@ import com.github.abusalam.android.projectaio.GoogleAuthenticator.TotpClock;
 import com.github.abusalam.android.projectaio.ajax.NetConnection;
 import com.github.abusalam.android.projectaio.ajax.VolleyAPI;
 import com.github.abusalam.android.projectaio.mpr.SchemeActivity;
+import com.github.abusalam.android.projectaio.mpr.UserActivity;
 import com.github.abusalam.android.projectaio.sms.GroupSMS;
 
 import org.json.JSONArray;
@@ -64,6 +65,8 @@ public class DashAIO extends ActionBarActivity
   private RequestQueue rQueue;
   private TextView tvMsg;
   private SeekBar sbUserMapID;
+
+  private Boolean oneTime;
 
   /**
    * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -174,7 +177,7 @@ public class DashAIO extends ActionBarActivity
   }
 
   @Override
-  public void onNavigationDrawerItemSelected(int MenuIndex) {
+  public void onNavigationDrawerItemSelected(int MenuIndex, boolean fromSavedState) {
     // TODO: update the main content by replacing fragments
     SharedPreferences mInSecurePrefs = getSharedPreferences(SECRET_PREF_NAME,
       MODE_PRIVATE);
@@ -188,23 +191,41 @@ public class DashAIO extends ActionBarActivity
       if ((MobileNo == null) && (MenuIndex < ExitMenu)) {
         startActivityForResult(new Intent(getApplicationContext(),
           LoginActivity.class), UPDATE_PROFILE_REQUEST);
-      } else {
+      } else if(!fromSavedState) {
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+
         switch (MenuIndex) {
           case 1:
-            //FragmentManager fragmentManager = getSupportFragmentManager();
-
-            //fragmentManager.beginTransaction()
-            //  .replace(R.id.fragmentHolder, PlaceholderFragment.newInstance(MenuIndex + 1))
-            //  .commit();
-            //setTitle(getString(R.string.btn_update_profile_text));
+            fragmentManager.beginTransaction()
+              .replace(
+                R.id.fragmentHolder,
+                PlaceholderFragment.newInstance(MenuIndex + 1)
+              )
+              .commit();
+            setTitle(getString(R.string.btn_update_profile_text));
             break;
+
           case 2:
+            try {
+              fragmentManager.beginTransaction()
+                .replace(
+                  R.id.fragmentHolder,
+                  MprFragment.newInstance(mUser.UserMapID, "")
+                ).commit();
+            } catch (Exception e) {
+              Log.e(TAG, "Error in Fragment");
+            }
+            setTitle(getString(R.string.title_activity_scheme));
+
             startActivity(new Intent(getApplicationContext(), SchemeActivity.class)
               .putExtra(SchemeActivity.UID, mUser.UserMapID));
             break;
+
           case 3:
             startActivity(new Intent(getApplicationContext(), GroupSMS.class));
             break;
+
           case ExitMenu:
             Intent intent = new Intent(Intent.ACTION_MAIN);
             intent.addCategory(Intent.CATEGORY_HOME);
@@ -448,6 +469,15 @@ public class DashAIO extends ActionBarActivity
     Log.e(TAG, jsonPost.toString() + mAccountDb.getSecret(mUser.MobileNo)
       + " " + mAccountDb.getCounter(mUser.MobileNo));
   }
+
+//  @Override
+//  public void onFragmentInteraction(Long SchemeID, String SchemeName) {
+//    Intent iWorks = new Intent(getApplicationContext(), UserActivity.class);
+//    iWorks.putExtra(MprFragment.SID, SchemeID);
+//    iWorks.putExtra(MprFragment.SN, SchemeName);
+//    iWorks.putExtra(MprFragment.UID, mUser.UserMapID);
+//    startActivity(iWorks);
+//  }
 
   /**
    * A placeholder fragment containing a simple view.

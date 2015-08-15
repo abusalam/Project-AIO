@@ -76,7 +76,7 @@ public class GroupSMS extends ActionBarActivity {
     mOtpProvider = new OtpProvider(mAccountDb, new TotpClock(this));
 
     mUser = new User();
-    mUser.MobileNo = mInSecurePrefs.getString(DashAIO.PREF_KEY_MOBILE, null);
+    mUser.setMobileNo(mInSecurePrefs.getString(DashAIO.PREF_KEY_MOBILE, null));
     rQueue = VolleyAPI.getInstance(this).getRequestQueue();
 
     /**
@@ -89,6 +89,7 @@ public class GroupSMS extends ActionBarActivity {
     ListView lvMsgHist = (ListView) findViewById(R.id.lvMsgHist);
     lvMsgHistAdapter = new MsgItemAdapter(this, R.layout.msg_item, lvMsgContent);
     lvMsgHist.setAdapter(lvMsgHistAdapter);
+    lvMsgHist.scrollTo(0,lvMsgHist.getHeight());
 
     registerForContextMenu(lvMsgHist);
 

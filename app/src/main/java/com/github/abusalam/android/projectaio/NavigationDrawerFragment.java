@@ -79,7 +79,7 @@ public class NavigationDrawerFragment extends Fragment {
     }
 
     // Select either the default item (0) or the last selected item.
-    selectItem(mCurrentSelectedPosition);
+    selectItem(mCurrentSelectedPosition, (savedInstanceState != null));
   }
 
   @Override
@@ -91,14 +91,14 @@ public class NavigationDrawerFragment extends Fragment {
 
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                           Bundle savedInstanceState) {
+                           final Bundle savedInstanceState) {
     mDrawerContainer = (RelativeLayout) inflater.inflate(
       R.layout.fragment_navigation_drawer, container, false);
     mDrawerListView = (ListView) mDrawerContainer.findViewById(R.id.lvNavDrawer);
     mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
       @Override
       public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        selectItem(position);
+        selectItem(position, (savedInstanceState!=null));
       }
     });
     View v = inflater.inflate(R.layout.profile_view, container);
@@ -196,7 +196,7 @@ public class NavigationDrawerFragment extends Fragment {
     mDrawerLayout.setDrawerListener(mDrawerToggle);
   }
 
-  private void selectItem(int position) {
+  private void selectItem(int position, boolean fromSavedState) {
     mCurrentSelectedPosition = position;
     if (mDrawerListView != null) {
       mDrawerListView.setItemChecked(position, true);
@@ -205,7 +205,7 @@ public class NavigationDrawerFragment extends Fragment {
       mDrawerLayout.closeDrawer(mFragmentContainerView);
     }
     if (mCallbacks != null) {
-      mCallbacks.onNavigationDrawerItemSelected(position);
+      mCallbacks.onNavigationDrawerItemSelected(position, fromSavedState);
     }
   }
 
@@ -286,6 +286,6 @@ public class NavigationDrawerFragment extends Fragment {
     /**
      * Called when an item in the navigation drawer is selected.
      */
-    void onNavigationDrawerItemSelected(int position);
+    void onNavigationDrawerItemSelected(int position, boolean fromSavedState);
   }
 }

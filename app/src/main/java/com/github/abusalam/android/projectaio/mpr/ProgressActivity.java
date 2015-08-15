@@ -68,8 +68,8 @@ public class ProgressActivity extends ActionBarActivity {
     mOtpProvider = new OtpProvider(mAccountDb, new TotpClock(this));
 
     mUser = new User();
-    mUser.UserMapID = mInSecurePrefs.getString(DashAIO.PREF_KEY_UserMapID, "Not Available");
-    mUser.MobileNo = mInSecurePrefs.getString(DashAIO.PREF_KEY_MOBILE, "");
+    mUser.setUserMapID(mInSecurePrefs.getString(DashAIO.PREF_KEY_UserMapID, "Not Available"));
+    mUser.setMobileNo( mInSecurePrefs.getString(DashAIO.PREF_KEY_MOBILE, ""));
     rQueue = VolleyAPI.getInstance(this).getRequestQueue();
 
     TextView tvWork = (TextView) findViewById(R.id.tvWork);
@@ -97,7 +97,7 @@ public class ProgressActivity extends ActionBarActivity {
       + " : " + getString(R.string.title_activity_progress_mpr)
       + " (" + mWork.getProgress() + "%)");
 
-    if (mUser.UserMapID.equals("" + mWork.getUserMapID())) {
+    if (mUser.getUserMapID().equals("" + mWork.getUserMapID())) {
       btnSave.setOnClickListener(new UpdateClickListener());
     } else {
       btnSave.setVisibility(View.GONE);
@@ -142,18 +142,18 @@ public class ProgressActivity extends ActionBarActivity {
     final JSONObject jsonPost = new JSONObject();
 
     try {
-      mUser.pin = mOtpProvider.getNextCode(mUser.MobileNo);
+      mUser.setPin(mOtpProvider.getNextCode(mUser.getMobileNo()));
     } catch (OtpSourceException e) {
       Log.e("Error OTP: ", "" + e.getMessage()
-        + mAccountDb.getCounter(mUser.MobileNo));
+        + mAccountDb.getCounter(mUser.getMobileNo()));
       return;
     }
 
     try {
       jsonPost.put("API", "UP");
-      jsonPost.put("MDN", mUser.MobileNo);
-      jsonPost.put("OTP", mUser.pin);
-      jsonPost.put("UID", mUser.UserMapID);
+      jsonPost.put("MDN", mUser.getMobileNo());
+      jsonPost.put("OTP", mUser.getPin());
+      jsonPost.put("UID", mUser.getUserMapID());
       jsonPost.put("WID", mWork.getWorkID());
       jsonPost.put("EA", etExpAmount.getText());
       jsonPost.put("P", sbProgress.getProgress());
@@ -242,11 +242,11 @@ public class ProgressActivity extends ActionBarActivity {
         Toast.makeText(getApplicationContext(),
           "Updating ... ", Toast.LENGTH_SHORT).show();
         try {
-          String oldPin = mUser.pin;
-          mUser.pin = mOtpProvider.getNextCode(mUser.MobileNo);
-          if (mUser.pin.equals(oldPin) || !mUser.hotpCodeGenerationAllowed) {
+          String oldPin = mUser.getPin();
+          mUser.setPin(mOtpProvider.getNextCode(mUser.getMobileNo()));
+          if (mUser.getPin().equals(oldPin) || !mUser.hotpCodeGenerationAllowed) {
             Toast.makeText(getApplicationContext(),
-              getString(R.string.msg_otp_delayed) + mUser.MobileNo,
+              getString(R.string.msg_otp_delayed) + mUser.getMobileNo(),
               Toast.LENGTH_LONG).show();
             return;
           } else {
@@ -254,7 +254,7 @@ public class ProgressActivity extends ActionBarActivity {
           }
         } catch (OtpSourceException e) {
           Toast.makeText(getApplicationContext(), "Error: " + e.getMessage()
-            + " MDN:" + mUser.MobileNo, Toast.LENGTH_SHORT).show();
+            + " MDN:" + mUser.getMobileNo(), Toast.LENGTH_SHORT).show();
           return;
         }
 
