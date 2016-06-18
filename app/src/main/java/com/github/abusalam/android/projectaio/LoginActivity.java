@@ -278,7 +278,7 @@ public class LoginActivity extends ActionBarActivity {
     }
 
     AccountDb.OtpType type = mAccountDb.getType(user);
-    currentPin.isHotp = (type == AccountDb.OtpType.HOTP);
+    currentPin.isHotp = (type == AccountDb.OtpType.TOTP);
 
     currentPin.MobileNo = user;
 
@@ -547,7 +547,7 @@ public class LoginActivity extends ActionBarActivity {
           etMobileNo.getText().toString(),
           getEnteredKey(),
           null,
-          AccountDb.OtpType.HOTP,
+          AccountDb.OtpType.TOTP,
           AccountDb.DEFAULT_HOTP_COUNTER);
       }
 
