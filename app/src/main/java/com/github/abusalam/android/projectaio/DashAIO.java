@@ -33,7 +33,7 @@ import com.github.abusalam.android.projectaio.GoogleAuthenticator.TotpClock;
 import com.github.abusalam.android.projectaio.ajax.NetConnection;
 import com.github.abusalam.android.projectaio.ajax.VolleyAPI;
 import com.github.abusalam.android.projectaio.mpr.SchemeActivity;
-import com.github.abusalam.android.projectaio.mpr.UserActivity;
+import com.github.abusalam.android.projectaio.sms.GroupActivity;
 import com.github.abusalam.android.projectaio.sms.GroupSMS;
 
 import org.json.JSONArray;
@@ -182,7 +182,7 @@ public class DashAIO extends ActionBarActivity
     SharedPreferences mInSecurePrefs = getSharedPreferences(SECRET_PREF_NAME,
       MODE_PRIVATE);
     //TODO: Proper Menu decoding to be done here so that position could be avoided
-    final int ExitMenu = 4;
+    final int ExitMenu = 5;
 
     if (mInSecurePrefs == null) {
       Log.e("StartLogin: ", "Preference not found");
@@ -191,7 +191,7 @@ public class DashAIO extends ActionBarActivity
       if ((MobileNo == null) && (MenuIndex < ExitMenu)) {
         startActivityForResult(new Intent(getApplicationContext(),
           LoginActivity.class), UPDATE_PROFILE_REQUEST);
-      } else if(!fromSavedState) {
+      } else if (!fromSavedState) {
 
         FragmentManager fragmentManager = getSupportFragmentManager();
 
@@ -207,7 +207,7 @@ public class DashAIO extends ActionBarActivity
             break;
 
           case 2:
-            try {
+            /*try {
               fragmentManager.beginTransaction()
                 .replace(
                   R.id.fragmentHolder,
@@ -216,7 +216,7 @@ public class DashAIO extends ActionBarActivity
             } catch (Exception e) {
               Log.e(TAG, "Error in Fragment");
             }
-            setTitle(getString(R.string.title_activity_scheme));
+            setTitle(getString(R.string.title_activity_scheme));*/
 
             startActivity(new Intent(getApplicationContext(), SchemeActivity.class)
               .putExtra(SchemeActivity.UID, mUser.UserMapID));
@@ -224,6 +224,10 @@ public class DashAIO extends ActionBarActivity
 
           case 3:
             startActivity(new Intent(getApplicationContext(), GroupSMS.class));
+            break;
+
+          case 4:
+            startActivity(new Intent(getApplicationContext(), GroupActivity.class));
             break;
 
           case ExitMenu:
@@ -304,6 +308,11 @@ public class DashAIO extends ActionBarActivity
     actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
     actionBar.setDisplayShowTitleEnabled(true);
     actionBar.setTitle(mTitle);
+  }
+
+  public void hideViewsForFragment() {
+    tvMsg.setVisibility(View.GONE);
+    sbUserMapID.setVisibility(View.GONE);
   }
 
   protected void onActivityResult(int requestCode, int resultCode,

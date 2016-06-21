@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -89,7 +90,7 @@ public class GroupSMS extends ActionBarActivity {
     ListView lvMsgHist = (ListView) findViewById(R.id.lvMsgHist);
     lvMsgHistAdapter = new MsgItemAdapter(this, R.layout.msg_item, lvMsgContent);
     lvMsgHist.setAdapter(lvMsgHistAdapter);
-    lvMsgHist.scrollTo(0,lvMsgHist.getHeight());
+    lvMsgHist.scrollTo(0, lvMsgHist.getHeight());
 
     registerForContextMenu(lvMsgHist);
 
@@ -156,6 +157,7 @@ public class GroupSMS extends ActionBarActivity {
     // Handle action bar item clicks here. The action bar will
     // automatically handle clicks on the Home/Up button, so long
     // as you specify a parent activity in AndroidManifest.xml.
+    FragmentManager fragmentManager = getSupportFragmentManager();
     switch (item.getItemId()) {
       // Respond to the action bar's Up/Home button
       case android.R.id.home:
@@ -163,8 +165,19 @@ public class GroupSMS extends ActionBarActivity {
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         NavUtils.navigateUpTo(this, intent);
         return true;
-      case R.id.action_settings:
-        //startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
+      case R.id.show_contacts:
+        try {
+          //fragmentManager.beginTransaction()
+          //        .replace(
+          //               R.id.fragmentHolder,
+          //               ContactFragment.newInstance(mUser.UserMapID, "")
+          //       ).commit();
+        } catch (Exception e) {
+          Log.e(TAG, "Error in Fragment");
+        }
+        //setTitle(getString(R.string.title_activity_scheme));
+        //Toast.makeText(getApplicationContext(), getText(R.string.msg_show_contacts), Toast.LENGTH_LONG).show();
+        startActivity(new Intent(getApplicationContext(), GroupActivity.class));
         return true;
     }
     return super.onOptionsItemSelected(item);
@@ -177,7 +190,13 @@ public class GroupSMS extends ActionBarActivity {
     try {
       jsonPost.put("API", "AG");
       jsonPost.put("MDN", mUser.MobileNo);
-      jsonPost.put("OTP", "");
+      try {
+        mUser.pin = mOtpProvider.getNextCode(mUser.MobileNo);
+      } catch (OtpSourceException e) {
+        Toast.makeText(getApplicationContext(), "Error: " + e.getMessage()
+          + " Mobile:" + mUser.MobileNo, Toast.LENGTH_LONG).show();
+      }
+      jsonPost.put("OTP", mUser.getPin());
     } catch (JSONException e) {
       e.printStackTrace();
       return;

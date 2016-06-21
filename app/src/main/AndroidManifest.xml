@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.github.abusalam.android.projectaio" >
+    package="com.github.abusalam.android.projectaio">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -10,11 +10,11 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme">
         <activity
             android:name=".DashAIO"
-            android:label="@string/title_Home" >
-            <intent-filter android:label="@string/app_caption" >
+            android:label="@string/title_Home">
+            <intent-filter android:label="@string/app_caption">
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -23,7 +23,7 @@
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:parentActivityName=".DashAIO" >
+            android:parentActivityName=".DashAIO">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.github.abusalam.android.projectaio.DashAIO" />
@@ -33,7 +33,7 @@
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_fullscreen"
             android:parentActivityName=".DashAIO"
-            android:theme="@style/FullscreenTheme" >
+            android:theme="@style/FullscreenTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.github.abusalam.android.projectaio.DashAIO" />
@@ -42,7 +42,7 @@
             android:name=".sms.GroupSMS"
             android:label="@string/title_activity_group_sms"
             android:parentActivityName=".DashAIO"
-            android:windowSoftInputMode="adjustResize" >
+            android:windowSoftInputMode="adjustResize">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.github.abusalam.android.projectaio.DashAIO" />
@@ -50,7 +50,7 @@
         <activity
             android:name=".LoginActivity"
             android:label="@string/title_activity_login"
-            android:parentActivityName=".DashAIO" >
+            android:parentActivityName=".DashAIO">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.github.abusalam.android.projectaio.DashAIO" />
@@ -58,7 +58,7 @@
         <activity
             android:name=".mpr.SchemeActivity"
             android:label="@string/title_activity_scheme"
-            android:parentActivityName=".DashAIO" >
+            android:parentActivityName=".DashAIO">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.github.abusalam.android.projectaio.DashAIO" />
@@ -66,7 +66,7 @@
         <activity
             android:name=".mpr.WorkActivity"
             android:label="@string/title_activity_work"
-            android:parentActivityName=".mpr.UserActivity" >
+            android:parentActivityName=".mpr.UserActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.github.abusalam.android.projectaio.mpr.UserActivity" />
@@ -74,7 +74,7 @@
         <activity
             android:name=".mpr.ProgressActivity"
             android:label="@string/title_activity_progress_mpr"
-            android:parentActivityName=".mpr.WorkActivity" >
+            android:parentActivityName=".mpr.WorkActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.github.abusalam.android.projectaio.mpr.WorkActivity" />
@@ -82,10 +82,18 @@
         <activity
             android:name=".mpr.UserActivity"
             android:label="@string/title_activity_user"
-            android:parentActivityName=".mpr.SchemeActivity" >
+            android:parentActivityName=".mpr.SchemeActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.github.abusalam.android.projectaio.mpr.SchemeActivity" />
+        </activity>
+        <activity
+            android:name=".sms.GroupActivity"
+            android:label="@string/title_activity_groups"
+            android:parentActivityName=".sms.GroupSMS">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.github.abusalam.android.projectaio.sms.GroupSMS" />
         </activity>
     </application>
 

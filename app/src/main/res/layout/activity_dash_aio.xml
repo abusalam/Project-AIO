@@ -25,7 +25,6 @@
                 android:layout_height="wrap_content"
                 android:gravity="bottom|center"
                 android:text="@string/NC"
-                android:textAlignment="gravity"
                 android:textStyle="bold" />
 
             <TextView
