@@ -95,9 +95,9 @@
     <string name="title_activity_scheme">Select Scheme</string>
     <string name="lbl_scheme_id">Scheme ID: </string>
     <string name="lbl_scheme_name">Scheme</string>
-    <string name="lbl_group_id">Group ID: </string>
+    <string name="lbl_group_id">ID# </string>
     <string name="lbl_group_name">Group</string>
-    <string name="lbl_contact_id">Contact ID: </string>
+    <string name="lbl_contact_id">ID# </string>
     <string name="lbl_contact_name">Conatact Name</string>
     <string name="title_activity_work">Select Work</string>
     <string name="lbl_work_id">Work ID: </string>

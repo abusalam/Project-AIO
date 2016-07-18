@@ -17,11 +17,13 @@ public class GroupAdapter extends ArrayAdapter<Group> {
 
   ArrayList<Group> Groups;
   int resource;
+  Context mContext;
 
   public GroupAdapter(Context context, int resource, ArrayList<Group> Groups) {
     super(context, resource, Groups);
     this.resource = resource;
     this.Groups = Groups;
+    this.mContext = context;
   }
 
   @Override
@@ -45,7 +47,7 @@ public class GroupAdapter extends ArrayAdapter<Group> {
     TextView tvGroupID = (TextView) GroupView.findViewById(R.id.tvGroupID);
     TextView tvGroupName = (TextView) GroupView.findViewById(R.id.tvGroupName);
 
-    tvGroupID.setText(lngGroupID.toString());
+    tvGroupID.setText(this.mContext.getString(R.string.lbl_group_id) + " " + lngGroupID.toString());
     tvGroupName.setText(txtGroupName);
 
     return GroupView;

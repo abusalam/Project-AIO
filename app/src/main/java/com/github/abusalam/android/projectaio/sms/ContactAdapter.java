@@ -17,11 +17,13 @@ public class ContactAdapter extends ArrayAdapter<Contact> {
 
   ArrayList<Contact> Contacts;
   int resource;
+  Context mContext;
 
   public ContactAdapter(Context context, int resource, ArrayList<Contact> Contacts) {
     super(context, resource, Contacts);
     this.resource = resource;
     this.Contacts = Contacts;
+    this.mContext = context;
   }
 
   @Override
@@ -47,7 +49,7 @@ public class ContactAdapter extends ArrayAdapter<Contact> {
     TextView tvDesignation = (TextView) ContactView.findViewById(R.id.tvDesignation);
     TextView tvMobileNo = (TextView) ContactView.findViewById(R.id.tvMobileNo);
 
-    tvContactID.setText(lngContactID.toString());
+    tvContactID.setText(this.mContext.getString(R.string.lbl_contact_id) + " " + lngContactID.toString());
     tvContactName.setText(txtContactName);
     tvDesignation.setText(mContact.getDesignation());
     tvMobileNo.setText(mContact.getMobileNo());
