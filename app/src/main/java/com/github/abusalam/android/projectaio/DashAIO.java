@@ -425,7 +425,7 @@ public class DashAIO extends ActionBarActivity
 
   private void showAttendance() {
     final JSONObject jsonPost = new JSONObject();
-    final String AR_API = API_HOST + "/apps/nic/android/api.php";
+    final String AR_API = API_HOST + "/apps/atnd-reg/android/api.php";
 
     try {
       mUser.pin = mOtpProvider.getNextCode(mUser.MobileNo);
