@@ -120,7 +120,7 @@ public class DashAIO extends ActionBarActivity
 
     if (IC.isDeviceConnected()) {
       tvNetConn.setVisibility(View.GONE);
-      showAttendance();
+      //showAttendance();
     } else {
       tvNetConn.setText(getString(R.string.NC));
       tvMsg.setText("ID: " + mUser.UserMapID);
