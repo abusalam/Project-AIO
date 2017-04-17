@@ -176,6 +176,7 @@ public class GroupFragment extends ListFragment {
     try {
       jsonPost.put(DashAIO.KEY_API, "CG");
       jsonPost.put("MDN", MDN);
+      jsonPost.put("CID", MDN);
       jsonPost.put("OTP", OTP);
       Log.e(TAG, "Mobile: " + MDN + " OTP: " + OTP);
     } catch (JSONException e) {
@@ -208,7 +209,7 @@ public class GroupFragment extends ListFragment {
 
       @Override
       public void onErrorResponse(VolleyError error) {
-        VolleyLog.d(TAG, "Error: " + error.getMessage());
+        VolleyLog.d(TAG, "CG API Error: " + error.getMessage());
         Log.e(TAG, jsonPost.toString());
       }
     }
