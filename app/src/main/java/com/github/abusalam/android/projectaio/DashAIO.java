@@ -182,8 +182,8 @@ public class DashAIO extends ActionBarActivity
     SharedPreferences mInSecurePrefs = getSharedPreferences(SECRET_PREF_NAME,
       MODE_PRIVATE);
     //TODO: Proper Menu decoding to be done here so that position could be avoided
-    final int ExitMenu = 5;
-
+    final int ExitMenu = 4;
+    Log.e(TAG, "Drawer MenuIndex:" + MenuIndex);
     if (mInSecurePrefs == null) {
       Log.e("StartLogin: ", "Preference not found");
     } else {
@@ -196,17 +196,17 @@ public class DashAIO extends ActionBarActivity
         FragmentManager fragmentManager = getSupportFragmentManager();
 
         switch (MenuIndex) {
-          case 1:
-            fragmentManager.beginTransaction()
+          //case 1:
+            /*fragmentManager.beginTransaction()
               .replace(
                 R.id.fragmentHolder,
                 PlaceholderFragment.newInstance(MenuIndex + 1)
               )
               .commit();
-            setTitle(getString(R.string.btn_update_profile_text));
-            break;
+            setTitle(getString(R.string.btn_update_profile_text));*/
+            //break;
 
-          case 2:
+          case 1:
             /*try {
               fragmentManager.beginTransaction()
                 .replace(
@@ -222,11 +222,11 @@ public class DashAIO extends ActionBarActivity
               .putExtra(SchemeActivity.UID, mUser.UserMapID));
             break;
 
-          case 3:
+          case 2:
             startActivity(new Intent(getApplicationContext(), GroupSMS.class));
             break;
 
-          case 4:
+          case 3:
             startActivity(new Intent(getApplicationContext(), GroupActivity.class));
             break;
 
