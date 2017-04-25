@@ -212,11 +212,13 @@ public class UserActivity extends ActionBarActivity {
   private class SelectUserClickListener implements ListView.OnItemClickListener {
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-      Intent iWorks = new Intent(getApplicationContext(), WorkActivity.class);
-      iWorks.putExtra(SchemeActivity.SID, SchemeID);
-      iWorks.putExtra(SchemeActivity.SN, SchemeName);
-      iWorks.putExtra(SchemeActivity.UID, "" + UserList.get(i).getUserID());
-      startActivity(iWorks);
+      if(i>0) { //Skip the List Header {i=0}
+        Intent iWorks = new Intent(getApplicationContext(), WorkActivity.class);
+        iWorks.putExtra(SchemeActivity.SID, SchemeID);
+        iWorks.putExtra(SchemeActivity.SN, SchemeName);
+        iWorks.putExtra(SchemeActivity.UID, "" + UserList.get(i - 1).getUserID());
+        startActivity(iWorks);
+      }
     }
   }
 
