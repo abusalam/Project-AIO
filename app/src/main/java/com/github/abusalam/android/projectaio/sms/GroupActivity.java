@@ -52,6 +52,12 @@ public class GroupActivity extends ActionBarActivity implements GroupFragment.On
   }
 
   @Override
+  public void onBackPressed() {
+      setTitle(getString(R.string.title_activity_groups));
+      super.onBackPressed();
+  }
+
+  @Override
   public void onListFragmentInteraction(Group item) {
     Log.d("SelectedGroup: ", item.getGroupName());
 

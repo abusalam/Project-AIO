@@ -458,7 +458,7 @@ public class DashAIO extends ActionBarActivity
             }
           } catch (JSONException e) {
             e.printStackTrace();
-            tvMsg.setText("Error: " + e.getMessage());
+            tvMsg.setText(e.getMessage());
           }
 
         }
@@ -467,7 +467,7 @@ public class DashAIO extends ActionBarActivity
       @Override
       public void onErrorResponse(VolleyError error) {
         VolleyLog.d(TAG, "Error: " + error.getMessage());
-        tvMsg.setText("Error: " + error.getMessage());
+        tvMsg.setText(error.getMessage());
       }
     }
     );
