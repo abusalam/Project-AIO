@@ -74,6 +74,6 @@ public class GroupActivity extends ActionBarActivity implements GroupFragment.On
       .replace(R.id.fragmentHolder, contactFragment)
       .addToBackStack(null)
       .commit();
-    setTitle(getString(R.string.show_contacts));
+    setTitle(item.getGroupName());
   }
 }
