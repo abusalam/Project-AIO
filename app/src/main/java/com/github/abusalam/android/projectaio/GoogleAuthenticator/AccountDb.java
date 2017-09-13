@@ -249,11 +249,11 @@ public class AccountDb {
         }
       };
     } catch (DecodingException error) {
-      Log.e(LOCAL_TAG, error.getMessage());
+      Log.d(LOCAL_TAG, error.getMessage());
     } catch (NoSuchAlgorithmException error) {
-      Log.e(LOCAL_TAG, error.getMessage());
+      Log.d(LOCAL_TAG, error.getMessage());
     } catch (InvalidKeyException error) {
-      Log.e(LOCAL_TAG, error.getMessage());
+      Log.d(LOCAL_TAG, error.getMessage());
     }
 
     return null;

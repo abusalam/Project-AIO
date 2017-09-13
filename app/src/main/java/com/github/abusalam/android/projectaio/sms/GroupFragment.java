@@ -178,7 +178,7 @@ public class GroupFragment extends ListFragment {
       jsonPost.put("MDN", MDN);
       jsonPost.put("CID", MDN);
       jsonPost.put("OTP", OTP);
-      Log.e(TAG, "Mobile: " + MDN + " OTP: " + OTP);
+      Log.d(TAG, "Mobile: " + MDN + " OTP: " + OTP);
     } catch (JSONException e) {
       e.printStackTrace();
       return;
@@ -190,7 +190,7 @@ public class GroupFragment extends ListFragment {
 
         @Override
         public void onResponse(JSONObject response) {
-          Log.e(TAG, "UserGroups: " + response.toString());
+          Log.d(TAG, "UserGroups: " + response.toString());
           try {
             respJsonArray = response.getJSONArray("DB");
             for (int i = 0; i < respJsonArray.length(); i++) {
@@ -210,7 +210,7 @@ public class GroupFragment extends ListFragment {
       @Override
       public void onErrorResponse(VolleyError error) {
         VolleyLog.d(TAG, "CG API Error: " + error.getMessage());
-        Log.e(TAG, jsonPost.toString());
+        Log.d(TAG, jsonPost.toString());
       }
     }
     );

@@ -170,7 +170,7 @@ public class ContactFragment extends Fragment {
 
         @Override
         public void onResponse(JSONObject response) {
-          Log.e(TAG, "UserContacts: " + response.toString());
+          Log.d(TAG, "UserContacts: " + response.toString());
           try {
             respJsonArray = response.getJSONArray("DB");
             for (int i = 0; i < respJsonArray.length(); i++) {
@@ -192,7 +192,7 @@ public class ContactFragment extends Fragment {
       @Override
       public void onErrorResponse(VolleyError error) {
         VolleyLog.d(TAG, "Error: " + error.getMessage());
-        Log.e(TAG, jsonPost.toString());
+        Log.d(TAG, jsonPost.toString());
       }
     }
     );

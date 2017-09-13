@@ -183,9 +183,9 @@ public class DashAIO extends ActionBarActivity
       MODE_PRIVATE);
     //TODO: Proper Menu decoding to be done here so that position could be avoided
     final int ExitMenu = 4;
-    Log.e(TAG, "Drawer MenuIndex:" + MenuIndex);
+    Log.d(TAG, "Drawer MenuIndex:" + MenuIndex);
     if (mInSecurePrefs == null) {
-      Log.e("StartLogin: ", "Preference not found");
+      Log.d("StartLogin: ", "Preference not found");
     } else {
       String MobileNo = mInSecurePrefs.getString(PREF_KEY_MOBILE, null);
       if ((MobileNo == null) && (MenuIndex < ExitMenu)) {
@@ -214,7 +214,7 @@ public class DashAIO extends ActionBarActivity
                   MprFragment.newInstance(mUser.UserMapID, "")
                 ).commit();
             } catch (Exception e) {
-              Log.e(TAG, "Error in Fragment");
+              Log.d(TAG, "Error in Fragment");
             }
             setTitle(getString(R.string.title_activity_scheme));*/
 
@@ -329,7 +329,7 @@ public class DashAIO extends ActionBarActivity
         prefEdit.putString(PREF_KEY_EMAIL, data.getStringExtra(PREF_KEY_EMAIL));
         prefEdit.putString(PREF_KEY_POST, data.getStringExtra(PREF_KEY_POST));
         prefEdit.apply();
-        Log.e("onActivityResult", "GroupSMS-RequestCode: " + requestCode + ":"
+        Log.d("onActivityResult", "GroupSMS-RequestCode: " + requestCode + ":"
           + resultCode + " UserMapID:" + data.getStringExtra(PREF_KEY_UserMapID)
           + " =>" + mInSecurePrefs.getAll().toString());
         startActivity(new Intent(getApplicationContext(), DashAIO.class));
@@ -419,7 +419,7 @@ public class DashAIO extends ActionBarActivity
     Toast.makeText(getApplicationContext(),
       getString(R.string.msg_sync_otp),
       Toast.LENGTH_LONG).show();
-    Log.e(TAG, jsonPost.toString() + mAccountDb.getSecret(mUser.MobileNo)
+    Log.d(TAG, jsonPost.toString() + mAccountDb.getSecret(mUser.MobileNo)
       + " " + mAccountDb.getCounter(mUser.MobileNo));
   }
 
@@ -475,7 +475,7 @@ public class DashAIO extends ActionBarActivity
     // Adding request to request queue
     jsonObjReq.setTag(TAG);
     rQueue.add(jsonObjReq);
-    Log.e(TAG, jsonPost.toString() + mAccountDb.getSecret(mUser.MobileNo)
+    Log.d(TAG, jsonPost.toString() + mAccountDb.getSecret(mUser.MobileNo)
       + " " + mAccountDb.getCounter(mUser.MobileNo));
   }
 

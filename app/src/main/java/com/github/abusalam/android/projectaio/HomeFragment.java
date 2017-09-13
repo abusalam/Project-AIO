@@ -154,7 +154,7 @@ public class HomeFragment extends Fragment {
     try {
       jsonPost.put(DashAIO.KEY_API, "US");
       jsonPost.put("UID", UID);
-      Log.e(TAG, "UserMapID: " + UID);
+      Log.d(TAG, "UserMapID: " + UID);
     } catch (JSONException e) {
       e.printStackTrace();
       return;
@@ -166,7 +166,7 @@ public class HomeFragment extends Fragment {
 
         @Override
         public void onResponse(JSONObject response) {
-          Log.e(TAG, "UserSchemes: " + response.toString());
+          Log.d(TAG, "UserSchemes: " + response.toString());
           try {
             respJsonArray = response.getJSONArray("DB");
             for (int i = 0; i < respJsonArray.length(); i++) {
@@ -186,7 +186,7 @@ public class HomeFragment extends Fragment {
       @Override
       public void onErrorResponse(VolleyError error) {
         VolleyLog.d(TAG, "Error: " + error.getMessage());
-        Log.e(TAG, jsonPost.toString());
+        Log.d(TAG, jsonPost.toString());
       }
     }
     );

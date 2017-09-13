@@ -173,7 +173,7 @@ public class GroupSMS extends ActionBarActivity {
           //               ContactFragment.newInstance(mUser.UserMapID, "")
           //       ).commit();
         } catch (Exception e) {
-          Log.e(TAG, "Error in Fragment");
+          Log.d(TAG, "Error in Fragment");
         }
         //setTitle(getString(R.string.title_activity_scheme));
         //Toast.makeText(getApplicationContext(), getText(R.string.msg_show_contacts), Toast.LENGTH_LONG).show();
@@ -231,7 +231,7 @@ public class GroupSMS extends ActionBarActivity {
       @Override
       public void onErrorResponse(VolleyError error) {
         VolleyLog.d(TAG, "Error: " + error.getMessage());
-        Log.e(TAG, jsonPost.toString());
+        Log.d(TAG, jsonPost.toString());
       }
     }
     );
@@ -295,7 +295,7 @@ public class GroupSMS extends ActionBarActivity {
       @Override
       public void onErrorResponse(VolleyError error) {
         VolleyLog.d(TAG, "Error: " + error.getMessage());
-        Log.e(TAG, jsonPost.toString());
+        Log.d(TAG, jsonPost.toString());
       }
     }
     );
