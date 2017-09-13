@@ -65,6 +65,8 @@
         android:layout_height="wrap_content"
         android:id="@+id/etSecretKey"
         android:inputType="textCapCharacters"
+        android:maxLength="16"
+        android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
         android:layout_alignParentLeft="false"
         android:gravity="center_vertical"
         android:layout_above="@+id/btnVerifyOTP"
