@@ -7,17 +7,17 @@
     tools:context="com.github.abusalam.android.projectaio.mpr.SchemeActivity">
 
     <ListView
+        android:id="@+id/lvSchemes"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/lvSchemes"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
 
     <ProgressBar
+        android:id="@+id/pbSchemes"
         style="?android:attr/progressBarStyleLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/pbSchemes"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
         android:indeterminate="true" />

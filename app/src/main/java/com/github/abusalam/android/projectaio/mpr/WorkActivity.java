@@ -21,8 +21,12 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.github.abusalam.android.projectaio.DashAIO;
-import com.github.abusalam.android.projectaio.R;
+import com.github.abusalam.android.projectaio.*;
+import com.github.abusalam.android.projectaio.GoogleAuthenticator.AccountDb;
+import com.github.abusalam.android.projectaio.GoogleAuthenticator.OtpProvider;
+import com.github.abusalam.android.projectaio.GoogleAuthenticator.OtpSource;
+import com.github.abusalam.android.projectaio.GoogleAuthenticator.OtpSourceException;
+import com.github.abusalam.android.projectaio.GoogleAuthenticator.TotpClock;
 import com.github.abusalam.android.projectaio.ajax.VolleyAPI;
 
 import org.json.JSONArray;
@@ -55,12 +59,29 @@ public class WorkActivity extends ActionBarActivity {
   private Long SchemeID;
   private String SchemeName;
 
+  private AccountDb mAccountDb;
+  private OtpSource mOtpProvider;
+  private com.github.abusalam.android.projectaio.User mUser;
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_work);
 
+    mAccountDb = new AccountDb(this);
+    mOtpProvider = new OtpProvider(mAccountDb, new TotpClock(this));
+
     mPrefs = getSharedPreferences(SECRET_PREF_NAME, MODE_PRIVATE);
+    mUser = new com.github.abusalam.android.projectaio.User();
+    mUser.MobileNo = mPrefs.getString(DashAIO.PREF_KEY_MOBILE, null);
+
+    try {
+      mUser.pin = mOtpProvider.getNextCode(mUser.MobileNo);
+    } catch (OtpSourceException e) {
+      Toast.makeText(getApplicationContext(), "OTP Error: " + e.getMessage()
+          + " Mobile:" + mUser.MobileNo, Toast.LENGTH_LONG).show();
+    }
+
     rQueue = VolleyAPI.getInstance(this).getRequestQueue();
     lvWorks = (ListView) findViewById(R.id.lvWorks);
     prgBar = (ProgressBar) findViewById(R.id.pbWorks);
@@ -141,16 +162,26 @@ public class WorkActivity extends ActionBarActivity {
   @Override
   protected void onDestroy() {
     super.onDestroy();
+    mAccountDb.close();
     rQueue.cancelAll(TAG);
   }
 
   private void getUserWorks(String mUID, Long SID) {
 
+    try {
+      mUser.pin = mOtpProvider.getNextCode(mUser.MobileNo);
+    } catch (OtpSourceException e) {
+      Toast.makeText(getApplicationContext(), "Error: " + e.getMessage()
+          + " MDN:" + mUser.MobileNo, Toast.LENGTH_SHORT).show();
+      return;
+    }
+
     final JSONObject jsonPost = new JSONObject();
 
     try {
       jsonPost.put(DashAIO.KEY_API, "UW");
-      jsonPost.put("UID", mUID);
+      jsonPost.put("MDN", mUser.getMobileNo());
+      jsonPost.put("OTP", mUser.pin);
       jsonPost.put("SID", SID);
     } catch (JSONException e) {
       e.printStackTrace();

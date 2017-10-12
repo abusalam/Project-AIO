@@ -142,10 +142,10 @@ public class ProgressActivity extends ActionBarActivity {
     final JSONObject jsonPost = new JSONObject();
 
     try {
-      mUser.setPin(mOtpProvider.getNextCode(mUser.getMobileNo()));
+      mUser.pin = mOtpProvider.getNextCode(mUser.MobileNo);
     } catch (OtpSourceException e) {
-      Log.d("Error OTP: ", "" + e.getMessage()
-        + mAccountDb.getCounter(mUser.getMobileNo()));
+      Toast.makeText(getApplicationContext(), "Error: " + e.getMessage()
+          + " MDN:" + mUser.MobileNo, Toast.LENGTH_SHORT).show();
       return;
     }
 

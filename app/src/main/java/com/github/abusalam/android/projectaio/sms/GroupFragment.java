@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -191,6 +192,9 @@ public class GroupFragment extends ListFragment {
         @Override
         public void onResponse(JSONObject response) {
           Log.d(TAG, "UserGroups: " + response.toString());
+          Toast.makeText(getActivity().getApplicationContext(),
+              response.optString(DashAIO.KEY_STATUS),
+              Toast.LENGTH_SHORT).show();
           try {
             respJsonArray = response.getJSONArray("DB");
             for (int i = 0; i < respJsonArray.length(); i++) {
@@ -209,6 +213,7 @@ public class GroupFragment extends ListFragment {
 
       @Override
       public void onErrorResponse(VolleyError error) {
+
         VolleyLog.d(TAG, "CG API Error: " + error.getMessage());
         Log.d(TAG, jsonPost.toString());
       }

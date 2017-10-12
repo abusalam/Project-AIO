@@ -37,8 +37,9 @@ public class GroupActivity extends ActionBarActivity implements GroupFragment.On
     try {
       mUser.pin = mOtpProvider.getNextCode(mUser.MobileNo);
     } catch (OtpSourceException e) {
-      Toast.makeText(getApplicationContext(), "OTP Error: " + e.getMessage()
-        + " Mobile:" + mUser.MobileNo, Toast.LENGTH_LONG).show();
+      Toast.makeText(getApplicationContext(), "Error: " + e.getMessage()
+          + " MDN:" + mUser.MobileNo, Toast.LENGTH_SHORT).show();
+      return;
     }
     FragmentManager fragmentManager = getSupportFragmentManager();
 

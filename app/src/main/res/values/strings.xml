@@ -30,7 +30,7 @@
     <string name="btn_send_msg_content_description">Sent this message</string>
 
     <string-array name="drawer_menu_list">
-        <!-- item>Scheme Progress</item -->
+        <item>Scheme Progress</item>
         <item>Group SMS</item>
         <item>Contacts</item>
         <item>Exit</item>

@@ -22,8 +22,13 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.github.abusalam.android.projectaio.DashAIO;
-import com.github.abusalam.android.projectaio.R;
+import com.github.abusalam.android.projectaio.*;
+import com.github.abusalam.android.projectaio.GoogleAuthenticator.AccountDb;
+import com.github.abusalam.android.projectaio.GoogleAuthenticator.OtpProvider;
+import com.github.abusalam.android.projectaio.GoogleAuthenticator.OtpSource;
+import com.github.abusalam.android.projectaio.GoogleAuthenticator.OtpSourceException;
+import com.github.abusalam.android.projectaio.GoogleAuthenticator.TotpClock;
+import com.github.abusalam.android.projectaio.User;
 import com.github.abusalam.android.projectaio.ajax.VolleyAPI;
 
 import org.json.JSONArray;
@@ -47,13 +52,24 @@ public class SchemeActivity extends ActionBarActivity {
   private ListView lvSchemes;
   private String UserID;
   private ProgressBar progressBar;
+  private AccountDb mAccountDb;
+  private OtpSource mOtpProvider;
+  private com.github.abusalam.android.projectaio.User mUser;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_scheme);
 
+    mAccountDb = new AccountDb(this);
+    mOtpProvider = new OtpProvider(mAccountDb, new TotpClock(this));
+
     mPrefs = getSharedPreferences(SECRET_PREF_NAME, MODE_PRIVATE);
+    mUser = new User();
+    mUser.MobileNo = mPrefs.getString(DashAIO.PREF_KEY_MOBILE, null);
+
+    mUser.pin = "______";
+
 
     rQueue = VolleyAPI.getInstance(this).getRequestQueue();
     lvSchemes = (ListView) findViewById(R.id.lvSchemes);
@@ -116,6 +132,7 @@ public class SchemeActivity extends ActionBarActivity {
   @Override
   protected void onDestroy() {
     super.onDestroy();
+    mAccountDb.close();
     rQueue.cancelAll(TAG);
   }
 
@@ -129,11 +146,20 @@ public class SchemeActivity extends ActionBarActivity {
 
   private void getUserSchemes(String UID) {
 
+    try {
+      mUser.pin = mOtpProvider.getNextCode(mUser.MobileNo);
+    } catch (OtpSourceException e) {
+      Toast.makeText(getApplicationContext(), "Error: " + e.getMessage()
+          + " MDN:" + mUser.MobileNo, Toast.LENGTH_SHORT).show();
+      return;
+    }
+
     final JSONObject jsonPost = new JSONObject();
 
     try {
       jsonPost.put(DashAIO.KEY_API, "US");
-      jsonPost.put("UID", UID);
+      jsonPost.put("MDN", mUser.getMobileNo());
+      jsonPost.put("OTP", mUser.pin);
       Log.d(TAG, "UserMapID: " + UID);
     } catch (JSONException e) {
       e.printStackTrace();
