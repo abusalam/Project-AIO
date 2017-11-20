@@ -108,7 +108,7 @@
     <string name="msg_insufficient_balance">Expenditure is more than balance.</string>
     <string name="lbl_work_remark">Work Remarks:</string>
     <string name="ea_hint">Enter Expenditure Amount</string>
-    <string name="sync_otp_text">Sync OTP Generation</string>
+    <string name="sync_otp_text">Sync Profile</string>
     <string name="msg_sync_otp">Synchronizing…</string>
     <string name="lbl_app_version">App Version:</string>
     <string name="msg_about">Developed by NIC, Paschim Medinipur</string>

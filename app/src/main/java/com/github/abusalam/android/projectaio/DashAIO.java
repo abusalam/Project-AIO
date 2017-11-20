@@ -185,7 +185,7 @@ public class DashAIO extends ActionBarActivity
     final int ExitMenu = 4;
     Log.d(TAG, "Drawer MenuIndex:" + MenuIndex);
     if (mInSecurePrefs == null) {
-      Log.d("StartLogin: ", "Preference not found");
+      //Log.d("StartLogin: ", "Preference not found");
     } else {
       String MobileNo = mInSecurePrefs.getString(PREF_KEY_MOBILE, null);
       if ((MobileNo == null) && (MenuIndex < ExitMenu)) {
@@ -329,9 +329,9 @@ public class DashAIO extends ActionBarActivity
         prefEdit.putString(PREF_KEY_EMAIL, data.getStringExtra(PREF_KEY_EMAIL));
         prefEdit.putString(PREF_KEY_POST, data.getStringExtra(PREF_KEY_POST));
         prefEdit.apply();
-        Log.d("onActivityResult", "GroupSMS-RequestCode: " + requestCode + ":"
-          + resultCode + " UserMapID:" + data.getStringExtra(PREF_KEY_UserMapID)
-          + " =>" + mInSecurePrefs.getAll().toString());
+        //Log.d("onActivityResult", "GroupSMS-RequestCode: " + requestCode + ":"
+        //  + resultCode + " UserMapID:" + data.getStringExtra(PREF_KEY_UserMapID)
+        //  + " =>" + mInSecurePrefs.getAll().toString());
         startActivity(new Intent(getApplicationContext(), DashAIO.class));
         finish();
       } else {
@@ -366,8 +366,8 @@ public class DashAIO extends ActionBarActivity
 
     try {
       jsonPost.put("API", "SP");
-      jsonPost.put("OTP1", OTP1);
-      jsonPost.put("OTP2", OTP2);
+      //jsonPost.put("OTP1", OTP1);
+      //jsonPost.put("OTP2", OTP2);
       jsonPost.put("MDN", mUser.MobileNo);
       jsonPost.put("OTP", mUser.pin);
     } catch (JSONException e) {
@@ -382,7 +382,7 @@ public class DashAIO extends ActionBarActivity
 
         @Override
         public void onResponse(JSONObject response) {
-          Log.d(TAG, "Group-SMS " + response.toString());
+          //Log.d(TAG, "Sync: " + response.toString());
           Toast.makeText(getApplicationContext(),
             response.optString(DashAIO.KEY_STATUS),
             Toast.LENGTH_LONG).show();
@@ -393,8 +393,8 @@ public class DashAIO extends ActionBarActivity
             SharedPreferences.Editor prefEdit = mInSecurePrefs.edit();
             prefEdit.putString(PREF_KEY_MOBILE, mUser.MobileNo);
             prefEdit.putString(PREF_KEY_NAME, respJson.optString("DisplayName"));
-            prefEdit.putString(PREF_KEY_EMAIL, respJson.optString("UserID"));
-            prefEdit.putString(PREF_KEY_POST, respJson.optString("UserName"));
+            prefEdit.putString(PREF_KEY_EMAIL, respJson.optString("eMailID"));
+            prefEdit.putString(PREF_KEY_POST, respJson.optString("Designation"));
             prefEdit.putString(PREF_KEY_UserMapID, respJson.optString("UserMapID"));
             prefEdit.apply();
           } catch (JSONException e) {
@@ -419,8 +419,8 @@ public class DashAIO extends ActionBarActivity
     Toast.makeText(getApplicationContext(),
       getString(R.string.msg_sync_otp),
       Toast.LENGTH_LONG).show();
-    Log.d(TAG, jsonPost.toString() + mAccountDb.getSecret(mUser.MobileNo)
-      + " " + mAccountDb.getCounter(mUser.MobileNo));
+    //Log.d(TAG, jsonPost.toString() + mAccountDb.getSecret(mUser.MobileNo)
+    //  + " " + mAccountDb.getCounter(mUser.MobileNo));
   }
 
   private void showAttendance() {
@@ -475,8 +475,8 @@ public class DashAIO extends ActionBarActivity
     // Adding request to request queue
     jsonObjReq.setTag(TAG);
     rQueue.add(jsonObjReq);
-    Log.d(TAG, jsonPost.toString() + mAccountDb.getSecret(mUser.MobileNo)
-      + " " + mAccountDb.getCounter(mUser.MobileNo));
+    //Log.d(TAG, jsonPost.toString() + mAccountDb.getSecret(mUser.MobileNo)
+    //  + " " + mAccountDb.getCounter(mUser.MobileNo));
   }
 
 //  @Override

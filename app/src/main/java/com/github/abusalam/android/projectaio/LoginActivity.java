@@ -193,7 +193,7 @@ public class LoginActivity extends ActionBarActivity {
       try {
         apiRespUserStat = new JSONObject(savedInstanceState.getString("API"));
       } catch (JSONException e) {
-        Log.d(TAG, e.getMessage());
+        //Log.d(TAG, e.getMessage());
       }
     }
     super.onRestoreInstanceState(savedInstanceState);
@@ -201,7 +201,7 @@ public class LoginActivity extends ActionBarActivity {
 
   @Override
   public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-    Log.d(getString(R.string.app_name), TAG + ": onActivityResult");
+    //Log.d(getString(R.string.app_name), TAG + ": onActivityResult");
     if (requestCode == SCAN_REQUEST && resultCode == Activity.RESULT_OK) {
       // Grab the scan results and convert it into a URI
       String scanResult = (intent != null) ? intent.getStringExtra("SCAN_RESULT") : null;
@@ -250,7 +250,7 @@ public class LoginActivity extends ActionBarActivity {
         return false;
       }
     } else {
-      Log.d(TAG, "Trying to save an empty secret key");
+      //Log.d(TAG, "Trying to save an empty secret key");
       Toast.makeText(context, R.string.error_empty_secret, Toast.LENGTH_LONG).show();
       return false;
     }
@@ -393,7 +393,7 @@ public class LoginActivity extends ActionBarActivity {
     final Integer counter;
 
     if (!OTP_SCHEME.equals(scheme)) {
-      Log.d(getString(R.string.app_name), TAG + ": Invalid or missing scheme in uri");
+      //Log.d(getString(R.string.app_name), TAG + ": Invalid or missing scheme in uri");
       Toast.makeText(this, "Invalid QR Code OTP Scheme", Toast.LENGTH_LONG).show();
       return;
     }
@@ -411,7 +411,7 @@ public class LoginActivity extends ActionBarActivity {
           try {
             counter = Integer.parseInt(counterParameter);
           } catch (NumberFormatException e) {
-            Log.d(getString(R.string.app_name), TAG + ": Invalid counter in uri");
+            //Log.d(getString(R.string.app_name), TAG + ": Invalid counter in uri");
             Toast.makeText(this, "Invalid QR Code Counter", Toast.LENGTH_LONG).show();
             return;
           }
@@ -420,14 +420,14 @@ public class LoginActivity extends ActionBarActivity {
         }
         break;
       default:
-        Log.d(getString(R.string.app_name), TAG + ": Invalid or missing authority in uri");
+        //Log.d(getString(R.string.app_name), TAG + ": Invalid or missing authority in uri");
         Toast.makeText(this, "Invalid QR Code", Toast.LENGTH_LONG).show();
         return;
     }
 
     user = validateAndGetUserInPath(path);
     if (user == null) {
-      Log.d(getString(R.string.app_name), TAG + ": Missing user id in uri");
+      //Log.d(getString(R.string.app_name), TAG + ": Missing user id in uri");
       Toast.makeText(this, "Invalid QR Code User", Toast.LENGTH_LONG).show();
       return;
     }
@@ -435,14 +435,14 @@ public class LoginActivity extends ActionBarActivity {
     secret = uri.getQueryParameter(SECRET_PARAM);
 
     if (secret == null || secret.length() == 0) {
-      Log.d(getString(R.string.app_name), TAG +
-        ": Secret key not found in URI");
+      //Log.d(getString(R.string.app_name), TAG +
+      //  ": Secret key not found in URI");
       Toast.makeText(this, "Invalid QR Code Secret Null", Toast.LENGTH_LONG).show();
       return;
     }
 
     if (AccountDb.getSigningOracle(secret) == null) {
-      Log.d(getString(R.string.app_name), TAG + ": Invalid secret key");
+      //Log.d(getString(R.string.app_name), TAG + ": Invalid secret key");
       Toast.makeText(this, "Invalid QR Code Secret Key", Toast.LENGTH_LONG).show();
       return;
     }
@@ -486,7 +486,7 @@ public class LoginActivity extends ActionBarActivity {
           jsonPost.put("API", "RU");
           jsonPost.put("MDN", etMobileNo.getText());
         } catch (JSONException e) {
-          Log.d(TAG, e.getMessage());
+          //Log.d(TAG, e.getMessage());
         }
 
         JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST,
@@ -495,7 +495,7 @@ public class LoginActivity extends ActionBarActivity {
 
             @Override
             public void onResponse(JSONObject response) {
-              Log.d(TAG, response.toString());
+              //Log.d(TAG, response.toString());
               apiRespUserStat = response;
               if (response.optBoolean(DashAIO.KEY_API)) {
                 etSecretKey.setVisibility(View.VISIBLE);
@@ -512,7 +512,7 @@ public class LoginActivity extends ActionBarActivity {
           @Override
           public void onErrorResponse(VolleyError error) {
             String msgError = "Error: " + error.getMessage();
-            Log.d(TAG, msgError);
+            //Log.d(TAG, msgError);
             tvLoginMessage.setText(msgError);
             finish();
           }
@@ -554,7 +554,7 @@ public class LoginActivity extends ActionBarActivity {
       try {
         computeAndDisplayPin(mAccount.MobileNo, /*position,*/ true);
       } catch (OtpSourceException e) {
-        Log.d(TAG, "CDP:MDN: " + mAccount.MobileNo + e.getMessage());
+        //Log.d(TAG, "CDP:MDN: " + mAccount.MobileNo + e.getMessage());
         return;
       }
 
@@ -583,7 +583,7 @@ public class LoginActivity extends ActionBarActivity {
 
           @Override
           public void onResponse(JSONObject response) {
-            Log.d(TAG, response.toString());
+            //Log.d(TAG, response.toString());
             apiRespUserStat = response;
             if (response.optBoolean(DashAIO.KEY_API)) {
               etSecretKey.setVisibility(View.GONE);
@@ -600,7 +600,7 @@ public class LoginActivity extends ActionBarActivity {
         @Override
         public void onErrorResponse(VolleyError error) {
           String msgError = "OT Error: " + error.getMessage();
-          Log.d(TAG, jsonPost.toString() + msgError);
+          //Log.d(TAG, jsonPost.toString() + msgError);
           tvLoginMessage.setText(msgError);
         }
       }
@@ -660,7 +660,7 @@ public class LoginActivity extends ActionBarActivity {
       } catch (JSONException e) {
         e.printStackTrace();
         String msgError = "SP Error:" + e.getMessage();
-        Log.d(TAG, msgError);
+        //Log.d(TAG, msgError);
         tvLoginMessage.setText(msgError);
       }
       setResult(RESULT_OK, data);
