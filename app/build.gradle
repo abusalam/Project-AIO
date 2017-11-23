@@ -2,13 +2,13 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 21
-    buildToolsVersion '21.1.2'
+    buildToolsVersion '25.0.0'
     defaultConfig {
         applicationId 'com.github.abusalam.android.projectaio'
         minSdkVersion 14
         targetSdkVersion 21
-        versionCode 21
-        versionName '1.1.2 20150309'
+        versionCode 34
+        versionName '1.1.10 20170425'
     }
     buildTypes {
         release {
@@ -21,10 +21,11 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'volley')
+    compile fileTree(dir: 'libs', include: ['*.jar'])
     // You must install or update the Support Repository through the SDK manager to use this dependency.
+    //compile 'com.google.android.gms:play-services:4.2.42'
+    //compile project(':volley')
     compile 'com.android.support:appcompat-v7:21.0.3'
     compile 'com.android.support:support-v4:21.0.3'
-    //compile 'com.google.android.gms:play-services:4.2.42'
-    compile project(':volley')
+    compile 'com.android.support:recyclerview-v7:21.0.3'
 }

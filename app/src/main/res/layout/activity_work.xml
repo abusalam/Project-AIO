@@ -9,4 +9,14 @@
         android:id="@+id/lvWorks"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
+
+    <ProgressBar
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/pbWorks"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="199dp"
+        android:indeterminate="true" />
 </RelativeLayout>

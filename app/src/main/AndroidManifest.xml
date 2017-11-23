@@ -16,6 +16,7 @@
             android:label="@string/title_Home">
             <intent-filter android:label="@string/app_caption">
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -65,10 +66,10 @@
         <activity
             android:name=".mpr.WorkActivity"
             android:label="@string/title_activity_work"
-            android:parentActivityName=".mpr.SchemeActivity">
+            android:parentActivityName=".mpr.UserActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.github.abusalam.android.projectaio.mpr.SchemeActivity" />
+                android:value="com.github.abusalam.android.projectaio.mpr.UserActivity" />
         </activity>
         <activity
             android:name=".mpr.ProgressActivity"
@@ -77,6 +78,22 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.github.abusalam.android.projectaio.mpr.WorkActivity" />
+        </activity>
+        <activity
+            android:name=".mpr.UserActivity"
+            android:label="@string/title_activity_user"
+            android:parentActivityName=".mpr.SchemeActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.github.abusalam.android.projectaio.mpr.SchemeActivity" />
+        </activity>
+        <activity
+            android:name=".sms.GroupActivity"
+            android:label="@string/title_activity_groups"
+            android:parentActivityName=".sms.GroupSMS">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.github.abusalam.android.projectaio.sms.GroupSMS" />
         </activity>
     </application>
 

@@ -45,6 +45,8 @@
         android:layout_alignParentLeft="true"
         android:divider="@color/black_overlay"
         android:dividerHeight="@dimen/divider_Height"
+        android:stackFromBottom="true"
+        android:transcriptMode="alwaysScroll"
         android:layout_above="@+id/etMsg" />
 
 
