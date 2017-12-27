@@ -34,6 +34,17 @@ public class GroupActivity extends ActionBarActivity implements GroupFragment.On
 
     mUser = new User();
     mUser.setMobileNo(mInSecurePrefs.getString(DashAIO.PREF_KEY_MOBILE, null));
+
+    try {
+      if (mUser.getMobileNo()==null) {
+        this.finish();
+      }
+    } catch (Exception e) {
+      Toast.makeText(getApplicationContext(), "Error: " + e.getMessage()
+          + " MDN:" + mUser.MobileNo, Toast.LENGTH_LONG).show();
+      return;
+    }
+
     try {
       mUser.pin = mOtpProvider.getNextCode(mUser.MobileNo);
     } catch (OtpSourceException e) {

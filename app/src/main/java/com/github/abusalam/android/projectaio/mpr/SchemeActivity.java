@@ -68,6 +68,16 @@ public class SchemeActivity extends ActionBarActivity {
     mUser = new User();
     mUser.MobileNo = mPrefs.getString(DashAIO.PREF_KEY_MOBILE, null);
 
+    try {
+      if (mUser.MobileNo == null) {
+        this.finish();
+      }
+    } catch (Exception e) {
+      Toast.makeText(getApplicationContext(), "Error: " + e.getMessage()
+          + " MDN:" + mUser.MobileNo, Toast.LENGTH_LONG).show();
+      return;
+    }
+
     mUser.pin = "______";
 
 
