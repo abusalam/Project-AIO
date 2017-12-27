@@ -37,6 +37,9 @@ import com.github.abusalam.android.projectaio.ajax.VolleyAPI;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Calendar;
+import java.util.Date;
+
 
 public class LoginActivity extends ActionBarActivity {
 
@@ -571,6 +574,7 @@ public class LoginActivity extends ActionBarActivity {
         jsonPost.put("API", "OT");
         jsonPost.put("MDN", etMobileNo.getText());
         jsonPost.put("OTP", pin);
+        jsonPost.put("TS", Calendar.getInstance().getTime());
       } catch (JSONException e) {
         e.printStackTrace();
       }

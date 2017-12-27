@@ -78,11 +78,11 @@
         <activity
             android:name=".sms.GroupActivity"
             android:label="@string/title_activity_groups"
-            android:parentActivityName=".sms.GroupSMS"
+            android:parentActivityName=".DashAIO"
             android:exported="false">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.github.abusalam.android.projectaio.sms.GroupSMS" />
+                android:value="com.github.abusalam.android.projectaio.DashAIO" />
         </activity>
     </application>
 
