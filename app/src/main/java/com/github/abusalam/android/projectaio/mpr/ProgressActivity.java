@@ -77,6 +77,7 @@ public class ProgressActivity extends ActionBarActivity {
     tvPrgVal = (TextView) findViewById(R.id.tvPrgVal);
     sbProgress = (SeekBar) findViewById(R.id.sbProgress);
     etExpAmount = (EditText) findViewById(R.id.etExpAmount);
+    TextView tvExpAmount = (TextView) findViewById(R.id.tvExpAmount);
     TextView tvWorkRemark = (TextView) findViewById(R.id.tvWorkRemark);
     TextView tvRemark = (TextView) findViewById(R.id.tvRemarks);
     etRemarks = (EditText) findViewById(R.id.etRemarks);
@@ -101,6 +102,9 @@ public class ProgressActivity extends ActionBarActivity {
       btnSave.setOnClickListener(new UpdateClickListener());
     } else {
       btnSave.setVisibility(View.GONE);
+      etExpAmount.setVisibility(View.GONE);
+      etRemarks.setVisibility(View.GONE);
+      tvExpAmount.setVisibility(View.GONE);
     }
 
   }
