@@ -46,6 +46,7 @@ import java.util.ArrayList;
 public class GroupSMS extends ActionBarActivity {
 
   public static final String TAG = GroupSMS.class.getSimpleName();
+  public static final String LAUNCH_KEY = "MessageKey";
   static final String API_URL = DashAIO.API_HOST + "/apps/smsgw/android/api.php";
   /**
    * Minimum amount of time (milliseconds) that has to elapse from the moment a HOTP code is
@@ -80,6 +81,14 @@ public class GroupSMS extends ActionBarActivity {
     mUser.setMobileNo(mInSecurePrefs.getString(DashAIO.PREF_KEY_MOBILE, null));
 
     try {
+      Bundle mBundle = getIntent().getExtras();
+      if (mBundle == null) {
+        this.finish();
+      } else {
+        if(!mBundle.getString(GroupSMS.LAUNCH_KEY).equals(DashAIO.SECRET_PREF_NAME)) {
+          this.finish();
+        }
+      }
       if (mUser.getMobileNo()==null) {
         this.finish();
       }

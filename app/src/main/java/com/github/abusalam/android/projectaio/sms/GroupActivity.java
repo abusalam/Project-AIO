@@ -20,6 +20,7 @@ public class GroupActivity extends ActionBarActivity implements GroupFragment.On
   private User mUser;
   private AccountDb mAccountDb;
   private OtpSource mOtpProvider;
+  public static final String LAUNCH_KEY = "ContactKey";
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +37,14 @@ public class GroupActivity extends ActionBarActivity implements GroupFragment.On
     mUser.setMobileNo(mInSecurePrefs.getString(DashAIO.PREF_KEY_MOBILE, null));
 
     try {
+      Bundle mBundle = getIntent().getExtras();
+      if (mBundle == null) {
+        this.finish();
+      } else {
+        if(!mBundle.getString(GroupActivity.LAUNCH_KEY).equals(DashAIO.SECRET_PREF_NAME)) {
+          this.finish();
+        }
+      }
       if (mUser.getMobileNo()==null) {
         this.finish();
       }

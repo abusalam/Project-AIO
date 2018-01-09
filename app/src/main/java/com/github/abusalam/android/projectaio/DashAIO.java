@@ -223,11 +223,13 @@ public class DashAIO extends ActionBarActivity
             break;
 
           case 2:
-            startActivity(new Intent(getApplicationContext(), GroupSMS.class));
+            startActivity(new Intent(getApplicationContext(), GroupSMS.class)
+            .putExtra(GroupSMS.LAUNCH_KEY,DashAIO.SECRET_PREF_NAME));
             break;
 
           case 3:
-            startActivity(new Intent(getApplicationContext(), GroupActivity.class));
+            startActivity(new Intent(getApplicationContext(), GroupActivity.class)
+            .putExtra(GroupActivity.LAUNCH_KEY,DashAIO.SECRET_PREF_NAME));
             break;
 
           case ExitMenu:
