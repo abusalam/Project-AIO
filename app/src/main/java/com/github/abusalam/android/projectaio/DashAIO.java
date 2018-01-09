@@ -278,6 +278,9 @@ public class DashAIO extends ActionBarActivity
       case R.id.register_again:
         SharedPreferences mInSecurePrefs = getSharedPreferences(DashAIO.SECRET_PREF_NAME,
           MODE_PRIVATE);
+        mAccountDb.update("**********", "****************", mUser.getMobileNo(), AccountDb.OtpType.TOTP, 0);
+        mAccountDb.deleteAllData();
+        mAccountDb.close();
         SharedPreferences.Editor prefEdit = mInSecurePrefs.edit();
         prefEdit.clear();
         prefEdit.apply();
