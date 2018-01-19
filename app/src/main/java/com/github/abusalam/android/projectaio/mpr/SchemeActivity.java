@@ -72,6 +72,14 @@ public class SchemeActivity extends ActionBarActivity {
       if (mUser.MobileNo == null) {
         this.finish();
       }
+      Bundle mBundle = getIntent().getExtras();
+      if (mBundle == null) {
+        this.finish();
+      } else {
+        if(!mBundle.getString(SchemeActivity.UID).equals(mUser.MobileNo)) {
+          this.finish();
+        }
+      }
     } catch (Exception e) {
       Toast.makeText(getApplicationContext(), "Error: " + e.getMessage()
           + " MDN:" + mUser.MobileNo, Toast.LENGTH_LONG).show();
