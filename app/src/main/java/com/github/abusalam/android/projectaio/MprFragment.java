@@ -195,6 +195,7 @@ public class MprFragment extends Fragment {
 
     // Adding request to request queue
     jsonObjReq.setTag(TAG);
+    jsonObjReq.setShouldCache(false);
     rQueue.add(jsonObjReq);
     //Toast.makeText(getApplicationContext(), "Loading All Schemes Please Wait...", Toast.LENGTH_SHORT).show();
   }

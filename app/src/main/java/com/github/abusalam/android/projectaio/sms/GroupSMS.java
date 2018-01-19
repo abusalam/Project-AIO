@@ -268,6 +268,7 @@ public class GroupSMS extends ActionBarActivity {
 
     // Adding request to request queue
     jsonObjReq.setTag(TAG);
+    jsonObjReq.setShouldCache(false);
     rQueue.add(jsonObjReq);
   }
 
@@ -321,6 +322,7 @@ public class GroupSMS extends ActionBarActivity {
 
     // Adding request to request queue
     jsonObjReq.setTag(TAG);
+    jsonObjReq.setShouldCache(false);
     rQueue.add(jsonObjReq);
   }
 

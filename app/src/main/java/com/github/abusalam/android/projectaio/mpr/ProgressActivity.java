@@ -205,6 +205,7 @@ public class ProgressActivity extends ActionBarActivity {
     );
 
     jsonObjReq.setTag(TAG);
+    jsonObjReq.setShouldCache(false);
     rQueue.add(jsonObjReq);
   }
 

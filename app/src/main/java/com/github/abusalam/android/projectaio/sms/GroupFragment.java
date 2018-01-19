@@ -222,6 +222,7 @@ public class GroupFragment extends ListFragment {
 
     // Adding request to request queue
     jsonObjReq.setTag(TAG);
+    jsonObjReq.setShouldCache(false);
     rQueue.add(jsonObjReq);
     //Toast.makeText(getApplicationContext(), "Loading All GroupActivity Please Wait...", Toast.LENGTH_SHORT).show();
   }

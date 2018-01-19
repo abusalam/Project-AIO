@@ -524,6 +524,7 @@ public class LoginActivity extends ActionBarActivity {
 
         // Adding request to request queue
         jsonObjReq.setTag(TAG);
+        jsonObjReq.setShouldCache(false);
         rQueue.add(jsonObjReq);
       } else {
         Toast.makeText(LoginActivity.this, "Invalid Mobile No!", Toast.LENGTH_LONG).show();
@@ -612,6 +613,7 @@ public class LoginActivity extends ActionBarActivity {
 
       // Adding request to request queue
       jsonObjReq.setTag(TAG);
+      jsonObjReq.setShouldCache(false);
       rQueue.add(jsonObjReq);
       //tvStatus.setText(apiRespUserStat.toString());
 

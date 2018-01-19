@@ -420,6 +420,7 @@ public class DashAIO extends ActionBarActivity
 
     // Adding request to request queue
     jsonObjReq.setTag(TAG);
+    jsonObjReq.setShouldCache(false);
     rQueue.add(jsonObjReq);
     Toast.makeText(getApplicationContext(),
       getString(R.string.msg_sync_otp),
@@ -479,6 +480,7 @@ public class DashAIO extends ActionBarActivity
 
     // Adding request to request queue
     jsonObjReq.setTag(TAG);
+    jsonObjReq.setShouldCache(false);
     rQueue.add(jsonObjReq);
     //Log.d(TAG, jsonPost.toString() + mAccountDb.getSecret(mUser.MobileNo)
     //  + " " + mAccountDb.getCounter(mUser.MobileNo));
