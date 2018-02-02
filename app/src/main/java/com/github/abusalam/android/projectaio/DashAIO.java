@@ -183,7 +183,7 @@ public class DashAIO extends ActionBarActivity
       MODE_PRIVATE);
     //TODO: Proper Menu decoding to be done here so that position could be avoided
     final int ExitMenu = 4;
-    Log.d(TAG, "Drawer MenuIndex:" + MenuIndex);
+    //Log.d(TAG, "Drawer MenuIndex:" + MenuIndex);
     if (mInSecurePrefs == null) {
       //Log.d("StartLogin: ", "Preference not found");
     } else {

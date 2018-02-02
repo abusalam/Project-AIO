@@ -100,7 +100,7 @@ public class WorkActivity extends ActionBarActivity {
       SchemeName = mBundle.getString(SchemeActivity.SN);
     }
 
-    Log.d("Populate Works:", "Found-" + UserID);
+    //Log.d("Populate Works:", "Found-" + UserID);
     getUserWorks(UserID, SchemeID);
     setTitle(SchemeName + " : " + getString(R.string.title_activity_work));
   }
@@ -194,7 +194,7 @@ public class WorkActivity extends ActionBarActivity {
 
         @Override
         public void onResponse(JSONObject response) {
-          Log.d(TAG, "UserSchemes: " + response.toString());
+          //Log.d(TAG, "UserSchemes: " + response.toString());
           Toast.makeText(getApplicationContext(),
             response.optString(DashAIO.KEY_STATUS),
             Toast.LENGTH_SHORT).show();
@@ -227,7 +227,7 @@ public class WorkActivity extends ActionBarActivity {
       @Override
       public void onErrorResponse(VolleyError error) {
         VolleyLog.d(TAG, "Error: " + error.getMessage());
-        Log.d(TAG, jsonPost.toString());
+        //Log.d(TAG, jsonPost.toString());
       }
     }
     );

@@ -179,7 +179,7 @@ public class GroupFragment extends ListFragment {
       jsonPost.put("MDN", MDN);
       jsonPost.put("CID", MDN);
       jsonPost.put("OTP", OTP);
-      Log.d(TAG, "Mobile: " + MDN + " OTP: " + OTP);
+      //Log.d(TAG, "Mobile: " + MDN + " OTP: " + OTP);
     } catch (JSONException e) {
       e.printStackTrace();
       return;
@@ -191,7 +191,7 @@ public class GroupFragment extends ListFragment {
 
         @Override
         public void onResponse(JSONObject response) {
-          Log.d(TAG, "UserGroups: " + response.toString());
+          //Log.d(TAG, "UserGroups: " + response.toString());
           Toast.makeText(getActivity().getApplicationContext(),
               response.optString(DashAIO.KEY_STATUS),
               Toast.LENGTH_SHORT).show();
@@ -215,7 +215,7 @@ public class GroupFragment extends ListFragment {
       public void onErrorResponse(VolleyError error) {
 
         VolleyLog.d(TAG, "CG API Error: " + error.getMessage());
-        Log.d(TAG, jsonPost.toString());
+        //Log.d(TAG, jsonPost.toString());
       }
     }
     );

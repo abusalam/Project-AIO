@@ -174,7 +174,7 @@ public class ProgressActivity extends ActionBarActivity {
 
         @Override
         public void onResponse(JSONObject response) {
-          Log.d(TAG, "Update Progress: " + response.toString());
+          //Log.d(TAG, "Update Progress: " + response.toString());
           Toast.makeText(getApplicationContext(),
             response.optString(DashAIO.KEY_STATUS),
             Toast.LENGTH_SHORT).show();
@@ -188,7 +188,7 @@ public class ProgressActivity extends ActionBarActivity {
       @Override
       public void onErrorResponse(VolleyError error) {
         VolleyLog.d(TAG, "Error: " + error.getMessage());
-        Log.d(TAG, jsonPost.toString());
+        //Log.d(TAG, jsonPost.toString());
       }
     }
     );

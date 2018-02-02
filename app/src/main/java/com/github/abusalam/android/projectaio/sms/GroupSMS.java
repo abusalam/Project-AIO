@@ -227,7 +227,7 @@ public class GroupSMS extends ActionBarActivity {
 
         @Override
         public void onResponse(JSONObject response) {
-          Log.d(TAG, "Group-SMS " + response.toString());
+          //Log.d(TAG, "Group-SMS " + response.toString());
           Toast.makeText(getApplicationContext(), response.optString(DashAIO.KEY_STATUS), Toast.LENGTH_SHORT).show();
           try {
             respJsonArray = response.getJSONArray("DB");
@@ -250,7 +250,7 @@ public class GroupSMS extends ActionBarActivity {
       @Override
       public void onErrorResponse(VolleyError error) {
         VolleyLog.d(TAG, "Error: " + error.getMessage());
-        Log.d(TAG, jsonPost.toString());
+        //Log.d(TAG, jsonPost.toString());
       }
     }
     );
@@ -302,7 +302,7 @@ public class GroupSMS extends ActionBarActivity {
 
         @Override
         public void onResponse(JSONObject response) {
-          Log.d(TAG, "Group-SMS " + response.toString());
+          //Log.d(TAG, "Group-SMS " + response.toString());
           Toast.makeText(getApplicationContext(), response.optString(DashAIO.KEY_STATUS), Toast.LENGTH_SHORT).show();
 
           newMsgItem.setMsgStatus(response.optString(DashAIO.KEY_SENT_ON));
@@ -315,7 +315,7 @@ public class GroupSMS extends ActionBarActivity {
       @Override
       public void onErrorResponse(VolleyError error) {
         VolleyLog.d(TAG, "Error: " + error.getMessage());
-        Log.d(TAG, jsonPost.toString());
+        //Log.d(TAG, jsonPost.toString());
       }
     }
     );

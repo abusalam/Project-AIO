@@ -74,7 +74,7 @@ public class GroupActivity extends ActionBarActivity implements GroupFragment.On
 
   @Override
   public void onListFragmentInteraction(Group item) {
-    Log.d("SelectedGroup: ", item.getGroupName());
+    //Log.d("SelectedGroup: ", item.getGroupName());
 
     ContactFragment contactFragment = ContactFragment.newInstance(mUser.getMobileNo(), mUser.getPin(), item.getGroupName());
     Bundle args = new Bundle();
