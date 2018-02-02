@@ -45,6 +45,7 @@ public class WorkActivity extends ActionBarActivity {
   public static final String Bal = "Balance";
   public static final String WR = "WorkRemarks";
   public static final String Rem = "Remarks";
+  public static final String LAUNCH_KEY = "WorkKey";
 
   static final String SECRET_PREF_NAME = "mPrefSecrets";
   private SharedPreferences mPrefs;
@@ -91,10 +92,11 @@ public class WorkActivity extends ActionBarActivity {
 
     Bundle mBundle = getIntent().getExtras();
     if (mBundle == null) {
-      UserID = mPrefs.getString(SchemeActivity.UID, "");
-      SchemeID = mPrefs.getLong(SchemeActivity.SID, 0);
-      SchemeName = mPrefs.getString(SchemeActivity.SN, "");
+      this.finish();
     } else {
+      if(!mBundle.getString(WorkActivity.LAUNCH_KEY).equals(DashAIO.SECRET_PREF_NAME)) {
+        this.finish();
+      }
       UserID = mBundle.getString(SchemeActivity.UID);
       SchemeID = mBundle.getLong(SchemeActivity.SID);
       SchemeName = mBundle.getString(SchemeActivity.SN);
@@ -211,6 +213,7 @@ public class WorkActivity extends ActionBarActivity {
               mWork.setProgress(respJsonArray.getJSONObject(i).optInt(Progress));
               mWork.setWorkRemarks(respJsonArray.getJSONObject(i).optString(WR));
               mWork.setRemarks(respJsonArray.getJSONObject(i).optString(Rem));
+              mWork.setEditable(response.getBoolean("Editable"));
               WorkList.add(mWork);
             }
             // Spinner adapter
@@ -250,6 +253,7 @@ public class WorkActivity extends ActionBarActivity {
       iPrg.putExtra(WorkName, WorkList.get(i));
       iPrg.putExtra(ProgressActivity.DYN_TITLE, SchemeName
         + " : " + WorkList.get(i).getWorkID());
+      iPrg.putExtra(ProgressActivity.LAUNCH_KEY,DashAIO.SECRET_PREF_NAME);
       startActivity(iPrg);
     }
   }

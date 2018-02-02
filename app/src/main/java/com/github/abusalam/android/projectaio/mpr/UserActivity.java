@@ -44,6 +44,7 @@ public class UserActivity extends ActionBarActivity {
   public static final String Bal = "B";
   public static final String MobileNo = "M";
   public static final String SchCount = "S";
+  public static final String LAUNCH_KEY = "UserKey";
 
 
   static final String SECRET_PREF_NAME = "mPrefSecrets";
@@ -93,10 +94,11 @@ public class UserActivity extends ActionBarActivity {
     UserList = new ArrayList<>();
     Bundle mBundle = getIntent().getExtras();
     if (mBundle == null) {
-      UserID = mPrefs.getString(SchemeActivity.UID, "");
-      SchemeID = mPrefs.getLong(SchemeActivity.SID, 0);
-      SchemeName = mPrefs.getString(SchemeActivity.SN, "");
+      this.finish();
     } else {
+      if(!mBundle.getString(UserActivity.LAUNCH_KEY).equals(DashAIO.SECRET_PREF_NAME)) {
+        this.finish();
+      }
       UserID = mBundle.getString(SchemeActivity.UID);
       SchemeID = mBundle.getLong(SchemeActivity.SID);
       SchemeName = mBundle.getString(SchemeActivity.SN);
@@ -250,6 +252,7 @@ public class UserActivity extends ActionBarActivity {
         iWorks.putExtra(SchemeActivity.SID, SchemeID);
         iWorks.putExtra(SchemeActivity.SN, SchemeName);
         iWorks.putExtra(SchemeActivity.UID, "" + UserList.get(i - 1).getUserID());
+        iWorks.putExtra(WorkActivity.LAUNCH_KEY,DashAIO.SECRET_PREF_NAME);
         startActivity(iWorks);
       }
     }

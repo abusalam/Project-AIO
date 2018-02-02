@@ -39,6 +39,7 @@ import org.json.JSONObject;
 public class ProgressActivity extends ActionBarActivity {
   public static final String TAG = ProgressActivity.class.getSimpleName();
   public static final String DYN_TITLE = "WPT";
+  public static final String LAUNCH_KEY = "ProgressKey";
   /**
    * Minimum amount of time (milliseconds) that has to elapse from the moment a HOTP code is
    * generated for an account until the moment the next code can be generated for the account.
@@ -98,7 +99,7 @@ public class ProgressActivity extends ActionBarActivity {
       + " : " + getString(R.string.title_activity_progress_mpr)
       + " (" + mWork.getProgress() + "%)");
 
-    if (mUser.getUserMapID().equals("" + mWork.getUserMapID())) {
+    if (mWork.isEditable()) {
       btnSave.setOnClickListener(new UpdateClickListener());
     } else {
       btnSave.setVisibility(View.GONE);

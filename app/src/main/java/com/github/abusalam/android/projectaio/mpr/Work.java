@@ -23,6 +23,7 @@ public class Work implements Parcelable {
   private String WorkRemarks;
   private String Remarks;
   private int UserMapID;
+  private boolean Editable;
 
   public Work() {
     initialPrg = 0;
@@ -42,6 +43,7 @@ public class Work implements Parcelable {
     setWorkRemarks(in.readString());
     setRemarks(in.readString());
     setUserMapID(in.readInt());
+    setEditable(in.readInt()!=0);
 
   }
 
@@ -103,6 +105,14 @@ public class Work implements Parcelable {
     }
   }
 
+  public boolean isEditable() {
+    return Editable;
+  }
+
+  public void setEditable(boolean editable) {
+    Editable = editable;
+  }
+
   public String getWorkRemarks() {
     return WorkRemarks;
   }
@@ -134,6 +144,7 @@ public class Work implements Parcelable {
     p.writeString(getWorkRemarks());
     p.writeString(getRemarks());
     p.writeInt(getUserMapID());
+    p.writeInt((isEditable()?1:0));
   }
 
   @Override

@@ -241,6 +241,7 @@ public class SchemeActivity extends ActionBarActivity {
       iWorks.putExtra(SchemeActivity.SID, SchemeID);
       iWorks.putExtra(SchemeActivity.SN, SchemeName);
       iWorks.putExtra(SchemeActivity.UID, UserID);
+      iWorks.putExtra(UserActivity.LAUNCH_KEY,DashAIO.SECRET_PREF_NAME);
       startActivity(iWorks);
     }
   }
