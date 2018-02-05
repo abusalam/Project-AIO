@@ -158,11 +158,9 @@ public class ProgressActivity extends ActionBarActivity {
       jsonPost.put("API", "UP");
       jsonPost.put("MDN", mUser.getMobileNo());
       jsonPost.put("OTP", mUser.getPin());
-      jsonPost.put("UID", mUser.getUserMapID());
       jsonPost.put("WID", mWork.getWorkID());
       jsonPost.put("EA", etExpAmount.getText());
       jsonPost.put("P", sbProgress.getProgress());
-      jsonPost.put("B", mWork.getBalance());
       jsonPost.put("R", etRemarks.getText());
     } catch (JSONException e) {
       e.printStackTrace();
