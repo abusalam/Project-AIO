@@ -185,7 +185,7 @@ public class DashAIO extends ActionBarActivity
     final int ExitMenu = 4;
     //Log.d(TAG, "Drawer MenuIndex:" + MenuIndex);
     if (mInSecurePrefs == null) {
-      //Log.d("StartLogin: ", "Preference not found");
+      Log.d("StartLogin: ", "Preference not found");
     } else {
       String MobileNo = mInSecurePrefs.getString(PREF_KEY_MOBILE, null);
       if ((MobileNo == null) && (MenuIndex < ExitMenu)) {
